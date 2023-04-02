@@ -5,6 +5,7 @@
              xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels">
     <Application.Resources>
 
+
         <ResourceDictionary>
 
             <DataTemplate DataType="{x:Type TypeName=viewModels:MainWindowViewModel}">
@@ -33,7 +34,10 @@
                 <ResourceDictionary Source="Resources/MWToggleButton.xaml" />
                 <ResourceDictionary Source="Resources/USTextBox.xaml" />
                 <ResourceDictionary Source="Resources/FadeTextBlock.xaml" />
+                <ResourceDictionary Source="Resources/ProfileDataFetcherResources/LookupButton.xaml" />
+                <ResourceDictionary Source="Resources/ProfileDataFetcherResources/SteamIDInputTextBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
 
         </ResourceDictionary>
 

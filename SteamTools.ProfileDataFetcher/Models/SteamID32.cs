@@ -23,7 +23,12 @@ public class SteamID32
 
     public static implicit operator string(SteamID32 steamID32)
     {
-        return steamID32._id.ToString();
+        return steamID32.ToString();
+    }
+
+    public override string ToString()
+    {
+        return _id.ToString();
     }
 
     public SteamID64 ToSteamID64()

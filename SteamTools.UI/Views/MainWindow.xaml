@@ -6,7 +6,7 @@
         xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels"
         mc:Ignorable="d"
         Title="Main"
-        Height="300"
+        Height="400"
         Width="480"
         WindowStyle="None"
         ResizeMode="NoResize"
