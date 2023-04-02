@@ -21,7 +21,8 @@
                                        FontFamily="{TemplateBinding FontFamily}"
                                        VerticalAlignment="{TemplateBinding VerticalAlignment}"
                                        TextAlignment="{TemplateBinding TextAlignment}"
-                                       Padding="16.5 0 0 0"
+                                       Margin="1 0 0 0"
+                                       Padding="{TemplateBinding Padding}"
                                        Visibility="{Binding Text, 
                                                         Converter={StaticResource StringNullOrEmptyToVisibilityConverter},
                                                         RelativeSource={RelativeSource TemplatedParent}}" />

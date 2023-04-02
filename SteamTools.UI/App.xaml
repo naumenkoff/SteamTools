@@ -4,26 +4,19 @@
              xmlns:views="clr-namespace:SteamTools.UI.Views"
              xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels">
     <Application.Resources>
-
-
         <ResourceDictionary>
-
             <DataTemplate DataType="{x:Type TypeName=viewModels:MainWindowViewModel}">
                 <views:MainWindow />
             </DataTemplate>
-
             <DataTemplate DataType="{x:Type TypeName=viewModels:IDScannerViewModel}">
                 <views:IDScannerView />
             </DataTemplate>
-
             <DataTemplate DataType="{x:Type TypeName=viewModels:LocalProfileScannerViewModel}">
                 <views:LocalProfileScannerView />
             </DataTemplate>
-
             <DataTemplate DataType="{x:Type TypeName=viewModels:ProfileDataFetcherViewModel}">
                 <views:ProfileDataFetcherView />
             </DataTemplate>
-
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Colors.xaml" />
                 <ResourceDictionary Source="Resources/PSComboBox.xaml" />
@@ -36,11 +29,8 @@
                 <ResourceDictionary Source="Resources/FadeTextBlock.xaml" />
                 <ResourceDictionary Source="Resources/ProfileDataFetcherResources/LookupButton.xaml" />
                 <ResourceDictionary Source="Resources/ProfileDataFetcherResources/SteamIDInputTextBox.xaml" />
+                <ResourceDictionary Source="Resources/ProfileDataFetcherResources/SteamProfileInfoTextBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-
         </ResourceDictionary>
-
-
     </Application.Resources>
 </Application>

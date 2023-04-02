@@ -10,7 +10,7 @@
              d:DataContext="{d:DesignInstance viewModels:ProfileDataFetcherViewModel}">
     <Grid Background="#202020">
         <Grid.RowDefinitions>
-            <RowDefinition Height="70" />
+            <RowDefinition Height="75" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
@@ -20,7 +20,7 @@
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0">
                 <TextBox Style="{StaticResource SteamIDInputTextBox}" Background="White"
-                         Height="40" Margin="15 15 0 0" Padding="15 0 15 0"
+                         Height="35" Margin="20 20 0 20" Padding="20 0 20 0"
                          Text="{Binding EnteredText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          Tag="Enter Steam ID">
                     <TextBox.InputBindings>
@@ -30,48 +30,42 @@
             </StackPanel>
             <StackPanel Grid.Column="1">
                 <Button Style="{StaticResource LookupButton}" FontSize="18"
-                        Height="40" Margin="0 15 15 0" Content="Lookup" Command="{Binding GetProfileDetailsCommand}" />
+                        Height="35" Margin="0 20 20 20" Content="Lookup" Command="{Binding GetProfileDetailsCommand}" />
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120" />
-                <ColumnDefinition Width="360" />
+                <ColumnDefinition Width="132" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0">
-                <Image Source="{Binding ProfileDetails.PlayerSummaries.AvatarFull}" VerticalAlignment="Top"
-                       HorizontalAlignment="Center" Width="92" Height="92" />
+            <Border Width="92" Height="92" Background="#333333">
+                <Image Source="{Binding ProfileDetails.PlayerSummaries.AvatarFull}" Width="90" Height="90"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center" />
+            </Border>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBox Grid.Row="0" Style="{StaticResource SteamProfileInfoTextBox}"
+                         Text="{Binding ProfileDetails.SteamID, Mode=OneWay}" Tag="STEAMID >" />
+                <TextBox Grid.Row="1" Style="{StaticResource SteamProfileInfoTextBox}"
+                         Text="{Binding ProfileDetails.SteamID3, Mode=OneWay}" Tag="STEAMID3 >" />
+                <TextBox Grid.Row="2" Style="{StaticResource SteamProfileInfoTextBox}"
+                         Text="{Binding ProfileDetails.SteamID32, Mode=OneWay}" Tag="STEAMID32 >" />
+                <TextBox Grid.Row="3" Style="{StaticResource SteamProfileInfoTextBox}"
+                         Text="{Binding ProfileDetails.SteamID64, Mode=OneWay}" Tag="STEAMID64 >" />
+                <TextBox Grid.Row="4" Style="{StaticResource SteamProfileInfoTextBox}"
+                         Text="{Binding ProfileDetails.ProfilePermanentUrl, Mode=OneWay}" Tag="PERMALINK >" />
+                <TextBox Grid.Row="5" Style="{StaticResource SteamProfileInfoTextBox}"
+                         Text="{Binding ProfileDetails.ProfileCustomUrl, Mode=OneWay}" Tag="VANITYURL >" />
             </Grid>
-            <StackPanel Grid.Column="1">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="40" />
-                        <RowDefinition Height="40" />
-                        <RowDefinition Height="40" />
-                        <RowDefinition Height="40" />
-                        <RowDefinition Height="40" />
-                        <RowDefinition Height="40" />
-                    </Grid.RowDefinitions>
-                    <TextBox Grid.Row="0" VerticalAlignment="Center" Style="{StaticResource USTextBox}"
-                             TextAlignment="Center" IsReadOnly="True"
-                             Text="{Binding ProfileDetails.SteamID, Mode=OneWay}" />
-                    <TextBox Grid.Row="1" VerticalAlignment="Center" Style="{StaticResource USTextBox}"
-                             TextAlignment="Center" IsReadOnly="True"
-                             Text="{Binding ProfileDetails.SteamID3, Mode=OneWay}" />
-                    <TextBox Grid.Row="2" VerticalAlignment="Center" Style="{StaticResource USTextBox}"
-                             TextAlignment="Center" IsReadOnly="True"
-                             Text="{Binding ProfileDetails.SteamID32, Mode=OneWay}" />
-                    <TextBox Grid.Row="3" VerticalAlignment="Center" Style="{StaticResource USTextBox}"
-                             TextAlignment="Center" IsReadOnly="True"
-                             Text="{Binding ProfileDetails.SteamID64, Mode=OneWay}" />
-                    <TextBox Grid.Row="4" VerticalAlignment="Center" Style="{StaticResource USTextBox}"
-                             TextAlignment="Center" IsReadOnly="True"
-                             Text="{Binding ProfileDetails.ProfileCustomUrl, Mode=OneWay}" />
-                    <TextBox Grid.Row="5" VerticalAlignment="Center" Style="{StaticResource USTextBox}"
-                             TextAlignment="Center" IsReadOnly="True"
-                             Text="{Binding ProfileDetails.ProfilePermanentUrl, Mode=OneWay}" />
-                </Grid>
-            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>
