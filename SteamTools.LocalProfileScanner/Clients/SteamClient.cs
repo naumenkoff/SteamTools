@@ -37,9 +37,7 @@ public static partial class SteamClient
     private static DirectoryInfo GetGenuineInstallationPath()
     {
         var registryPath = GetInstallPathFromRegistry();
-        if (IsClientGenuine(registryPath)) return registryPath;
-
-        return null;
+        return IsClientGenuine(registryPath) ? registryPath : null;
     }
 
     private static DirectoryInfo GetInstallPathFromRegistry()

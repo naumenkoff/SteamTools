@@ -27,8 +27,7 @@ public class SteamProfileTypeResolver : ISteamProfileTypeResolver
         if (InSteamID32Format(input)) return SteamProfileType.SteamID32;
         if (InSteamID64Format(input)) return SteamProfileType.SteamID64;
         if (InSteamCustomUrlFormat(input)) return SteamProfileType.SteamCustomUrl;
-        if (InSteamPermanentUrlFormat(input)) return SteamProfileType.SteamPermanentUrl;
-        return InUnknownFormat(input);
+        return InSteamPermanentUrlFormat(input) ? SteamProfileType.SteamPermanentUrl : InUnknownFormat(input);
     }
 
     private bool InSteamID64Format(string trigger)
@@ -69,8 +68,7 @@ public class SteamProfileTypeResolver : ISteamProfileTypeResolver
     private bool InSteamCustomUrlFormat(string trigger)
     {
         var match = _steamProfileRegexProvider.GetRegex(SteamProfileType.SteamCustomUrl).Match(trigger);
-        if (match.Success is false) return false;
-        return _templateMatches.TryAdd(SteamProfileType.SteamCustomUrl, match);
+        return match.Success && _templateMatches.TryAdd(SteamProfileType.SteamCustomUrl, match);
     }
 
     private SteamProfileType InUnknownFormat(string trigger)

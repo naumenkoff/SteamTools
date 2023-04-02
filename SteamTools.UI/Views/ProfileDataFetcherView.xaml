@@ -39,7 +39,7 @@
                 <ColumnDefinition Width="360" />
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
-                <Image Source="{Binding ProfileDetails.PlayerSummaries.Avatar}" VerticalAlignment="Top"
+                <Image Source="{Binding ProfileDetails.PlayerSummaries.AvatarFull}" VerticalAlignment="Top"
                        HorizontalAlignment="Center" Width="92" Height="92" />
             </Grid>
             <StackPanel Grid.Column="1">

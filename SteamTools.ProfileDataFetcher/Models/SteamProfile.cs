@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace SteamTools.ProfileDataFetcher.Models;
 
 public class SteamProfile
@@ -38,24 +36,4 @@ public class SteamProfile
     public SteamID64 SteamID64 { get; }
     public string ProfilePermanentUrl { get; }
     public PlayerSummaries PlayerSummaries { get; }
-
-    public string GetProfileSummaries()
-    {
-        if (SteamID64 is null) return null;
-
-        var stringBuilder = new StringBuilder();
-        stringBuilder.AppendLine("Steam ID > " + SteamID);
-        stringBuilder.AppendLine("Steam ID3 > " + SteamID3);
-        stringBuilder.AppendLine("Steam ID32 > " + SteamID32);
-        stringBuilder.AppendLine("Steam ID64 > " + SteamID64);
-        stringBuilder.AppendLine("Profile Custom Url > " + ProfileCustomUrl);
-        stringBuilder.AppendLine("Profile Permanent Url > " + ProfilePermanentUrl);
-
-        if (PlayerSummaries is null) return stringBuilder.ToString();
-
-        stringBuilder.AppendLine($"Profile Name > {PlayerSummaries.PersonaName}");
-        stringBuilder.AppendLine($"Avatar > {PlayerSummaries.AvatarFull}");
-
-        return stringBuilder.ToString();
-    }
 }
