@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,8 @@ public class ProfileDataFetcherViewModel : ObservableObject
     {
         _serviceProvider = serviceProvider;
         GetProfileDetailsCommand = new RelayCommand(GetProfileDetails);
+        CopyToClipboardCommand = new RelayCommand<object>(CopyText);
+        OpenInBrowserCommand = new RelayCommand<object>(OpenInBrowser);
         ProfileDetails = SteamProfile.Empty;
     }
 
@@ -30,7 +34,9 @@ public class ProfileDataFetcherViewModel : ObservableObject
         }
     }
 
+    public RelayCommand<object> OpenInBrowserCommand { get; }
     public RelayCommand GetProfileDetailsCommand { get; }
+    public RelayCommand<object> CopyToClipboardCommand { get; }
 
     public string EnteredText
     {
@@ -40,6 +46,22 @@ public class ProfileDataFetcherViewModel : ObservableObject
             _enteredText = value;
             OnPropertyChanged();
         }
+    }
+
+    private void CopyText(object parameter)
+    {
+        var text = parameter.ToString();
+        if (string.IsNullOrEmpty(text)) return;
+
+        Clipboard.SetText(text);
+    }
+
+    private void OpenInBrowser(object parameter)
+    {
+        var text = parameter.ToString();
+        if (string.IsNullOrEmpty(text)) return;
+
+        Process.Start(new ProcessStartInfo { FileName = text, UseShellExecute = true });
     }
 
     private async void GetProfileDetails()

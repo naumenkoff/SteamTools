@@ -4,21 +4,21 @@ namespace SteamTools.ProfileDataFetcher.Models;
 
 public class SteamID32
 {
-    private readonly uint _id;
-
     public SteamID32(uint steamID32)
     {
-        _id = steamID32;
+        ID32 = steamID32;
     }
 
     public SteamID32(SteamID64 steamID64)
     {
-        _id = SteamIDConverter.ToSteamID32(steamID64);
+        ID32 = SteamIDConverter.ToSteamID32(steamID64);
     }
+
+    public uint ID32 { get; }
 
     public static implicit operator uint(SteamID32 steamID32)
     {
-        return steamID32._id;
+        return steamID32.ID32;
     }
 
     public static implicit operator string(SteamID32 steamID32)
@@ -28,7 +28,7 @@ public class SteamID32
 
     public override string ToString()
     {
-        return _id.ToString();
+        return ID32.ToString();
     }
 
     public SteamID64 ToSteamID64()

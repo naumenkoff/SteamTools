@@ -5,67 +5,138 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels"
              mc:Ignorable="d"
-             d:DesignHeight="375"
+             d:DesignHeight="275"
              d:DesignWidth="480"
              d:DataContext="{d:DesignInstance viewModels:ProfileDataFetcherViewModel}">
     <Grid Background="#202020">
+
         <Grid.RowDefinitions>
             <RowDefinition Height="75" />
             <RowDefinition />
         </Grid.RowDefinitions>
+
         <Grid Grid.Row="0">
+
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="4*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0">
-                <TextBox Style="{StaticResource SteamIDInputTextBox}" Background="White"
-                         Height="35" Margin="20 20 0 20" Padding="20 0 20 0"
-                         Text="{Binding EnteredText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Tag="Enter Steam ID">
-                    <TextBox.InputBindings>
-                        <KeyBinding Command="{Binding GetProfileDetailsCommand}" Key="Enter" />
-                    </TextBox.InputBindings>
-                </TextBox>
-            </StackPanel>
-            <StackPanel Grid.Column="1">
-                <Button Style="{StaticResource LookupButton}" FontSize="18"
-                        Height="35" Margin="0 20 20 20" Content="Lookup" Command="{Binding GetProfileDetailsCommand}" />
-            </StackPanel>
+
+            <TextBox Grid.Column="0"
+                     Style="{StaticResource SteamIDInputTextBox}"
+                     Background="White"
+                     Height="35"
+                     Margin="20 20 0 20"
+                     Padding="20 0 20 0"
+                     Text="{Binding EnteredText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Tag="Enter Steam ID">
+                <TextBox.InputBindings>
+                    <KeyBinding Command="{Binding GetProfileDetailsCommand}" Key="Enter" />
+                </TextBox.InputBindings>
+            </TextBox>
+
+            <Button Grid.Column="1"
+                    Style="{StaticResource LookupButton}"
+                    FontSize="18"
+                    Height="35"
+                    Margin="0 20 20 20"
+                    Content="Lookup"
+                    Command="{Binding GetProfileDetailsCommand}" />
+
         </Grid>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Margin="20 0 20 20">
+
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="132" />
+                <ColumnDefinition Width="140" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Border Width="92" Height="92" Background="#333333">
-                <Image Source="{Binding ProfileDetails.PlayerSummaries.AvatarFull}" Width="90" Height="90"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center" />
-            </Border>
 
-            <Grid Grid.Column="1">
+            <Grid>
+
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <TextBox Grid.Row="0" Style="{StaticResource SteamProfileInfoTextBox}"
-                         Text="{Binding ProfileDetails.SteamID, Mode=OneWay}" Tag="STEAMID >" />
-                <TextBox Grid.Row="1" Style="{StaticResource SteamProfileInfoTextBox}"
-                         Text="{Binding ProfileDetails.SteamID3, Mode=OneWay}" Tag="STEAMID3 >" />
-                <TextBox Grid.Row="2" Style="{StaticResource SteamProfileInfoTextBox}"
-                         Text="{Binding ProfileDetails.SteamID32, Mode=OneWay}" Tag="STEAMID32 >" />
-                <TextBox Grid.Row="3" Style="{StaticResource SteamProfileInfoTextBox}"
-                         Text="{Binding ProfileDetails.SteamID64, Mode=OneWay}" Tag="STEAMID64 >" />
-                <TextBox Grid.Row="4" Style="{StaticResource SteamProfileInfoTextBox}"
-                         Text="{Binding ProfileDetails.ProfilePermanentUrl, Mode=OneWay}" Tag="PERMALINK >" />
-                <TextBox Grid.Row="5" Style="{StaticResource SteamProfileInfoTextBox}"
-                         Text="{Binding ProfileDetails.ProfileCustomUrl, Mode=OneWay}" Tag="VANITYURL >" />
+
+                <Border Grid.Row="0"
+                        VerticalAlignment="Center"
+                        Margin="20 20 20 0"
+                        Width="100"
+                        Height="100"
+                        CornerRadius="0">
+                    <!-- CornerRadius for Image -->
+                    <Border.Background>
+                        <VisualBrush>
+                            <VisualBrush.Visual>
+                                <Image Source="{Binding ProfileDetails.PlayerSummaries.AvatarFull}" />
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Border.Background>
+                </Border>
+
+                <Button Grid.Row="1" x:Name="ProfileName"
+                        Style="{StaticResource InformationButton}"
+                        VerticalAlignment="Top"
+                        Margin="0 5 0 0"
+                        FontSize="12"
+                        Content="{Binding ProfileDetails.PlayerSummaries.PersonaName}"
+                        Command="{Binding OpenInBrowserCommand}"
+                        CommandParameter="{Binding ProfileDetails.PlayerSummaries.ProfileUrl}" />
+
             </Grid>
+
+            <Grid Grid.Column="1" Margin="20 0 0 0"
+                  Visibility="{Binding ElementName=ProfileName, Path=Content, Converter={StaticResource StringIsNullOrEmptyToVisibleConverter}}">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource PSTextBlock}"
+                               Width="100"
+                               Text="SteamID" />
+                    <Button Style="{StaticResource InformationButton}"
+                            Content="{Binding ProfileDetails.SteamID, Mode=OneWay}"
+                            Command="{Binding CopyToClipboardCommand}"
+                            CommandParameter="{Binding ProfileDetails.SteamID}" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource PSTextBlock}"
+                               Width="100"
+                               Text="SteamID3" />
+                    <Button Style="{StaticResource InformationButton}"
+                            Content="{Binding ProfileDetails.SteamID3, Mode=OneWay}"
+                            Command="{Binding CopyToClipboardCommand}"
+                            CommandParameter="{Binding ProfileDetails.SteamID3}" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource PSTextBlock}"
+                               Width="100"
+                               Text="SteamID32" />
+                    <Button Style="{StaticResource InformationButton}"
+                            Content="{Binding ProfileDetails.SteamID32, Mode=OneWay}"
+                            Command="{Binding CopyToClipboardCommand}"
+                            CommandParameter="{Binding ProfileDetails.SteamID32}" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="3" Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource PSTextBlock}"
+                               Width="100"
+                               Text="SteamID64" />
+                    <Button Style="{StaticResource InformationButton}"
+                            Content="{Binding ProfileDetails.SteamID64, Mode=OneWay}"
+                            Command="{Binding CopyToClipboardCommand}"
+                            CommandParameter="{Binding ProfileDetails.SteamID64}" />
+                </StackPanel>
+
+            </Grid>
+
         </Grid>
     </Grid>
 </UserControl>

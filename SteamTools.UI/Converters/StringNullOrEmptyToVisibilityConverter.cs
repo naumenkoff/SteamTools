@@ -9,7 +9,9 @@ public class StringNullOrEmptyToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return string.IsNullOrEmpty(value as string) ? Visibility.Visible : Visibility.Collapsed;
+        var text = value as string;
+        if (parameter is not null) return string.IsNullOrEmpty(text) ? Visibility.Visible : Visibility.Collapsed;
+        return string.IsNullOrEmpty(text) ? Visibility.Collapsed : Visibility.Visible;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

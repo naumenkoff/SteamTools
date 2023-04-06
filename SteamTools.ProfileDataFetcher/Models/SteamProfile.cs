@@ -9,7 +9,6 @@ public class SteamProfile
         SteamID = SteamID32.ToSteamID();
         SteamID3 = SteamID32.ToSteamID3();
         ProfilePermanentUrl = steamID64.ToSteamPermanentUrl();
-        ProfileCustomUrl = playerSummaries.ProfileUrl;
         PlayerSummaries = playerSummaries;
     }
 
@@ -20,7 +19,6 @@ public class SteamProfile
         SteamID = steamID32.ToSteamID();
         SteamID3 = steamID32.ToSteamID3();
         ProfilePermanentUrl = SteamID64.ToSteamPermanentUrl();
-        ProfileCustomUrl = playerSummaries.ProfileUrl;
         PlayerSummaries = playerSummaries;
     }
 
@@ -29,7 +27,6 @@ public class SteamProfile
     }
 
     public static SteamProfile Empty => new();
-    public string ProfileCustomUrl { get; }
     public string SteamID { get; }
     public string SteamID3 { get; }
     public SteamID32 SteamID32 { get; }

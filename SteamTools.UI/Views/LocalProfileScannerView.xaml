@@ -3,7 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid />
+             d:DesignHeight="275"
+             d:DesignWidth="480"
+             d:DataContext="{d:DesignInstance viewModels:LocalProfileScannerViewModel}">
+    <Grid Background="#202020" />
 </UserControl>
