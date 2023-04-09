@@ -13,6 +13,8 @@ public class ProfileDataFetcherViewModel : ObservableObject
 {
     private readonly IServiceProvider _serviceProvider;
     private string _enteredText;
+
+    private TimeSpan _responseTime;
     private SteamProfile _steamProfile;
 
     public ProfileDataFetcherViewModel(IServiceProvider serviceProvider)
@@ -48,6 +50,16 @@ public class ProfileDataFetcherViewModel : ObservableObject
         }
     }
 
+    public TimeSpan ResponseTime
+    {
+        get => _responseTime;
+        set
+        {
+            _responseTime = value;
+            OnPropertyChanged();
+        }
+    }
+
     private void CopyText(object parameter)
     {
         var text = parameter.ToString();
@@ -66,8 +78,10 @@ public class ProfileDataFetcherViewModel : ObservableObject
 
     private async void GetProfileDetails()
     {
-        var factory = _serviceProvider.GetRequiredService<ISteamProfileBuilder>();
-        var profile = await factory.BuildSteamProfileAsync(EnteredText);
+        var start = Stopwatch.GetTimestamp();
+        var factory = _serviceProvider.GetRequiredService<ISteamProfileService>();
+        var profile = await factory.GetProfileAsync(EnteredText);
         ProfileDetails = profile;
+        ResponseTime = Stopwatch.GetElapsedTime(start);
     }
 }

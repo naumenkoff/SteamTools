@@ -11,15 +11,10 @@ public class SteamID32
 
     public SteamID32(SteamID64 steamID64)
     {
-        ID32 = SteamIDConverter.ToSteamID32(steamID64);
+        ID32 = SteamIDConverter.ToSteamID32(steamID64.ID64);
     }
 
     public uint ID32 { get; }
-
-    public static implicit operator uint(SteamID32 steamID32)
-    {
-        return steamID32.ID32;
-    }
 
     public static implicit operator string(SteamID32 steamID32)
     {
@@ -38,11 +33,11 @@ public class SteamID32
 
     public string ToSteamID3()
     {
-        return SteamIDConverter.ToSteamID3(this);
+        return SteamIDConverter.ToSteamID3(ID32);
     }
 
     public string ToSteamID()
     {
-        return SteamIDConverter.ToSteamID(this);
+        return SteamIDConverter.ToSteamID(ID32);
     }
 }

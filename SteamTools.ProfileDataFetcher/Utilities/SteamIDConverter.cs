@@ -10,19 +10,17 @@ public static class SteamIDConverter
 
     public static long ToSteamID64(uint steamID32)
     {
-        var result = (steamID32 & SteamID32Mask) | SteamID64Offset;
-        return result;
+        return (steamID32 & SteamID32Mask) | SteamID64Offset;
     }
 
     public static uint ToSteamID32(long steamID64)
     {
-        var result = (uint)(steamID64 & SteamID32Mask);
-        return result;
+        return (uint)(steamID64 & SteamID32Mask);
     }
 
     public static string ToSteamPermanentUrl(long steamID64)
     {
-        return "https://steamcommunity.com/profiles/" + steamID64;
+        return $"https://steamcommunity.com/profiles/{steamID64}";
     }
 
     public static string ToSteamID3(uint steamID32)
@@ -38,8 +36,8 @@ public static class SteamIDConverter
 
     public static long ToSteamID64(Match steamID)
     {
-        var type = long.Parse(steamID.Groups[1].Value);
-        var accountNumber = long.Parse(steamID.Groups[2].Value);
+        var type = long.Parse(steamID.Groups[2].Value);
+        var accountNumber = long.Parse(steamID.Groups[3].Value);
         return (accountNumber << 1) + SteamID64Offset + type;
     }
 }

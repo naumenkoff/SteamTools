@@ -11,15 +11,10 @@ public class SteamID64
 
     public SteamID64(SteamID32 steamID32)
     {
-        ID64 = SteamIDConverter.ToSteamID64(steamID32);
+        ID64 = SteamIDConverter.ToSteamID64(steamID32.ID32);
     }
 
     public long ID64 { get; }
-
-    public static implicit operator long(SteamID64 steamID64)
-    {
-        return steamID64.ID64;
-    }
 
     public static implicit operator string(SteamID64 steamID64)
     {
@@ -38,6 +33,6 @@ public class SteamID64
 
     public string ToSteamPermanentUrl()
     {
-        return SteamIDConverter.ToSteamPermanentUrl(this);
+        return SteamIDConverter.ToSteamPermanentUrl(ID64);
     }
 }

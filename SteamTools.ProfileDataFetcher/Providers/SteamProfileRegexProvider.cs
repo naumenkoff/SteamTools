@@ -11,12 +11,12 @@ public partial class SteamProfileRegexProvider : ISteamProfileRegexProvider
     {
         _regexTemplates = new Dictionary<SteamProfileType, Regex>
         {
-            { SteamProfileType.SteamCustomUrl, CreateSteamCustomUrlRegex() },
-            { SteamProfileType.SteamID, CreateSteamIDRegex() },
-            { SteamProfileType.SteamID3, CreateSteamID3Regex() },
-            { SteamProfileType.SteamID32, CreateSteamID32Regex() },
-            { SteamProfileType.SteamID64, CreateSteamID64Regex() },
-            { SteamProfileType.SteamPermanentUrl, CreateSteamPermanentUrlRegex() },
+            { SteamProfileType.CustomUrl, CreateSteamCustomUrlRegex() },
+            { SteamProfileType.ID, CreateSteamIDRegex() },
+            { SteamProfileType.ID3, CreateSteamID3Regex() },
+            { SteamProfileType.ID32, CreateSteamID32Regex() },
+            { SteamProfileType.ID64, CreateSteamID64Regex() },
+            { SteamProfileType.PermanentUrl, CreateSteamPermanentUrlRegex() },
             { SteamProfileType.Unknown, CreateUnknownRegex() }
         };
     }
@@ -43,7 +43,7 @@ public partial class SteamProfileRegexProvider : ISteamProfileRegexProvider
     private static partial Regex CreateSteamID3Regex();
 
 
-    [GeneratedRegex("STEAM_[0-1]:([0-1]):([0-9]+)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex("STEAM_([0-1]):([0-1]):([0-9]+)", RegexOptions.IgnoreCase)]
     private static partial Regex CreateSteamIDRegex();
 
 

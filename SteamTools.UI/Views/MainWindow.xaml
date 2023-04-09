@@ -13,53 +13,59 @@
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
 
     <Grid Background="#202020">
+
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Background="#1C1C1C">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="240" />
-                    <ColumnDefinition Width="80" />
-                </Grid.ColumnDefinitions>
 
-                <Border>
-                    <TextBlock Text="SteamTools" Style="{StaticResource FadeTextBlock}" />
-                </Border>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="240" />
+                <ColumnDefinition Width="80" />
+            </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Width="80"
-                            Command="{Binding IDScannerCommand}"
-                            Content="ID Scanner"
-                            Style="{StaticResource MWButton}" />
-                    <Button Width="80"
-                            Command="{Binding LocalProfileScannerCommand}"
-                            Content="Local Profile"
-                            Style="{StaticResource MWButton}" />
-                    <Button Width="80"
-                            Command="{Binding ProfileDataFetcherCommand}"
-                            Content="Profile Data"
-                            Style="{StaticResource MWButton}" />
-                </StackPanel>
+            <TextBlock Text="SteamTools" Style="{StaticResource FadeTextBlock}" />
 
-                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Width="40"
-                            Content="—"
-                            Command="{Binding MinimizeApplicationCommand}"
-                            Style="{StaticResource MWButton}" />
-                    <Button Width="40"
-                            Content="✕"
-                            Command="{Binding ShutdownApplicationCommand}"
-                            Style="{StaticResource MWButton}" />
-                </StackPanel>
-            </Grid>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Style="{StaticResource MWButton}"
+                        Width="80"
+                        Command="{Binding IDScannerCommand}"
+                        Content="ID Scanner" />
+                <Button Style="{StaticResource MWButton}"
+                        Width="80"
+                        Command="{Binding LocalProfileScannerCommand}"
+                        Content="Local Profile" />
+                <Button Style="{StaticResource MWButton}"
+                        Width="80"
+                        Command="{Binding ProfileDataFetcherCommand}"
+                        Content="Profile Data" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Style="{StaticResource MWButton}"
+                        Width="40"
+                        Content="—"
+                        Command="{Binding MinimizeApplicationCommand}" />
+                <Button Style="{StaticResource MWButton}"
+                        Width="40"
+                        Content="✕"
+                        Command="{Binding ShutdownApplicationCommand}" />
+            </StackPanel>
+
             <Grid.InputBindings>
                 <MouseBinding MouseAction="LeftClick" Command="{Binding MoveApplicationCommand}" />
             </Grid.InputBindings>
         </Grid>
         <ContentControl Grid.Row="1" Content="{Binding Navigation.CurrentView}" />
     </Grid>
+    <!--
+        - Добавить общий центр уведомления в MainWindow между FadeTextBlock и ControlButtons, например:
+            Copied
+            Loaded
+            Failed
+        - Добавить выделение активного меню посредством увеличения альфы кнопки, которая делает redirect на это меню
+    -->
 </Window>

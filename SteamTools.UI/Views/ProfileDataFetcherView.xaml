@@ -44,6 +44,13 @@
                     Command="{Binding GetProfileDetailsCommand}" />
 
         </Grid>
+        <!-- Debug TextBlock
+        
+        <TextBlock Grid.Row="0" Text="{Binding ResponseTime, Mode=OneWay}" Margin="20 55 20 0" TextAlignment="Center"
+                   FontSize="9" Style="{StaticResource PSTextBlock}" /> 
+        
+        -->
+
         <Grid Grid.Row="1" Margin="20 0 20 20">
 
             <Grid.ColumnDefinitions>
@@ -52,7 +59,6 @@
             </Grid.ColumnDefinitions>
 
             <Grid>
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -74,7 +80,7 @@
                     </Border.Background>
                 </Border>
 
-                <Button Grid.Row="1" x:Name="ProfileName"
+                <Button Grid.Row="1"
                         Style="{StaticResource InformationButton}"
                         VerticalAlignment="Top"
                         Margin="0 5 0 0"
@@ -82,11 +88,10 @@
                         Content="{Binding ProfileDetails.PlayerSummaries.PersonaName}"
                         Command="{Binding OpenInBrowserCommand}"
                         CommandParameter="{Binding ProfileDetails.PlayerSummaries.ProfileUrl}" />
-
             </Grid>
 
             <Grid Grid.Column="1" Margin="20 0 0 0"
-                  Visibility="{Binding ElementName=ProfileName, Path=Content, Converter={StaticResource StringIsNullOrEmptyToVisibleConverter}}">
+                  Visibility="{Binding ElementName=SteamID, Path=Content, Converter={StaticResource StringIsNullOrEmptyToVisibleConverter}}">
 
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -99,7 +104,7 @@
                     <TextBlock Style="{StaticResource PSTextBlock}"
                                Width="100"
                                Text="SteamID" />
-                    <Button Style="{StaticResource InformationButton}"
+                    <Button x:Name="SteamID" Style="{StaticResource InformationButton}"
                             Content="{Binding ProfileDetails.SteamID, Mode=OneWay}"
                             Command="{Binding CopyToClipboardCommand}"
                             CommandParameter="{Binding ProfileDetails.SteamID}" />
@@ -134,9 +139,17 @@
                             Command="{Binding CopyToClipboardCommand}"
                             CommandParameter="{Binding ProfileDetails.SteamID64}" />
                 </StackPanel>
-
             </Grid>
-
         </Grid>
+
     </Grid>
+    <!-- 
+    Изменить палитру цветов. Добавить анимацию кнопки Lookup. Добавить подсказки при наведении на все InfoButton.
+    Добавить куда нибудь панель, которая будет заполняться цветом взависимости от выполнения Lookup:
+        Зеленый цвет - успешная операция
+        Красный цвет - неуспешная операция
+        Желтый цвет - наполовину успешная операция (например, при отсутствии интернета)
+    Добавить историю операций, например под InputTextBox расположить последние 5 аккаунтов, 
+    при нажатии на которые будет меняться ProfileDetails, а так же, заполняться InputTextBox.        
+    -->
 </UserControl>

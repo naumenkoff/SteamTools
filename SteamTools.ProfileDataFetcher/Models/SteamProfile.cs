@@ -12,16 +12,6 @@ public class SteamProfile
         PlayerSummaries = playerSummaries;
     }
 
-    public SteamProfile(SteamID64 steamID64, SteamID32 steamID32, PlayerSummaries playerSummaries)
-    {
-        SteamID64 = steamID64;
-        SteamID32 = steamID32;
-        SteamID = steamID32.ToSteamID();
-        SteamID3 = steamID32.ToSteamID3();
-        ProfilePermanentUrl = SteamID64.ToSteamPermanentUrl();
-        PlayerSummaries = playerSummaries;
-    }
-
     private SteamProfile()
     {
     }

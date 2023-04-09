@@ -3,8 +3,8 @@ using SteamTools.ProfileDataFetcher.Enumerations;
 
 namespace SteamTools.ProfileDataFetcher.Services;
 
-public interface ISteamProfileTypeResolver
+public interface ISteamProfileTypeDetector
 {
     Match GetCachedMatchBySteamProfileType(SteamProfileType steamProfileType);
-    SteamProfileType ResolveSteamProfileType(string input);
+    SteamProfileType DetectSteamProfileType(string input);
 }

@@ -5,15 +5,15 @@ using JsonException = System.Text.Json.JsonException;
 
 namespace SteamTools.ProfileDataFetcher.Clients;
 
-public class SteamHttpClient : ISteamHttpClient
+public class SteamApiClient : ISteamApiClient
 {
     private readonly ISteamApiKeyProvider _apiKey;
     private readonly HttpClient _httpClient;
 
-    public SteamHttpClient(ISteamApiKeyProvider steamApiKey)
+    public SteamApiClient(ISteamApiKeyProvider steamApiKey, HttpClient httpClient)
     {
         _apiKey = steamApiKey;
-        _httpClient = new HttpClient();
+        _httpClient = httpClient;
     }
 
     public async Task<ResolvedVanityUrl> ResolveVanityUrlAsync(string vanityUrl)
@@ -22,7 +22,7 @@ public class SteamHttpClient : ISteamHttpClient
             $"https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key={_apiKey.GetSteamApiKey()}&vanityurl={vanityUrl}";
         try
         {
-            var response = await _httpClient.GetAsync(uri);
+            using var response = await _httpClient.GetAsync(uri);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<GenericSteamResponse<ResolvedVanityUrl>>(content);
@@ -38,13 +38,13 @@ public class SteamHttpClient : ISteamHttpClient
         }
     }
 
-    public async Task<PlayerSummaries> GetPlayerSummariesAsync(long steamId64)
+    public async Task<PlayerSummaries> GetPlayerSummariesAsync(SteamID64 steamId64)
     {
         var uri =
-            $"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={_apiKey.GetSteamApiKey()}&steamids={steamId64}";
+            $"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={_apiKey.GetSteamApiKey()}&steamids={steamId64.ID64}";
         try
         {
-            var response = await _httpClient.GetAsync(uri);
+            using var response = await _httpClient.GetAsync(uri);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<GenericSteamResponse<PlayerSummariesResponse>>(content);

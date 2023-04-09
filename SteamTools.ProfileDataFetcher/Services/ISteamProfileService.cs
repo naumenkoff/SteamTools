@@ -2,7 +2,7 @@ using SteamTools.ProfileDataFetcher.Models;
 
 namespace SteamTools.ProfileDataFetcher.Services;
 
-public interface ISteamProfileBuilder
+public interface ISteamProfileService
 {
-    Task<SteamProfile> BuildSteamProfileAsync(string text);
+    Task<SteamProfile> GetProfileAsync(string input);
 }

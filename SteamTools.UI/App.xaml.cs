@@ -23,7 +23,7 @@ public partial class App
     public App()
     {
         _configuration = BuildConfiguration();
-        _serviceProvider = BuildServiceProvider();
+        _serviceProvider = ConfigureServices();
     }
 
     protected override void OnStartup(StartupEventArgs e)
@@ -45,7 +45,7 @@ public partial class App
         return configuration.Build();
     }
 
-    private IServiceProvider BuildServiceProvider()
+    private IServiceProvider ConfigureServices()
     {
         var services = new ServiceCollection();
 
@@ -59,10 +59,10 @@ public partial class App
         services.AddSingleton<ProfileDataFetcherViewModel>();
         services.AddSingleton<INavigationService, NavigationService>();
 
-        services.AddSingleton<ISteamHttpClient, SteamHttpClient>();
+        services.AddHttpClient<ISteamApiClient, SteamApiClient>();
         services.AddSingleton<ISteamProfileRegexProvider, SteamProfileRegexProvider>();
-        services.AddTransient<ISteamProfileTypeResolver, SteamProfileTypeResolver>();
-        services.AddTransient<ISteamProfileBuilder, SteamProfileBuilder>();
+        services.AddTransient<ISteamProfileTypeDetector, SteamProfileTypeDetector>();
+        services.AddTransient<ISteamProfileService, SteamProfileService>();
         services.AddSingleton(_configuration);
         services.AddSingleton<ISteamApiKeyProvider, SteamApiKeyProvider>();
 
