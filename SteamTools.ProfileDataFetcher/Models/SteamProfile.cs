@@ -2,7 +2,7 @@ namespace SteamTools.ProfileDataFetcher.Models;
 
 public class SteamProfile
 {
-    public SteamProfile(SteamID64 steamID64, PlayerSummaries playerSummaries)
+    public SteamProfile(SteamID64 steamID64, PlayerSummaries playerSummaries, string request)
     {
         SteamID64 = steamID64;
         SteamID32 = steamID64.ToSteamID32();
@@ -10,12 +10,15 @@ public class SteamProfile
         SteamID3 = SteamID32.ToSteamID3();
         ProfilePermanentUrl = steamID64.ToSteamPermanentUrl();
         PlayerSummaries = playerSummaries;
+        Request = request;
     }
 
     private SteamProfile()
     {
     }
 
+
+    public string Request { get; }
     public static SteamProfile Empty => new();
     public string SteamID { get; }
     public string SteamID3 { get; }

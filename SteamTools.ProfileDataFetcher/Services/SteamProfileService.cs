@@ -27,7 +27,7 @@ public class SteamProfileService : ISteamProfileService
         if (id is null) return SteamProfile.Empty;
 
         var playerSummary = await _steamApiClient.GetPlayerSummariesAsync(id);
-        return new SteamProfile(id, playerSummary);
+        return new SteamProfile(id, playerSummary, input);
     }
 
     private async Task<SteamID64> GetSteamID64FromProfileTypeAsync(string input, SteamProfileType profileType)

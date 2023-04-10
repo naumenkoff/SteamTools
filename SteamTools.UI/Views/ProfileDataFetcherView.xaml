@@ -44,12 +44,27 @@
                     Command="{Binding GetProfileDetailsCommand}" />
 
         </Grid>
-        <!-- Debug TextBlock
-        
-        <TextBlock Grid.Row="0" Text="{Binding ResponseTime, Mode=OneWay}" Margin="20 55 20 0" TextAlignment="Center"
-                   FontSize="9" Style="{StaticResource PSTextBlock}" /> 
-        
-        -->
+        <ItemsControl Grid.Row="0"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      Margin="20 55 20 0"
+                      ItemsSource="{Binding SteamProfiles}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Content="{Binding SteamID64}"
+                            Command="{Binding DataContext.SelectProfileFromHistoryCommand, ElementName=SteamID}"
+                            CommandParameter="{Binding}"
+                            Style="{StaticResource InformationButton}"
+                            Margin="5 0 5 0"
+                            FontSize="10" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
         <Grid Grid.Row="1" Margin="20 0 20 20">
 
@@ -74,7 +89,7 @@
                     <Border.Background>
                         <VisualBrush>
                             <VisualBrush.Visual>
-                                <Image Source="{Binding ProfileDetails.PlayerSummaries.AvatarFull}" />
+                                <Image Source="{Binding CurrentSteamProfile.PlayerSummaries.AvatarFull}" />
                             </VisualBrush.Visual>
                         </VisualBrush>
                     </Border.Background>
@@ -85,9 +100,9 @@
                         VerticalAlignment="Top"
                         Margin="0 5 0 0"
                         FontSize="12"
-                        Content="{Binding ProfileDetails.PlayerSummaries.PersonaName}"
+                        Content="{Binding CurrentSteamProfile.PlayerSummaries.PersonaName}"
                         Command="{Binding OpenInBrowserCommand}"
-                        CommandParameter="{Binding ProfileDetails.PlayerSummaries.ProfileUrl}" />
+                        CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.ProfileUrl}" />
             </Grid>
 
             <Grid Grid.Column="1" Margin="20 0 0 0"
@@ -105,9 +120,9 @@
                                Width="100"
                                Text="SteamID" />
                     <Button x:Name="SteamID" Style="{StaticResource InformationButton}"
-                            Content="{Binding ProfileDetails.SteamID, Mode=OneWay}"
+                            Content="{Binding CurrentSteamProfile.SteamID, Mode=OneWay}"
                             Command="{Binding CopyToClipboardCommand}"
-                            CommandParameter="{Binding ProfileDetails.SteamID}" />
+                            CommandParameter="{Binding CurrentSteamProfile.SteamID}" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Orientation="Horizontal">
@@ -115,9 +130,9 @@
                                Width="100"
                                Text="SteamID3" />
                     <Button Style="{StaticResource InformationButton}"
-                            Content="{Binding ProfileDetails.SteamID3, Mode=OneWay}"
+                            Content="{Binding CurrentSteamProfile.SteamID3, Mode=OneWay}"
                             Command="{Binding CopyToClipboardCommand}"
-                            CommandParameter="{Binding ProfileDetails.SteamID3}" />
+                            CommandParameter="{Binding CurrentSteamProfile.SteamID3}" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="2" Orientation="Horizontal">
@@ -125,9 +140,9 @@
                                Width="100"
                                Text="SteamID32" />
                     <Button Style="{StaticResource InformationButton}"
-                            Content="{Binding ProfileDetails.SteamID32, Mode=OneWay}"
+                            Content="{Binding CurrentSteamProfile.SteamID32, Mode=OneWay}"
                             Command="{Binding CopyToClipboardCommand}"
-                            CommandParameter="{Binding ProfileDetails.SteamID32}" />
+                            CommandParameter="{Binding CurrentSteamProfile.SteamID32}" />
                 </StackPanel>
 
                 <StackPanel Grid.Row="3" Orientation="Horizontal">
@@ -135,9 +150,9 @@
                                Width="100"
                                Text="SteamID64" />
                     <Button Style="{StaticResource InformationButton}"
-                            Content="{Binding ProfileDetails.SteamID64, Mode=OneWay}"
+                            Content="{Binding CurrentSteamProfile.SteamID64, Mode=OneWay}"
                             Command="{Binding CopyToClipboardCommand}"
-                            CommandParameter="{Binding ProfileDetails.SteamID64}" />
+                            CommandParameter="{Binding CurrentSteamProfile.SteamID64}" />
                 </StackPanel>
             </Grid>
         </Grid>
@@ -149,7 +164,5 @@
         Зеленый цвет - успешная операция
         Красный цвет - неуспешная операция
         Желтый цвет - наполовину успешная операция (например, при отсутствии интернета)
-    Добавить историю операций, например под InputTextBox расположить последние 5 аккаунтов, 
-    при нажатии на которые будет меняться ProfileDetails, а так же, заполняться InputTextBox.        
     -->
 </UserControl>

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,9 +15,9 @@ public class ProfileDataFetcherViewModel : ObservableObject
 {
     private readonly IServiceProvider _serviceProvider;
     private string _enteredText;
-
     private TimeSpan _responseTime;
-    private SteamProfile _steamProfile;
+    private SteamProfile _steamCurrentSteamProfile;
+    private ObservableCollection<SteamProfile> _steamProfiles;
 
     public ProfileDataFetcherViewModel(IServiceProvider serviceProvider)
     {
@@ -23,15 +25,28 @@ public class ProfileDataFetcherViewModel : ObservableObject
         GetProfileDetailsCommand = new RelayCommand(GetProfileDetails);
         CopyToClipboardCommand = new RelayCommand<object>(CopyText);
         OpenInBrowserCommand = new RelayCommand<object>(OpenInBrowser);
-        ProfileDetails = SteamProfile.Empty;
+        SelectProfileFromHistoryCommand = new RelayCommand<object>(SelectProfileFromHistory);
+
+        CurrentSteamProfile = SteamProfile.Empty;
+        SteamProfiles = new ObservableCollection<SteamProfile>();
     }
 
-    public SteamProfile ProfileDetails
+    public ObservableCollection<SteamProfile> SteamProfiles
     {
-        get => _steamProfile;
+        get => _steamProfiles;
         set
         {
-            _steamProfile = value;
+            _steamProfiles = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public SteamProfile CurrentSteamProfile
+    {
+        get => _steamCurrentSteamProfile;
+        set
+        {
+            _steamCurrentSteamProfile = value;
             OnPropertyChanged();
         }
     }
@@ -39,6 +54,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
     public RelayCommand<object> OpenInBrowserCommand { get; }
     public RelayCommand GetProfileDetailsCommand { get; }
     public RelayCommand<object> CopyToClipboardCommand { get; }
+    public RelayCommand<object> SelectProfileFromHistoryCommand { get; }
 
     public string EnteredText
     {
@@ -60,7 +76,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
         }
     }
 
-    private void CopyText(object parameter)
+    private static void CopyText(object parameter)
     {
         var text = parameter.ToString();
         if (string.IsNullOrEmpty(text)) return;
@@ -68,7 +84,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
         Clipboard.SetText(text);
     }
 
-    private void OpenInBrowser(object parameter)
+    private static void OpenInBrowser(object parameter)
     {
         var text = parameter.ToString();
         if (string.IsNullOrEmpty(text)) return;
@@ -76,12 +92,39 @@ public class ProfileDataFetcherViewModel : ObservableObject
         Process.Start(new ProcessStartInfo { FileName = text, UseShellExecute = true });
     }
 
+    private void SelectProfileFromHistory(object parameter)
+    {
+        if (parameter is not SteamProfile profile) return;
+        CurrentSteamProfile = profile;
+        EnteredText = profile.Request;
+    }
+
     private async void GetProfileDetails()
     {
         var start = Stopwatch.GetTimestamp();
         var factory = _serviceProvider.GetRequiredService<ISteamProfileService>();
         var profile = await factory.GetProfileAsync(EnteredText);
-        ProfileDetails = profile;
+        CurrentSteamProfile = profile;
+        AddProfile(profile);
         ResponseTime = Stopwatch.GetElapsedTime(start);
+    }
+
+    private void AddProfile(SteamProfile steamProfile)
+    {
+        var existingProfile = SteamProfiles.FirstOrDefault(x => x.SteamID32.ID32 == steamProfile.SteamID32.ID32);
+        if (existingProfile is not null)
+        {
+            var index = SteamProfiles.IndexOf(existingProfile);
+            SteamProfiles.Move(index, 0);
+        }
+        else
+        {
+            SteamProfiles.Insert(0, steamProfile);
+            if (SteamProfiles.Count > 4)
+            {
+                var lastItem = SteamProfiles.Last();
+                SteamProfiles.Remove(lastItem);
+            }
+        }
     }
 }
