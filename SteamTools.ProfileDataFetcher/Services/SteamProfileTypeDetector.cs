@@ -1,4 +1,6 @@
 using System.Text.RegularExpressions;
+using SteamTools.Core.Enums;
+using SteamTools.Core.Services;
 using SteamTools.ProfileDataFetcher.Enumerations;
 using SteamTools.ProfileDataFetcher.Providers;
 
@@ -7,11 +9,13 @@ namespace SteamTools.ProfileDataFetcher.Services;
 public class SteamProfileTypeDetector : ISteamProfileTypeDetector
 {
     private readonly Dictionary<SteamProfileType, Match> _matches = new();
+    private readonly INotificationService _notificationService;
     private readonly ISteamProfileRegexProvider _regexProvider;
 
-    public SteamProfileTypeDetector(ISteamProfileRegexProvider regexProvider)
+    public SteamProfileTypeDetector(ISteamProfileRegexProvider regexProvider, INotificationService notificationService)
     {
         _regexProvider = regexProvider;
+        _notificationService = notificationService;
     }
 
     public Match GetCachedMatchBySteamProfileType(SteamProfileType steamProfileType)
@@ -21,6 +25,7 @@ public class SteamProfileTypeDetector : ISteamProfileTypeDetector
 
     public SteamProfileType DetectSteamProfileType(string input)
     {
+        _notificationService.ShowNotification("Determining the profile type", NotificationLevel.Common);
         return input switch
         {
             _ when IsSteamID64Format(input) => SteamProfileType.ID64,

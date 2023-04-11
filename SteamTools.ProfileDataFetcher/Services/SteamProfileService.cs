@@ -1,4 +1,6 @@
 using System.Text.RegularExpressions;
+using SteamTools.Core.Enums;
+using SteamTools.Core.Services;
 using SteamTools.ProfileDataFetcher.Clients;
 using SteamTools.ProfileDataFetcher.Enumerations;
 using SteamTools.ProfileDataFetcher.Models;
@@ -8,23 +10,37 @@ namespace SteamTools.ProfileDataFetcher.Services;
 
 public class SteamProfileService : ISteamProfileService
 {
+    private readonly INotificationService _notificationService;
     private readonly ISteamProfileTypeDetector _profileTypeDetector;
     private readonly ISteamApiClient _steamApiClient;
 
-    public SteamProfileService(ISteamProfileTypeDetector profileTypeDetector, ISteamApiClient steamApiClient)
+    public SteamProfileService(ISteamProfileTypeDetector profileTypeDetector, ISteamApiClient steamApiClient,
+        INotificationService notificationService)
     {
         _profileTypeDetector = profileTypeDetector;
         _steamApiClient = steamApiClient;
+        _notificationService = notificationService;
     }
 
     public async Task<SteamProfile> GetProfileAsync(string input)
     {
-        if (string.IsNullOrWhiteSpace(input)) return SteamProfile.Empty;
+        _notificationService.ShowNotification("Starting to retrieve information about the profile",
+            NotificationLevel.Common);
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            _notificationService.ShowNotification("Input should not be empty!", NotificationLevel.Warning);
+            return SteamProfile.Empty;
+        }
 
         var profileType = _profileTypeDetector.DetectSteamProfileType(input);
         var id = await GetSteamID64FromProfileTypeAsync(input, profileType);
 
-        if (id is null) return SteamProfile.Empty;
+        if (id is null)
+        {
+            _notificationService.ShowNotification("Error occurred while retrieving profile information",
+                NotificationLevel.Warning);
+            return SteamProfile.Empty;
+        }
 
         var playerSummary = await _steamApiClient.GetPlayerSummariesAsync(id);
         return new SteamProfile(id, playerSummary, input);
@@ -71,7 +87,7 @@ public class SteamProfileService : ISteamProfileService
     private async Task<SteamID64> GetSteamID64FromCustomUrlAsync(Match match)
     {
         var response = await _steamApiClient.ResolveVanityUrlAsync(match.Groups["Name"].Value);
-        return long.TryParse(response.SteamID, out var id) is false ? null : new SteamID64(id);
+        return long.TryParse(response.SteamID, out var id) ? new SteamID64(id) : null;
     }
 
     private static Task<SteamID64> GetSteamID64FromPermanentUrlAsync(Match match)
@@ -82,7 +98,6 @@ public class SteamProfileService : ISteamProfileService
     private async Task<SteamID64> GetSteamID64FromUnknownAsync(string input)
     {
         var response = await _steamApiClient.ResolveVanityUrlAsync(input);
-        if (long.TryParse(response.SteamID, out var id) is false) return null;
-        return new SteamID64(id);
+        return long.TryParse(response.SteamID, out var id) ? new SteamID64(id) : null;
     }
 }

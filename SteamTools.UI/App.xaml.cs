@@ -3,10 +3,12 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SteamTools.Core.Services;
 using SteamTools.ProfileDataFetcher.Clients;
 using SteamTools.ProfileDataFetcher.Providers;
 using SteamTools.ProfileDataFetcher.Services;
 using SteamTools.UI.Services.Navigation;
+using SteamTools.UI.Services.Notifications;
 using SteamTools.UI.ViewModels;
 using SteamTools.UI.Views;
 
@@ -58,6 +60,7 @@ public partial class App
         services.AddSingleton<LocalProfileScannerViewModel>();
         services.AddSingleton<ProfileDataFetcherViewModel>();
         services.AddSingleton<INavigationService, NavigationService>();
+        services.AddSingleton<INotificationService, PopupNotificationService>();
 
         services.AddHttpClient<ISteamApiClient, SteamApiClient>();
         services.AddSingleton<ISteamProfileRegexProvider, SteamProfileRegexProvider>();

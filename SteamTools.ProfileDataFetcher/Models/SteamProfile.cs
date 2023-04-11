@@ -17,7 +17,6 @@ public class SteamProfile
     {
     }
 
-
     public string Request { get; }
     public static SteamProfile Empty => new();
     public string SteamID { get; }
@@ -26,4 +25,9 @@ public class SteamProfile
     public SteamID64 SteamID64 { get; }
     public string ProfilePermanentUrl { get; }
     public PlayerSummaries PlayerSummaries { get; }
+
+    public bool IsEmpty()
+    {
+        return SteamID64 is null || SteamID32 is null;
+    }
 }

@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.IDScanner", "Ste
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.LocalProfileScanner", "SteamTools.LocalProfileScanner\SteamTools.LocalProfileScanner.csproj", "{40FDF008-AD12-43D6-8BFA-E10D9E1FC4C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.Core", "SteamTools.Core\SteamTools.Core.csproj", "{5A30BB38-4D56-49F8-9134-176400779F97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{40FDF008-AD12-43D6-8BFA-E10D9E1FC4C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40FDF008-AD12-43D6-8BFA-E10D9E1FC4C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40FDF008-AD12-43D6-8BFA-E10D9E1FC4C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A30BB38-4D56-49F8-9134-176400779F97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A30BB38-4D56-49F8-9134-176400779F97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A30BB38-4D56-49F8-9134-176400779F97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A30BB38-4D56-49F8-9134-176400779F97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

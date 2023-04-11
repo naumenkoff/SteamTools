@@ -17,10 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Services"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <Page Update="Views\MainWindow.xaml">
             <Generator>MSBuild:Compile</Generator>
             <XamlRuntime>Wpf</XamlRuntime>
@@ -38,6 +34,10 @@
         <None Update="appsettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Models\"/>
     </ItemGroup>
 
 </Project>

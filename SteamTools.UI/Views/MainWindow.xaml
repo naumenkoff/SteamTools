@@ -22,29 +22,24 @@
         <Grid Grid.Row="0" Background="#1C1C1C">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="240" />
-                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="230" />
             </Grid.ColumnDefinitions>
-
-            <TextBlock Text="SteamTools" Style="{StaticResource FadeTextBlock}" />
-
+            <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="SteamTools"
+                       Style="{StaticResource FadeTextBlock}" />
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Style="{StaticResource MWButton}"
-                        Width="80"
+                        Width="50"
                         Command="{Binding IDScannerCommand}"
-                        Content="ID Scanner" />
+                        Content="Scan" />
                 <Button Style="{StaticResource MWButton}"
-                        Width="80"
+                        Width="50"
                         Command="{Binding LocalProfileScannerCommand}"
-                        Content="Local Profile" />
+                        Content="Trace" />
                 <Button Style="{StaticResource MWButton}"
-                        Width="80"
+                        Width="50"
                         Command="{Binding ProfileDataFetcherCommand}"
-                        Content="Profile Data" />
-            </StackPanel>
-
-            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                        Content="Lookup" />
                 <Button Style="{StaticResource MWButton}"
                         Width="40"
                         Content="—"
@@ -60,6 +55,8 @@
             </Grid.InputBindings>
         </Grid>
         <ContentControl Grid.Row="1" Content="{Binding Navigation.CurrentView}" />
+        <TextBlock Grid.Row="1" VerticalAlignment="Bottom" FontSize="12" Text="{Binding NotificationMessage.Text }"
+                   Style="{StaticResource FadeTextBlock}" />
     </Grid>
     <!--
         - Добавить общий центр уведомления в MainWindow между FadeTextBlock и ControlButtons, например:

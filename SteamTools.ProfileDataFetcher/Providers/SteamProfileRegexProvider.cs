@@ -1,4 +1,6 @@
 using System.Text.RegularExpressions;
+using SteamTools.Core.Enums;
+using SteamTools.Core.Services;
 using SteamTools.ProfileDataFetcher.Enumerations;
 
 namespace SteamTools.ProfileDataFetcher.Providers;
@@ -7,7 +9,7 @@ public partial class SteamProfileRegexProvider : ISteamProfileRegexProvider
 {
     private readonly Dictionary<SteamProfileType, Regex> _regexTemplates;
 
-    public SteamProfileRegexProvider()
+    public SteamProfileRegexProvider(INotificationService notificationService)
     {
         _regexTemplates = new Dictionary<SteamProfileType, Regex>
         {
@@ -19,6 +21,8 @@ public partial class SteamProfileRegexProvider : ISteamProfileRegexProvider
             { SteamProfileType.PermanentUrl, CreateSteamPermanentUrlRegex() },
             { SteamProfileType.Unknown, CreateUnknownRegex() }
         };
+
+        notificationService.ShowNotification("Prepared regular expression templates", NotificationLevel.Common);
     }
 
     public Regex GetRegex(SteamProfileType steamProfileType)
