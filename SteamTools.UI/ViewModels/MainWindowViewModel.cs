@@ -13,7 +13,7 @@ public class MainWindowViewModel : ObservableObject
     // TODO Убирать TextBlock, отображающий уведомление, если прошло более 5 секунд с момента его получения
     // TODO Помечать цветом полученное уведомление
     // TODO разобраться, где нужны уведомления, а где нет.
-    
+
     private NotificationMessage _notificationMessage;
 
     public MainWindowViewModel(INavigationService navigationService, INotificationService notificationService)

@@ -8,7 +8,7 @@ namespace SteamTools.LocalProfileScanner.AccountEntries;
 
 public partial class AppworkshopEntry : ISteamID, IAppworkshopEntry
 {
-    private AppworkshopEntry(FileSystemInfo appworkshop, Match match)
+    private AppworkshopEntry(FileSystemInfo appworkshop, Match match) // skipcq: CS-R1004
     {
         File = appworkshop;
         AppID = int.Parse(match.Groups[1].Value);

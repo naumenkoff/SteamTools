@@ -127,7 +127,7 @@ public class ScanningService
             using var streamReader = new StreamReader(stream);
             return streamReader.ReadToEnd();
         }
-        catch (Exception) // There's no need to specify what exactly caused the exception, just suppress it.
+        catch (Exception) // skipcq: CS-R1008
         {
             return null;
         }

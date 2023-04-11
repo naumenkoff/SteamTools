@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -24,7 +25,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
     public ProfileDataFetcherViewModel(IServiceProvider serviceProvider, INotificationService notificationService)
     {
         _serviceProvider = serviceProvider;
-        GetProfileDetailsCommand = new RelayCommand(GetProfileDetails);
+        GetProfileDetailsCommand = new AsyncRelayCommand(GetProfileDetails);
         CopyToClipboardCommand = new RelayCommand<object>(CopyText);
         OpenInBrowserCommand = new RelayCommand<object>(OpenInBrowser);
         SelectProfileFromHistoryCommand = new RelayCommand<object>(SelectProfileFromHistory);
@@ -55,7 +56,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
     }
 
     public RelayCommand<object> OpenInBrowserCommand { get; }
-    public RelayCommand GetProfileDetailsCommand { get; }
+    public AsyncRelayCommand GetProfileDetailsCommand { get; }
     public RelayCommand<object> CopyToClipboardCommand { get; }
     public RelayCommand<object> SelectProfileFromHistoryCommand { get; }
 
@@ -94,7 +95,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
         EnteredText = profile.Request;
     }
 
-    private async void GetProfileDetails()
+    private async Task GetProfileDetails()
     {
         var start = Stopwatch.GetTimestamp();
         var factory = _serviceProvider.GetRequiredService<ISteamProfileService>();

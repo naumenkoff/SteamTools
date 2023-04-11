@@ -164,6 +164,7 @@ public static class ScanningServiceFactory
     /// <returns>The maximum file size in megabytes.</returns>
     private static int GetMaximumFileSize(IReadOnlyList<string> fileSizeCommand)
     {
+        // skipcq: CS-R1004
         return fileSizeCommand.Count > 0 ? int.Parse(fileSizeCommand[0]) : 100;
     }
 

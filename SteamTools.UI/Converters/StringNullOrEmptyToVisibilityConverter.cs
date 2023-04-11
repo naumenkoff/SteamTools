@@ -14,6 +14,7 @@ public class StringNullOrEmptyToVisibilityConverter : IValueConverter
         return string.IsNullOrEmpty(text) ? Visibility.Collapsed : Visibility.Visible;
     }
 
+    // skipcq: CS-A1003
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
