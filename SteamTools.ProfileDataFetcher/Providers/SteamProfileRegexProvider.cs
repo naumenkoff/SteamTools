@@ -1,6 +1,4 @@
 using System.Text.RegularExpressions;
-using SteamTools.Core.Enums;
-using SteamTools.Core.Services;
 using SteamTools.ProfileDataFetcher.Enumerations;
 
 namespace SteamTools.ProfileDataFetcher.Providers;
@@ -9,20 +7,9 @@ public partial class SteamProfileRegexProvider : ISteamProfileRegexProvider
 {
     private readonly Dictionary<SteamProfileType, Regex> _regexTemplates;
 
-    public SteamProfileRegexProvider(INotificationService notificationService)
+    public SteamProfileRegexProvider()
     {
-        _regexTemplates = new Dictionary<SteamProfileType, Regex>
-        {
-            { SteamProfileType.CustomUrl, CreateSteamCustomUrlRegex() },
-            { SteamProfileType.ID, CreateSteamIDRegex() },
-            { SteamProfileType.ID3, CreateSteamID3Regex() },
-            { SteamProfileType.ID32, CreateSteamID32Regex() },
-            { SteamProfileType.ID64, CreateSteamID64Regex() },
-            { SteamProfileType.PermanentUrl, CreateSteamPermanentUrlRegex() },
-            { SteamProfileType.Unknown, CreateUnknownRegex() }
-        };
-
-        notificationService.ShowNotification("Prepared regular expression templates", NotificationLevel.Common);
+        _regexTemplates = GetRegexTemplates();
     }
 
     public Regex GetRegex(SteamProfileType steamProfileType)
@@ -30,28 +17,32 @@ public partial class SteamProfileRegexProvider : ISteamProfileRegexProvider
         return _regexTemplates[steamProfileType];
     }
 
+    private static Dictionary<SteamProfileType, Regex> GetRegexTemplates()
+    {
+        return new Dictionary<SteamProfileType, Regex>
+        {
+            { SteamProfileType.Url, CreateSteamCustomUrlRegex() },
+            { SteamProfileType.ID, CreateSteamIDRegex() },
+            { SteamProfileType.ID3, CreateSteamID3Regex() },
+            { SteamProfileType.ID32, CreateSteamID32Regex() },
+            { SteamProfileType.ID64, CreateSteamID64Regex() },
+            { SteamProfileType.Unknown, CreateUnknownRegex() }
+        };
+    }
 
-    [GeneratedRegex("steamcommunity.com/profiles/(?<SteamID64>[0-9]+)", RegexOptions.IgnoreCase)]
-    private static partial Regex CreateSteamPermanentUrlRegex();
-
-
-    [GeneratedRegex("(76561[1-2][0-9]+)")]
+    [GeneratedRegex("(76561[1-2][0-9]{11})")]
     private static partial Regex CreateSteamID64Regex();
-
 
     [GeneratedRegex("[0-9]+")]
     private static partial Regex CreateSteamID32Regex();
 
-
-    [GeneratedRegex("U:[1]:(?<SteamID32>[0-9]+)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex("U:[1]:([0-9]+)", RegexOptions.IgnoreCase)]
     private static partial Regex CreateSteamID3Regex();
-
 
     [GeneratedRegex("STEAM_([0-1]):([0-1]):([0-9]+)", RegexOptions.IgnoreCase)]
     private static partial Regex CreateSteamIDRegex();
 
-
-    [GeneratedRegex("steamcommunity.com/id/(?<Name>\\w+)", RegexOptions.IgnoreCase)]
+    [GeneratedRegex(@"steamcommunity\.com\/(?:id|profiles)\/(\w+)", RegexOptions.IgnoreCase)]
     private static partial Regex CreateSteamCustomUrlRegex();
 
     [GeneratedRegex(".+")]

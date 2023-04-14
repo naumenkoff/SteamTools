@@ -8,20 +8,163 @@
              d:DesignHeight="275"
              d:DesignWidth="480"
              d:DataContext="{d:DesignInstance viewModels:IDScannerViewModel}">
-    <Grid Background="#202020" />
+
+    <UserControl.Resources>
+        <Style x:Key="DisabledStyle" TargetType="{x:Type Control}">
+            <Setter Property="IsEnabled" Value="{Binding Path=IsChecked, ElementName=LimitMaximumFileSizeCheckBox}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsChecked, ElementName=LimitMaximumFileSizeCheckBox}" Value="False">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ListViewCheckBox" TargetType="{x:Type CheckBox}" />
+    </UserControl.Resources>
+
+    <Grid Background="#202020">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="190" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Margin="20">
+
+            <!-- Maximum File Size -->
+            <StackPanel>
+
+                <CheckBox x:Name="LimitMaximumFileSizeCheckBox" Content="Limit maximum fileSize"
+                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                          Foreground="{StaticResource TextColor}" Height="25"
+                          IsChecked="{Binding Path=IsLimitMaximumFileSizeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                <StackPanel Orientation="Horizontal">
+
+                    <Button Height="25" Width="25" Style="{StaticResource DisabledStyle}" BorderThickness="0"
+                            Content="+"
+                            Command="{Binding Path=IncreaseMaximumFileSizeCommand}" />
+
+                    <TextBox Height="25" Width="100" HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"
+                             Style="{StaticResource DisabledStyle}" BorderThickness="0"
+                             Text="{Binding Path=MaximumFileSizeInMegaBytes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <Button Height="25" Width="25" Style="{StaticResource DisabledStyle}" BorderThickness="0"
+                            Content="-"
+                            Command="{Binding Path=DecreaseMaximumFileSizeCommand}" />
+
+                </StackPanel>
+
+            </StackPanel>
+
+            <!-- Extensions -->
+            <StackPanel>
+
+                <CheckBox Height="25" Content="Search by extensions?" HorizontalContentAlignment="Center"
+                          VerticalContentAlignment="Center" Foreground="{StaticResource TextColor}"
+                          IsChecked="{Binding UseExtensions}" />
+
+                <TextBox VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="25"
+                         BorderThickness="0"
+                         Text="{Binding FilterSearchQuery, UpdateSourceTrigger=PropertyChanged}" />
+
+                <ListView Height="110" BorderThickness="0" ItemsSource="{Binding Path=FilteredSearchExtensions}"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox HorizontalContentAlignment="Left"
+                                      Content="{Binding Extension}"
+                                      IsChecked="{Binding Selected}" Style="{StaticResource ListViewCheckBox}" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <StackPanel Orientation="Horizontal" Height="25">
+                    <Button Width="75" Command="{Binding SelectAllSearchExtensionsCommand}" Content="Select all"
+                            BorderThickness="0" />
+                    <Button Width="75" Content="Clear all" Command="{Binding ResetAllSearchExtensionsCommand}"
+                            BorderThickness="0" />
+                </StackPanel>
+
+            </StackPanel>
+
+        </StackPanel>
+
+        <!-- Search & Results -->
+        <Grid Grid.Column="1">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="75" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Search -->
+            <Grid Grid.Row="0" Margin="20 20 20 0">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="25" />
+                    <ColumnDefinition Width="50" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0"
+                         Style="{StaticResource SteamIDInputTextBox}"
+                         Background="White"
+                         Height="35"
+                         Padding="20 0 20 0"
+                         Text="{Binding ScanQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Tag="Enter Steam 32/64 ID">
+                    <TextBox.InputBindings>
+                        <KeyBinding Command="{Binding RunScanCommand}" Key="Enter" />
+                    </TextBox.InputBindings>
+                </TextBox>
+
+                <Button Grid.Column="2"
+                        Style="{StaticResource LookupButton}"
+                        FontSize="18"
+                        Height="35"
+                        Content="Scan"
+                        Command="{Binding RunScanCommand}" />
+
+                <Button Grid.Column="1"
+                        Style="{StaticResource CancelButton}"
+                        Margin="0"
+                        FontSize="18"
+                        Height="35"
+                        Content="X"
+                        Command="{Binding CancelSearchCommand}" />
+            </Grid>
+
+            <ListView Grid.Row="1" Margin="20" ItemsSource="{Binding Path=FoundProfiles}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="BorderBrush" Value="Transparent" />
+                        <Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Padding" Value="0" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="Transparent" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Button HorizontalContentAlignment="Left" Content="{Binding }"
+                                Command="{Binding DataContext.OpenInExplorerCommand, ElementName=LimitMaximumFileSizeCheckBox}"
+                                CommandParameter="{Binding}" />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+        </Grid>
+    </Grid>
+
     <!-- 
-    - Ввод SteamID или предложенные варианты под TextBox из LocalProfileScanner.
-    - Кнопка начать сканирование
-    - Выбор расширений для сканирования:
-      CheckBox "Use file extensions".
-      Если его активировать, можно будет из списка выбрать расширения файлов в директории стим. 
-      Это будет ListView с CheckBox (галочка - расширение).
-      Расширения будут загружаться в список расширений посредством сканирования директории Steam.
-      Дополнительно, нужно оставить место для выбора корневой директории Steam, вслучае, если мои методы дадут сбой.
-    - Выбор максимального размера файла
-      CheckBox, позволяющий выбрать максимальный размер файла
-      TextBox с максимальным размером файла
     - Список с файлами, в которых была найдена сигнатура SteamID, который человек искал.
       Можно нажать на элемент и он откроется в проводнике (логика как у LocalProfileScanner)  
     -->
+
 </UserControl>

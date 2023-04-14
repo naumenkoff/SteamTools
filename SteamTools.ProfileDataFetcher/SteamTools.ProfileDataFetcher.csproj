@@ -11,8 +11,6 @@
         <Folder Include="Enumerations"/>
         <Folder Include="Models"/>
         <Folder Include="Providers"/>
-        <Folder Include="Services"/>
-        <Folder Include="Utilities"/>
     </ItemGroup>
 
     <ItemGroup>

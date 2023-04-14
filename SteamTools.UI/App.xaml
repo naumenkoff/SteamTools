@@ -7,6 +7,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <converters:StringNullOrEmptyToVisibilityConverter x:Key="StringIsNullOrEmptyToVisibleConverter" />
+            <converters:ProfileImageConverter x:Key="ProfileImageConverter" />
             <DataTemplate DataType="{x:Type TypeName=viewModels:MainWindowViewModel}">
                 <views:MainWindow />
             </DataTemplate>
@@ -26,6 +27,7 @@
                 <ResourceDictionary Source="Resources/MWButton.xaml" />
                 <ResourceDictionary Source="Resources/MWToggleButton.xaml" />
                 <ResourceDictionary Source="Resources/FadeTextBlock.xaml" />
+                <ResourceDictionary Source="Resources/CancelButton.xaml" />
                 <ResourceDictionary Source="Resources/ProfileDataFetcherResources/LookupButton.xaml" />
                 <ResourceDictionary Source="Resources/ProfileDataFetcherResources/SteamIDInputTextBox.xaml" />
                 <ResourceDictionary Source="Resources/ProfileDataFetcherResources/InformationButton.xaml" />

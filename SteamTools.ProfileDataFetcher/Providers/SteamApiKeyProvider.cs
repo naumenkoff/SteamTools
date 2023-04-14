@@ -14,6 +14,13 @@ public class SteamApiKeyProvider : ISteamApiKeyProvider
 
     public string GetSteamApiKey()
     {
+        /*
+        if (_steamApiKey == null)
+        {
+            throw new InvalidOperationException("Steam API key is not set.");
+        }
+        */
+
         return _steamApiKey;
     }
 }

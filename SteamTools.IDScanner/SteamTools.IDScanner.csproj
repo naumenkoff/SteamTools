@@ -14,10 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Converters"/>
-        <Folder Include="Enums"/>
-        <Folder Include="Factories"/>
-        <Folder Include="Services"/>
+        <ProjectReference Include="..\SteamTools.Core\SteamTools.Core.csproj"/>
     </ItemGroup>
 
 </Project>

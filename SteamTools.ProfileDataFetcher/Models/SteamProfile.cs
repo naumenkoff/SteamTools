@@ -1,3 +1,5 @@
+using SteamTools.Core.Models;
+
 namespace SteamTools.ProfileDataFetcher.Models;
 
 public class SteamProfile

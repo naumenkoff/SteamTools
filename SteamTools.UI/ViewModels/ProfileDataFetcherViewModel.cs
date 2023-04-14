@@ -25,13 +25,13 @@ public class ProfileDataFetcherViewModel : ObservableObject
     public ProfileDataFetcherViewModel(IServiceProvider serviceProvider, INotificationService notificationService)
     {
         _serviceProvider = serviceProvider;
-        GetProfileDetailsCommand = new AsyncRelayCommand(GetProfileDetails);
+        GetProfileDetailsCommand = new AsyncRelayCommand(RetrieveProfileInformationWithNotification);
         CopyToClipboardCommand = new RelayCommand<object>(CopyText);
         OpenInBrowserCommand = new RelayCommand<object>(OpenInBrowser);
-        SelectProfileFromHistoryCommand = new RelayCommand<object>(SelectProfileFromHistory);
+        SelectProfileFromHistoryCommand = new AsyncRelayCommand<object>(SelectProfileFromHistory);
 
-        CurrentSteamProfile = SteamProfile.Empty;
-        SteamProfiles = new ObservableCollection<SteamProfile>();
+        _currentSteamProfile = SteamProfile.Empty;
+        _steamProfiles = new ObservableCollection<SteamProfile>();
         _notificationService = notificationService;
     }
 
@@ -55,11 +55,6 @@ public class ProfileDataFetcherViewModel : ObservableObject
         }
     }
 
-    public RelayCommand<object> OpenInBrowserCommand { get; }
-    public AsyncRelayCommand GetProfileDetailsCommand { get; }
-    public RelayCommand<object> CopyToClipboardCommand { get; }
-    public RelayCommand<object> SelectProfileFromHistoryCommand { get; }
-
     public string EnteredText
     {
         get => _enteredText;
@@ -70,10 +65,15 @@ public class ProfileDataFetcherViewModel : ObservableObject
         }
     }
 
+    public RelayCommand<object> OpenInBrowserCommand { get; }
+    public AsyncRelayCommand GetProfileDetailsCommand { get; }
+    public RelayCommand<object> CopyToClipboardCommand { get; }
+    public AsyncRelayCommand<object> SelectProfileFromHistoryCommand { get; }
+
     private void CopyText(object parameter)
     {
         var text = parameter.ToString();
-        if (string.IsNullOrEmpty(text)) return;
+        if (string.IsNullOrWhiteSpace(text)) return;
 
         Clipboard.SetText(text);
         _notificationService.ShowNotification("Copied!", NotificationLevel.Common);
@@ -82,30 +82,35 @@ public class ProfileDataFetcherViewModel : ObservableObject
     private void OpenInBrowser(object parameter)
     {
         var text = parameter.ToString();
-        if (string.IsNullOrEmpty(text)) return;
+        if (string.IsNullOrWhiteSpace(text)) return;
 
         Process.Start(new ProcessStartInfo { FileName = text, UseShellExecute = true });
         _notificationService.ShowNotification("Opened in browser!", NotificationLevel.Common);
     }
 
-    private void SelectProfileFromHistory(object parameter)
+    private async Task SelectProfileFromHistory(object parameter)
     {
-        if (parameter is not SteamProfile profile) return;
-        CurrentSteamProfile = profile;
-        EnteredText = profile.Request;
+        if (parameter is not SteamProfile steamProfile) return;
+        EnteredText = steamProfile.Request;
+        await RetrieveProfileInformationWithNotification();
     }
 
-    private async Task GetProfileDetails()
+    private async Task RetrieveProfileInformationWithNotification()
     {
         var start = Stopwatch.GetTimestamp();
+        var selected = await RetrieveProfileInformation();
+        var responseTime = Stopwatch.GetElapsedTime(start);
+        var notification = selected
+            ? $"Profile information successfully obtained in {responseTime.TotalMilliseconds} ms!"
+            : "Selection reset!";
+        _notificationService.ShowNotification(notification, NotificationLevel.Common);
+    }
+
+    private async Task<bool> RetrieveProfileInformation()
+    {
         var factory = _serviceProvider.GetRequiredService<ISteamProfileService>();
         var profile = await factory.GetProfileAsync(EnteredText);
-        var selected = SelectProfile(profile);
-        var responseTime = Stopwatch.GetElapsedTime(start);
-        if (selected)
-            _notificationService.ShowNotification(
-                $"Profile information successfully obtained in {responseTime.TotalMilliseconds} ms!",
-                NotificationLevel.Common);
+        return SelectProfile(profile);
     }
 
     private bool SelectProfile(SteamProfile steamProfile)
@@ -116,25 +121,29 @@ public class ProfileDataFetcherViewModel : ObservableObject
             return false;
         }
 
-        var existingProfile = SteamProfiles.FirstOrDefault(x => x.SteamID32.ID32 == steamProfile.SteamID32.ID32);
-        if (existingProfile is not null)
-        {
-            var index = SteamProfiles.IndexOf(existingProfile);
-            SteamProfiles.Move(index, 0);
-            CurrentSteamProfile = existingProfile;
-        }
-        else
-        {
-            SteamProfiles.Insert(0, steamProfile);
-            CurrentSteamProfile = steamProfile;
-
-            if (SteamProfiles.Count > 4)
-            {
-                var lastItem = SteamProfiles.Last();
-                SteamProfiles.Remove(lastItem);
-            }
-        }
+        if (SelectExistingProfile(steamProfile) is false) SelectNewProfile(steamProfile);
 
         return true;
+    }
+
+    private bool SelectExistingProfile(SteamProfile newProfile)
+    {
+        var existingProfile = SteamProfiles.FirstOrDefault(x => x.SteamID32.ID32 == newProfile.SteamID32.ID32);
+        if (existingProfile is null) return false;
+
+        var oldIndex = SteamProfiles.IndexOf(existingProfile);
+        SteamProfiles.Move(oldIndex, 0);
+        CurrentSteamProfile = existingProfile;
+        return true;
+    }
+
+    private void SelectNewProfile(SteamProfile newProfile)
+    {
+        SteamProfiles.Insert(0, newProfile);
+        CurrentSteamProfile = newProfile;
+
+        if (SteamProfiles.Count <= 4) return;
+        var lastItem = SteamProfiles.Last();
+        SteamProfiles.Remove(lastItem);
     }
 }

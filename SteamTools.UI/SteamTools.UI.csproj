@@ -37,7 +37,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Models\"/>
+        <None Remove="Resources\placeholder.jpg"/>
+        <Resource Include="Resources\placeholder.jpg"/>
     </ItemGroup>
 
 </Project>

@@ -59,10 +59,6 @@
                    Style="{StaticResource FadeTextBlock}" />
     </Grid>
     <!--
-        - Добавить общий центр уведомления в MainWindow между FadeTextBlock и ControlButtons, например:
-            Copied
-            Loaded
-            Failed
         - Добавить выделение активного меню посредством увеличения альфы кнопки, которая делает redirect на это меню
     -->
 </Window>

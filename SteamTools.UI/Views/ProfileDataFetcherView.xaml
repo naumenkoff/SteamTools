@@ -15,18 +15,16 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
-
+        <!-- Search -->
+        <Grid Grid.Row="0" Margin="20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="4*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-
             <TextBox Grid.Column="0"
                      Style="{StaticResource SteamIDInputTextBox}"
                      Background="White"
                      Height="35"
-                     Margin="20 20 0 20"
                      Padding="20 0 20 0"
                      Text="{Binding EnteredText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Tag="Enter Steam ID">
@@ -34,16 +32,15 @@
                     <KeyBinding Command="{Binding GetProfileDetailsCommand}" Key="Enter" />
                 </TextBox.InputBindings>
             </TextBox>
-
             <Button Grid.Column="1"
                     Style="{StaticResource LookupButton}"
                     FontSize="18"
                     Height="35"
-                    Margin="0 20 20 20"
                     Content="Lookup"
                     Command="{Binding GetProfileDetailsCommand}" />
-
         </Grid>
+
+        <!-- Search History -->
         <ItemsControl Grid.Row="0"
                       Background="Transparent"
                       BorderThickness="0"
@@ -56,8 +53,8 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button Content="{Binding SteamID64}"
-                            Command="{Binding DataContext.SelectProfileFromHistoryCommand, ElementName=SteamID}"
+                    <Button Content="{Binding SteamID64 }"
+                            Command="{Binding DataContext.SelectProfileFromHistoryCommand, ElementName=SteamId}"
                             CommandParameter="{Binding}"
                             Style="{StaticResource InformationButton}"
                             Margin="5 0 5 0"
@@ -66,13 +63,16 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <Grid Grid.Row="1" Margin="20 0 20 20">
+        <!-- Profile Information -->
+        <Grid Grid.Row="1" Margin="20 0 20 20"
+              Visibility="{Binding ElementName=SteamId, Path=Content, Converter={StaticResource StringIsNullOrEmptyToVisibleConverter}}">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="140" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
+            <!-- Profile Image & Custom Url -->
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -89,7 +89,12 @@
                     <Border.Background>
                         <VisualBrush>
                             <VisualBrush.Visual>
-                                <Image Source="{Binding CurrentSteamProfile.PlayerSummaries.AvatarFull}" />
+                                <Image>
+                                    <Image.Source>
+                                        <Binding Path="CurrentSteamProfile"
+                                                 Converter="{StaticResource ProfileImageConverter}" />
+                                    </Image.Source>
+                                </Image>
                             </VisualBrush.Visual>
                         </VisualBrush>
                     </Border.Background>
@@ -105,8 +110,8 @@
                         CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.ProfileUrl}" />
             </Grid>
 
-            <Grid Grid.Column="1" Margin="20 0 0 0"
-                  Visibility="{Binding ElementName=SteamID, Path=Content, Converter={StaticResource StringIsNullOrEmptyToVisibleConverter}}">
+            <!-- Profile SteamID, SteamID3, SteamID32, SteamID64 -->
+            <Grid Grid.Column="1" Margin="20 0 0 0">
 
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -119,7 +124,7 @@
                     <TextBlock Style="{StaticResource PSTextBlock}"
                                Width="100"
                                Text="SteamID" />
-                    <Button x:Name="SteamID" Style="{StaticResource InformationButton}"
+                    <Button x:Name="SteamId" Style="{StaticResource InformationButton}"
                             Content="{Binding CurrentSteamProfile.SteamID, Mode=OneWay}"
                             Command="{Binding CopyToClipboardCommand}"
                             CommandParameter="{Binding CurrentSteamProfile.SteamID}" />
@@ -154,7 +159,9 @@
                             Command="{Binding CopyToClipboardCommand}"
                             CommandParameter="{Binding CurrentSteamProfile.SteamID64}" />
                 </StackPanel>
+
             </Grid>
+
         </Grid>
 
     </Grid>

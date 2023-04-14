@@ -1,7 +1,9 @@
-﻿namespace SteamTools.LocalProfileScanner.Models;
+﻿using SteamTools.Core.Models;
+
+namespace SteamTools.LocalProfileScanner.Models;
 
 public interface ISteamID
 {
-    long Steam32 { get; }
-    long Steam64 { get; }
+    SteamID32 Steam32 { get; }
+    SteamID64 Steam64 { get; }
 }
