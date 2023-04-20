@@ -1,13 +1,6 @@
 ﻿namespace SteamTools.UI.Models;
 
-public class SearchExtension
+public record SearchExtension(string Extension)
 {
-    public SearchExtension(string extension)
-    {
-        Extension = extension;
-        Selected = false;
-    }
-
-    public string Extension { get; }
     public bool Selected { get; set; }
 }

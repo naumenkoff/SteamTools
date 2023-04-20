@@ -8,6 +8,8 @@
         <ResourceDictionary>
             <converters:StringNullOrEmptyToVisibilityConverter x:Key="StringIsNullOrEmptyToVisibleConverter" />
             <converters:ProfileImageConverter x:Key="ProfileImageConverter" />
+            <converters:HeightToWidthConverter x:Key="HeightToWidthConverter" />
+            <converters:HeightToMarginConverter x:Key="HeightToMarginConverter" />
             <DataTemplate DataType="{x:Type TypeName=viewModels:MainWindowViewModel}">
                 <views:MainWindow />
             </DataTemplate>
@@ -22,15 +24,7 @@
             </DataTemplate>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Colors.xaml" />
-                <ResourceDictionary Source="Resources/PSComboBox.xaml" />
-                <ResourceDictionary Source="Resources/PSTextBlock.xaml" />
-                <ResourceDictionary Source="Resources/MWButton.xaml" />
-                <ResourceDictionary Source="Resources/MWToggleButton.xaml" />
-                <ResourceDictionary Source="Resources/FadeTextBlock.xaml" />
-                <ResourceDictionary Source="Resources/CancelButton.xaml" />
-                <ResourceDictionary Source="Resources/ProfileDataFetcherResources/LookupButton.xaml" />
                 <ResourceDictionary Source="Resources/ProfileDataFetcherResources/SteamIDInputTextBox.xaml" />
-                <ResourceDictionary Source="Resources/ProfileDataFetcherResources/InformationButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -7,7 +7,6 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using SteamTools.Core.Enums;
 using SteamTools.Core.Services;
 using SteamTools.ProfileDataFetcher.Models;
 using SteamTools.ProfileDataFetcher.Services;
@@ -18,27 +17,28 @@ public class ProfileDataFetcherViewModel : ObservableObject
 {
     private readonly INotificationService _notificationService;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ObservableCollection<SteamProfile> _steamProfiles;
     private SteamProfile _currentSteamProfile;
     private string _enteredText;
-    private ObservableCollection<SteamProfile> _steamProfiles;
 
     public ProfileDataFetcherViewModel(IServiceProvider serviceProvider, INotificationService notificationService)
     {
         _serviceProvider = serviceProvider;
+        _notificationService = notificationService;
+
+        CurrentSteamProfile = SteamProfile.Empty;
+        SteamProfiles = new ObservableCollection<SteamProfile>();
+
         GetProfileDetailsCommand = new AsyncRelayCommand(RetrieveProfileInformationWithNotification);
         CopyToClipboardCommand = new RelayCommand<object>(CopyText);
         OpenInBrowserCommand = new RelayCommand<object>(OpenInBrowser);
         SelectProfileFromHistoryCommand = new AsyncRelayCommand<object>(SelectProfileFromHistory);
-
-        _currentSteamProfile = SteamProfile.Empty;
-        _steamProfiles = new ObservableCollection<SteamProfile>();
-        _notificationService = notificationService;
     }
 
     public ObservableCollection<SteamProfile> SteamProfiles
     {
         get => _steamProfiles;
-        set
+        private init
         {
             _steamProfiles = value;
             OnPropertyChanged();
@@ -48,7 +48,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
     public SteamProfile CurrentSteamProfile
     {
         get => _currentSteamProfile;
-        set
+        private set
         {
             _currentSteamProfile = value;
             OnPropertyChanged();
@@ -60,6 +60,8 @@ public class ProfileDataFetcherViewModel : ObservableObject
         get => _enteredText;
         set
         {
+            if (_enteredText == value) return;
+
             _enteredText = value;
             OnPropertyChanged();
         }
@@ -76,7 +78,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
         if (string.IsNullOrWhiteSpace(text)) return;
 
         Clipboard.SetText(text);
-        _notificationService.ShowNotification("Copied!", NotificationLevel.Common);
+        _notificationService.ShowNotification("Copied!");
     }
 
     private void OpenInBrowser(object parameter)
@@ -84,8 +86,10 @@ public class ProfileDataFetcherViewModel : ObservableObject
         var text = parameter.ToString();
         if (string.IsNullOrWhiteSpace(text)) return;
 
-        Process.Start(new ProcessStartInfo { FileName = text, UseShellExecute = true });
-        _notificationService.ShowNotification("Opened in browser!", NotificationLevel.Common);
+        var processStartInfo = new ProcessStartInfo { FileName = text, UseShellExecute = true };
+        using var process = Process.Start(processStartInfo);
+
+        _notificationService.ShowNotification("Opened in the browser!");
     }
 
     private async Task SelectProfileFromHistory(object parameter)
@@ -95,19 +99,24 @@ public class ProfileDataFetcherViewModel : ObservableObject
         await RetrieveProfileInformationWithNotification();
     }
 
+    // Click or Enter => RetrieveProfileInformationWithNotification
+    // RetrieveProfileInformationWithNotification => RetrieveProfileInformation
+    // RetrieveProfileInformation => SelectProfile
+    // SelectProfile => SelectExistingProfile, SelectNewProfile
     private async Task RetrieveProfileInformationWithNotification()
     {
         var start = Stopwatch.GetTimestamp();
         var selected = await RetrieveProfileInformation();
         var responseTime = Stopwatch.GetElapsedTime(start);
         var notification = selected
-            ? $"Profile information successfully obtained in {responseTime.TotalMilliseconds} ms!"
-            : "Selection reset!";
-        _notificationService.ShowNotification(notification, NotificationLevel.Common);
+            ? $"Found your profile in {responseTime.TotalSeconds:F1} seconds!"
+            : "Selection cleared!";
+        _notificationService.ShowNotification(notification);
     }
 
     private async Task<bool> RetrieveProfileInformation()
     {
+        _notificationService.ShowNotification("Searching for your profile...");
         var factory = _serviceProvider.GetRequiredService<ISteamProfileService>();
         var profile = await factory.GetProfileAsync(EnteredText);
         return SelectProfile(profile);

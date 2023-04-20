@@ -3,7 +3,12 @@
     <Brush x:Key="ControlButtonMouseOverColor">#292929</Brush>
     <Brush x:Key="ControlButtonMousePressedColor">#252525</Brush>
     <Brush x:Key="ToggleButtonCheckedColor">#333333</Brush>
-
-    <FontFamily x:Key="Font"> Segoe UI Variable Text </FontFamily>
+    <Brush x:Key="TopPanelColor">#1C1C1C</Brush>
+    <Brush x:Key="ApplicationBackgroundColor">#232323</Brush>
+    <FontFamily x:Key="Font"> Segoe UI SemiBold </FontFamily>
+    <Brush x:Key="PopUpBackgroundColor">#292929</Brush>
+    <Brush x:Key="HighlightColor">#3D3D3D</Brush>
+    <Brush x:Key="TextColor">#FAFDF6</Brush>
+    <Brush x:Key="BackgroundColor">#333333</Brush>
 
 </ResourceDictionary>

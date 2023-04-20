@@ -4,167 +4,424 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels"
+             xmlns:local="clr-namespace:SteamTools.UI.Models"
              mc:Ignorable="d"
-             d:DesignHeight="275"
-             d:DesignWidth="480"
+             d:DesignHeight="335"
+             d:DesignWidth="540"
+             Background="{StaticResource ApplicationBackgroundColor}"
              d:DataContext="{d:DesignInstance viewModels:IDScannerViewModel}">
 
     <UserControl.Resources>
-        <Style x:Key="DisabledStyle" TargetType="{x:Type Control}">
-            <Setter Property="IsEnabled" Value="{Binding Path=IsChecked, ElementName=LimitMaximumFileSizeCheckBox}" />
+
+        <Style TargetType="local:RoundCheckBox" x:Key="BaseRoundCheckBox">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontFamily" Value="{StaticResource Font}" />
+            <Setter Property="TextPosition" Value="Center" />
+            <Setter Property="Background" Value="{StaticResource PopUpBackgroundColor}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type local:RoundCheckBox}">
+                        <Border CornerRadius="5" Background="{TemplateBinding Background}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition
+                                        Width="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource HeightToWidthConverter}}" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" x:Name="Border" Margin="5"
+                                        Background="#E75A7C"
+                                        CornerRadius="2"
+                                        ClipToBounds="True">
+                                    <Path x:Name="CheckMark"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Data="F1M9.97498,1.22334L4.6983,9.09834 4.52164,9.09834 0,5.19331 1.27664,3.52165 4.255,6.08833 8.33331,1.52588E-05 9.97498,1.22334z"
+                                          Fill="#FAFDF6"
+                                          Opacity="0" />
+                                </Border>
+                                <TextBlock Grid.Column="1"
+                                           Margin="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource HeightToMarginConverter}}"
+                                           Text="{TemplateBinding Content}"
+                                           TextAlignment="{TemplateBinding TextPosition}"
+                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           FontFamily="{TemplateBinding FontFamily}"
+                                           FontSize="{TemplateBinding FontSize}" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation To="#5AE77C" Duration="0:0:0.15"
+                                                            Storyboard.TargetName="Border"
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" />
+                                            <DoubleAnimation Storyboard.TargetName="CheckMark"
+                                                             Storyboard.TargetProperty="(Opacity)" To="1"
+                                                             Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation To="#E75A7C" Duration="0:0:0.15"
+                                                            Storyboard.TargetName="Border"
+                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" />
+                                            <DoubleAnimation Storyboard.TargetName="CheckMark"
+                                                             Storyboard.TargetProperty="(Opacity)" To="0"
+                                                             Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="{x:Type local:RoundButton}" x:Key="BaseRoundButton">
+            <Setter Property="Background" Value="{StaticResource HighlightColor}" />
+            <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+            <Setter Property="FontFamily" Value="{StaticResource Font}" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type local:RoundButton}">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="{TemplateBinding Roundness }" ClipToBounds="True">
+                            <TextBlock Padding="5" x:Name="textBlock"
+                                       Text="{TemplateBinding Content}"
+                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                       FontFamily="{TemplateBinding FontFamily}"
+                                       FontSize="{TemplateBinding FontSize}"
+                                       TextAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding Path=IsChecked, ElementName=LimitMaximumFileSizeCheckBox}" Value="False">
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource ControlButtonMouseOverColor}" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{StaticResource ControlButtonMousePressedColor}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type local:RoundTextBox}" x:Key="BaseRoundTextBox">
+            <Setter Property="Background" Value="{StaticResource HighlightColor}" />
+            <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+            <Setter Property="FontFamily" Value="{StaticResource Font}" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="local:RoundTextBox">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding Roundness }"
+                                ClipToBounds="True">
+                            <ScrollViewer x:Name="PART_ContentHost" HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Stretch" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ListView" x:Key="BaseListView">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="5" />
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                    <ContentPresenter Margin="0 0 0 5" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ListView" x:Key="BaseRoundedListView" BasedOn="{StaticResource BaseListView}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListView}">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10">
+                            <ScrollViewer Padding="{TemplateBinding Padding}"
+                                          HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                                          VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
+                                <ItemsPresenter />
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="local:RoundCheckBox" x:Key="ListCheckBox" BasedOn="{StaticResource BaseRoundCheckBox}">
+            <Setter Property="TextPosition" Value="Left" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="IsEnabled" Value="{Binding Path=IsChecked, ElementName=UseSelectedExtensions}" />
+            <Setter Property="Padding" Value="5 0 5 0" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsChecked, ElementName=UseSelectedExtensions}" Value="False">
                     <Setter Property="IsEnabled" Value="False" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        <Style x:Key="ListViewCheckBox" TargetType="{x:Type CheckBox}" />
+
+        <Style TargetType="{x:Type local:RoundButton}" x:Key="FileSizeControlButton"
+               BasedOn="{StaticResource BaseRoundButton}">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="IsEnabled" Value="{Binding Path=IsChecked, ElementName=LimitFileSize}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsChecked, ElementName=LimitFileSize}" Value="False">
+                    <Setter Property="IsEnabled" Value="False" />
+                    <Setter Property="Opacity" Value="0.5" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type local:RoundButton}" x:Key="ExtensionControlButton"
+               BasedOn="{StaticResource BaseRoundButton}">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="IsEnabled" Value="{Binding Path=IsChecked, ElementName=UseSelectedExtensions}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsChecked, ElementName=UseSelectedExtensions}" Value="False">
+                    <Setter Property="IsEnabled" Value="False" />
+                    <Setter Property="Opacity" Value="0.5" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type local:RoundTextBox}" x:Key="ExtensionTextBox"
+               BasedOn="{StaticResource BaseRoundTextBox}">
+            <Setter Property="IsEnabled" Value="{Binding Path=IsChecked, ElementName=UseSelectedExtensions}" />
+            <Setter Property="Padding" Value="8 -2 8 0" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsChecked, ElementName=UseSelectedExtensions}" Value="False">
+                    <Setter Property="IsEnabled" Value="False" />
+                    <Setter Property="Opacity" Value="0.5" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type local:RoundTextBox}" x:Key="FileSizeTextBox"
+               BasedOn="{StaticResource BaseRoundTextBox}">
+            <Setter Property="IsEnabled" Value="{Binding Path=IsChecked, ElementName=LimitFileSize}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=IsChecked, ElementName=LimitFileSize}" Value="False">
+                    <Setter Property="IsEnabled" Value="False" />
+                    <Setter Property="Opacity" Value="0.5" />
+                </DataTrigger>
+            </Style.Triggers>
+
+        </Style>
+
     </UserControl.Resources>
 
-    <Grid Background="#202020">
+    <Grid>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="190" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Column="0" Margin="20">
-
-            <!-- Maximum File Size -->
-            <StackPanel>
-
-                <CheckBox x:Name="LimitMaximumFileSizeCheckBox" Content="Limit maximum fileSize"
-                          HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                          Foreground="{StaticResource TextColor}" Height="25"
-                          IsChecked="{Binding Path=IsLimitMaximumFileSizeEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                <StackPanel Orientation="Horizontal">
-
-                    <Button Height="25" Width="25" Style="{StaticResource DisabledStyle}" BorderThickness="0"
-                            Content="+"
-                            Command="{Binding Path=IncreaseMaximumFileSizeCommand}" />
-
-                    <TextBox Height="25" Width="100" HorizontalContentAlignment="Center"
-                             VerticalContentAlignment="Center"
-                             Style="{StaticResource DisabledStyle}" BorderThickness="0"
-                             Text="{Binding Path=MaximumFileSizeInMegaBytes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                    <Button Height="25" Width="25" Style="{StaticResource DisabledStyle}" BorderThickness="0"
-                            Content="-"
-                            Command="{Binding Path=DecreaseMaximumFileSizeCommand}" />
-
-                </StackPanel>
-
-            </StackPanel>
-
-            <!-- Extensions -->
-            <StackPanel>
-
-                <CheckBox Height="25" Content="Search by extensions?" HorizontalContentAlignment="Center"
-                          VerticalContentAlignment="Center" Foreground="{StaticResource TextColor}"
-                          IsChecked="{Binding UseExtensions}" />
-
-                <TextBox VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="25"
-                         BorderThickness="0"
-                         Text="{Binding FilterSearchQuery, UpdateSourceTrigger=PropertyChanged}" />
-
-                <ListView Height="110" BorderThickness="0" ItemsSource="{Binding Path=FilteredSearchExtensions}"
-                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <CheckBox HorizontalContentAlignment="Left"
-                                      Content="{Binding Extension}"
-                                      IsChecked="{Binding Selected}" Style="{StaticResource ListViewCheckBox}" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-
-                <StackPanel Orientation="Horizontal" Height="25">
-                    <Button Width="75" Command="{Binding SelectAllSearchExtensionsCommand}" Content="Select all"
-                            BorderThickness="0" />
-                    <Button Width="75" Content="Clear all" Command="{Binding ResetAllSearchExtensionsCommand}"
-                            BorderThickness="0" />
-                </StackPanel>
-
-            </StackPanel>
-
-        </StackPanel>
-
-        <!-- Search & Results -->
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="0" Margin="20">
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="75" />
+                <RowDefinition Height="70" />
+                <RowDefinition Height="3.5*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>
+
+                <local:RoundCheckBox x:Name="LimitFileSize" Grid.Row="0" Style="{StaticResource BaseRoundCheckBox}"
+                                     Content="Limit file size" VerticalAlignment="Stretch"
+                                     IsChecked="{Binding Path=LimitFileSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Grid Grid.Row="2">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="30" />
+                    </Grid.ColumnDefinitions>
+
+                    <local:RoundButton Grid.Column="0" Style="{StaticResource FileSizeControlButton}"
+                                       Content="+"
+                                       Roundness="5 0 0 5"
+                                       Command="{Binding Path=IncreaseMaximumFileSizeCommand}" />
+
+                    <local:RoundTextBox Grid.Column="1" Style="{StaticResource FileSizeTextBox}"
+                                        Text="{Binding Path=MaxFileSizeInMb, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <local:RoundButton Grid.Column="2" Style="{StaticResource FileSizeControlButton}"
+                                       Content="-"
+                                       Roundness="0 5 5 0"
+                                       Command="{Binding Path=DecreaseMaximumFileSizeCommand}" />
+
+                </Grid>
+
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="0 20 0 0">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <local:RoundCheckBox Grid.Row="0" x:Name="UseSelectedExtensions"
+                                     Style="{StaticResource BaseRoundCheckBox}"
+                                     Content="Use Extensions" VerticalAlignment="Stretch"
+                                     IsChecked="{Binding UseSelectedExtensions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Grid Grid.Row="2">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="25" />
+                    </Grid.RowDefinitions>
+
+                    <local:RoundTextBox Grid.Row="0" Style="{StaticResource ExtensionTextBox}"
+                                        Roundness="5 5 0 0"
+                                        Text="{Binding ExtensionQuery, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <ListView Grid.Row="1" Style="{StaticResource BaseListView}"
+                              ItemsSource="{Binding Path=FilteredCollectionViewSource}"
+                              Background="{StaticResource BackgroundColor}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate DataType="{x:Type local:SearchExtension}">
+                                <local:RoundCheckBox Style="{StaticResource ListCheckBox}" Height="25"
+                                                     Content="{Binding Extension}"
+                                                     IsChecked="{Binding Selected}" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <Grid Grid.Row="2">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <local:RoundButton Grid.Column="0" Style="{StaticResource ExtensionControlButton}"
+                                           Content="Select all"
+                                           Command="{Binding SelectAllSearchExtensionsCommand}"
+                                           Roundness="0 0 0 5" />
+
+                        <local:RoundButton Grid.Column="1" Style="{StaticResource ExtensionControlButton}"
+                                           Content="Clear all"
+                                           Roundness="0 0 5 0"
+                                           Command="{Binding ResetAllSearchExtensionsCommand}" />
+
+                    </Grid>
+
+                </Grid>
+
+            </Grid>
+
+        </Grid>
+
+        <Grid Grid.Column="1" Margin="20">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="10" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Search -->
-            <Grid Grid.Row="0" Margin="20 20 20 0">
+            <Grid Grid.Row="0">
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*" />
-                    <ColumnDefinition Width="25" />
-                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="30" />
                 </Grid.ColumnDefinitions>
 
                 <TextBox Grid.Column="0"
                          Style="{StaticResource SteamIDInputTextBox}"
                          Background="White"
-                         Height="35"
+                         VerticalAlignment="Stretch"
                          Padding="20 0 20 0"
                          Text="{Binding ScanQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Tag="Enter Steam 32/64 ID">
+                         Tag="Enter SteamID64">
                     <TextBox.InputBindings>
                         <KeyBinding Command="{Binding RunScanCommand}" Key="Enter" />
                     </TextBox.InputBindings>
                 </TextBox>
 
-                <Button Grid.Column="2"
-                        Style="{StaticResource LookupButton}"
-                        FontSize="18"
-                        Height="35"
-                        Content="Scan"
-                        Command="{Binding RunScanCommand}" />
+                <local:RoundButton Grid.Column="2" Style="{StaticResource BaseRoundButton}"
+                                   FontSize="18"
+                                   Roundness="0 5 5 0"
+                                   Content="➤"
+                                   Command="{Binding RunScanCommand}" />
 
-                <Button Grid.Column="1"
-                        Style="{StaticResource CancelButton}"
-                        Margin="0"
-                        FontSize="18"
-                        Height="35"
-                        Content="X"
-                        Command="{Binding CancelSearchCommand}" />
+                <local:RoundButton Grid.Column="1" Style="{StaticResource BaseRoundButton}"
+                                   Margin="0"
+                                   FontSize="18"
+                                   Content="✕"
+                                   Command="{Binding CancelScanCommand}" />
+
             </Grid>
 
-            <ListView Grid.Row="1" Margin="20" ItemsSource="{Binding Path=FoundProfiles}">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                        <Setter Property="Background" Value="Transparent" />
-                        <Setter Property="BorderBrush" Value="Transparent" />
-                        <Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="Padding" Value="0" />
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="Transparent" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </ListView.ItemContainerStyle>
+            <ListView Grid.Row="2" Style="{StaticResource BaseRoundedListView}"
+                      ItemsSource="{Binding Path=MatchingFiles}"
+                      Background="{StaticResource BackgroundColor}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Button HorizontalContentAlignment="Left" Content="{Binding }"
-                                Command="{Binding DataContext.OpenInExplorerCommand, ElementName=LimitMaximumFileSizeCheckBox}"
-                                CommandParameter="{Binding}" />
+                        <local:RoundButton
+                            HorizontalContentAlignment="Left"
+                            Style="{StaticResource BaseRoundButton}"
+                            Roundness="5"
+                            Content="{Binding }"
+                            Command="{Binding DataContext.OpenInExplorerCommand, ElementName=LimitFileSize}"
+                            CommandParameter="{Binding}" />
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
 
         </Grid>
+
     </Grid>
 
     <!-- 
-    - Список с файлами, в которых была найдена сигнатура SteamID, который человек искал.
-      Можно нажать на элемент и он откроется в проводнике (логика как у LocalProfileScanner)  
+        Разобраться с палитрой цветов
+        Добавить подсказку при наведении на Button внутри результатов сканирования,
+        позицию обнаруженного SteamID.
+        
+        Разобраться с центрированием текста,
+        потому что буквы стоят на разных расстояниях от верхней и нижней границы.
     -->
 
 </UserControl>

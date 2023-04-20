@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using SteamTools.Core.Models;
+using SteamTools.Core.Models.Steam;
 using SteamTools.LocalProfileScanner.Models.ProfileData;
 
 namespace SteamTools.LocalProfileScanner.Models.DataScanner;
@@ -29,6 +30,7 @@ public class LoginusersScanner : IScanner
         var login = match.Groups[3].Captures[0].Value;
         var name = match.Groups[3].Captures[1].Value;
         var time = long.Parse(match.Groups[3].Captures[7].Value);
-        return new LoginusersData(steamID64, login, name, time);
+        return new LoginusersData(login, name, DateTimeOffset.FromUnixTimeSeconds(time).ToLocalTime(), steamID64,
+            steamID64.ToSteamID32());
     }
 }

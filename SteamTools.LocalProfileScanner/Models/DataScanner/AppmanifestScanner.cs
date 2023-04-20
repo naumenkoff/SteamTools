@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using SteamTools.Core.Models;
+using SteamTools.Core.Models.Steam;
 using SteamTools.LocalProfileScanner.Models.ProfileData;
 
 namespace SteamTools.LocalProfileScanner.Models.DataScanner;
@@ -53,6 +54,6 @@ public class AppmanifestScanner : IScanner
     {
         var name = match.Groups[2].Value;
         var steam64 = new SteamID64(long.Parse(match.Groups[3].Value));
-        return new AppmanifestData(name, steam64);
+        return new AppmanifestData(name, steam64, steam64.ToSteamID32());
     }
 }

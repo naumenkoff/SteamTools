@@ -4,22 +4,25 @@ public static class FileSystemHelper
 {
     public static DirectoryInfo GetDirectory(params string[] paths)
     {
-        if (paths.Any(string.IsNullOrEmpty)) return default;
-
-        var path = Path.Combine(paths);
-        var directory = new DirectoryInfo(path);
-
-        return FileSystemInfoExists(directory) ? directory : null;
+        return GetFileSystemInfo<DirectoryInfo>(paths);
     }
 
     public static FileInfo GetFile(params string[] paths)
     {
-        if (paths.Any(string.IsNullOrEmpty)) return default;
+        return GetFileSystemInfo<FileInfo>(paths);
+    }
+
+    private static T GetFileSystemInfo<T>(params string[] paths) where T : FileSystemInfo
+    {
+        if (paths.Any(string.IsNullOrEmpty)) return null;
 
         var path = Path.Combine(paths);
-        var file = new FileInfo(path);
 
-        return FileSystemInfoExists(file) ? file : null;
+        var fileSystemInfo = typeof(T) == typeof(FileInfo)
+            ? (T)(object)new FileInfo(path)
+            : (T)(object)new DirectoryInfo(path);
+
+        return FileSystemInfoExists(fileSystemInfo) ? fileSystemInfo : null;
     }
 
     private static bool FileSystemInfoExists(FileSystemInfo fileSystemInfo)
@@ -37,15 +40,10 @@ public static class FileSystemHelper
             var content = streamReader.ReadToEnd();
             return content;
         }
-        catch (FileNotFoundException ex)
-        {
-            Console.WriteLine($"FileNotFoundException: {ex.Message}");
-            return default;
-        }
         catch (Exception ex)
         {
             Console.WriteLine($"Unable to read file: {ex.Message}");
-            return default;
+            return null;
         }
     }
 }

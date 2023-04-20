@@ -3,9 +3,11 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using SteamTools.Core.Models;
+using SteamTools.Core.Models.Steam;
 using SteamTools.Core.Services;
+using SteamTools.IDScanner.Models;
 using SteamTools.IDScanner.Services;
+using SteamTools.LocalProfileScanner;
 using SteamTools.LocalProfileScanner.Services;
 using SteamTools.ProfileDataFetcher.Clients;
 using SteamTools.ProfileDataFetcher.Providers;
@@ -31,19 +33,12 @@ public partial class App
         _serviceProvider = ConfigureServices();
     }
 
-    protected override async void OnStartup(StartupEventArgs e)
+    protected override void OnStartup(StartupEventArgs e)
     {
         var main = _serviceProvider.GetRequiredService<MainWindow>();
         var navigator = _serviceProvider.GetRequiredService<INavigationService>();
         navigator.Navigate<ProfileDataFetcherViewModel>();
         main.Show();
-
-        var viewModel = _serviceProvider.GetRequiredService<IDScannerViewModel>();
-        await viewModel.InitializeAsync();
-
-        var finderService = _serviceProvider.GetRequiredService<ProfileScannerService>();
-        finderService.Execute();
-
         base.OnStartup(e);
     }
 
@@ -62,27 +57,30 @@ public partial class App
 
         services.AddSingleton<Func<Type, ObservableObject>>(serviceProvider =>
             viewModelType => (ObservableObject)serviceProvider.GetRequiredService(viewModelType));
+        // MainWindowViewModel doesn't have a default constructor, so we are setting the DataContext
         services.AddSingleton(provider => new MainWindow
             { DataContext = provider.GetRequiredService<MainWindowViewModel>() });
+
         services.AddSingleton<MainWindowViewModel>();
         services.AddSingleton<IDScannerViewModel>();
         services.AddSingleton<LocalProfileScannerViewModel>();
         services.AddSingleton<ProfileDataFetcherViewModel>();
         services.AddSingleton<INavigationService, NavigationService>();
-        services.AddSingleton<INotificationService, PopupNotificationService>();
         services.AddSingleton(_configuration);
-
+        services.AddSingleton<ISteamApiKeyProvider, SteamApiKeyProvider>();
         services.AddSingleton<ISteamApiClientCacheService, SteamApiClientCacheService>();
-        services.AddHttpClient<ISteamApiClient, SteamApiClient>();
         services.AddSingleton<ISteamProfileRegexProvider, SteamProfileRegexProvider>();
+        services.AddSingleton<ISteamClient, SteamClient>();
+        services.AddSingleton<INotificationService, PopupNotificationService>();
+        services.AddSingleton<LocalProfileStorage>();
+
+        services.AddHttpClient<ISteamApiClient, SteamApiClient>();
+        services.AddTransient<ISteamDirectoryFinder, SteamDirectoryFinder>();
         services.AddTransient<ISteamProfileTypeDetector, SteamProfileTypeDetector>();
         services.AddTransient<ISteamProfileService, SteamProfileService>();
-        services.AddSingleton<ISteamApiKeyProvider, SteamApiKeyProvider>();
-
-        services.AddSingleton<ISteamClient, SteamClient>();
-        services.AddSingleton<IScanningService, ScanningService>();
-
-        services.AddSingleton<ProfileScannerService>();
+        services.AddTransient<ProfileScannerService>();
+        services.AddTransient<ScanningResult>();
+        services.AddTransient<IScanningService, ScanningService>();
 
         return services.BuildServiceProvider();
     }

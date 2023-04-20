@@ -5,26 +5,129 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels"
              mc:Ignorable="d"
-             d:DesignHeight="275"
-             d:DesignWidth="480"
+             Background="{StaticResource ApplicationBackgroundColor}"
+             d:DesignHeight="335"
+             d:DesignWidth="540"
              d:DataContext="{d:DesignInstance viewModels:ProfileDataFetcherViewModel}">
-    <Grid Background="#202020">
+
+    <UserControl.Resources>
+
+        <Style x:Key="LookupButton" TargetType="Button">
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Background" Value="Violet" />
+            <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontFamily" Value="{StaticResource Font}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="0 5 5 0">
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                                To="BlueViolet" Duration="0:0:0.25" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
+                                                To="Violet" Duration="0:0:0.25" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="BaseTextBlock" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontFamily" Value="{StaticResource Font}" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+
+        <Style x:Key="InformationButton" TargetType="Button">
+            <Setter Property="Foreground" Value="Goldenrod" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontFamily" Value="{StaticResource Font}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Command" Value="{Binding CopyToClipboardCommand}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter>
+                            <ContentPresenter.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextDecorations" Value="Underline" />
+                                    <Setter Property="TextWrapping" Value="Wrap" />
+                                    <Setter Property="TextAlignment" Value="Center" />
+                                </Style>
+                            </ContentPresenter.Resources>
+                        </ContentPresenter>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="Click">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimation Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                            To="MediumSpringGreen" Duration="0:0:0.25" />
+                            <ColorAnimation Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
+                                            To="Goldenrod" Duration="0:0:0.5" BeginTime="0:0:0.5" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid Margin="20">
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="75" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="20" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
         <!-- Search -->
-        <Grid Grid.Row="0" Margin="20">
+        <Grid Grid.Row="0">
+
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="4*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
+
             <TextBox Grid.Column="0"
                      Style="{StaticResource SteamIDInputTextBox}"
                      Background="White"
-                     Height="35"
+                     VerticalAlignment="Stretch"
                      Padding="20 0 20 0"
                      Text="{Binding EnteredText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Tag="Enter Steam ID">
@@ -32,19 +135,20 @@
                     <KeyBinding Command="{Binding GetProfileDetailsCommand}" Key="Enter" />
                 </TextBox.InputBindings>
             </TextBox>
+
             <Button Grid.Column="1"
                     Style="{StaticResource LookupButton}"
                     FontSize="18"
                     Height="35"
                     Content="Lookup"
                     Command="{Binding GetProfileDetailsCommand}" />
+
         </Grid>
 
         <!-- Search History -->
-        <ItemsControl Grid.Row="0"
+        <ItemsControl Grid.Row="1"
                       Background="Transparent"
                       BorderThickness="0"
-                      Margin="20 55 20 0"
                       ItemsSource="{Binding SteamProfiles}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -54,42 +158,42 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Button Content="{Binding SteamID64 }"
-                            Command="{Binding DataContext.SelectProfileFromHistoryCommand, ElementName=SteamId}"
+                            Command="{Binding DataContext.SelectProfileFromHistoryCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                             CommandParameter="{Binding}"
                             Style="{StaticResource InformationButton}"
-                            Margin="5 0 5 0"
-                            FontSize="10" />
+                            VerticalAlignment="Stretch"
+                            FontSize="12"
+                            Margin="5 0 5 0" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
         <!-- Profile Information -->
-        <Grid Grid.Row="1" Margin="20 0 20 20"
-              Visibility="{Binding ElementName=SteamId, Path=Content, Converter={StaticResource StringIsNullOrEmptyToVisibleConverter}}">
+        <Grid Grid.Row="2"
+              Visibility="{Binding ElementName=SteamProfile, Path=Content, Converter={StaticResource StringIsNullOrEmptyToVisibleConverter}}">
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="140" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="2*" />
+            </Grid.RowDefinitions>
 
-            <!-- Profile Image & Custom Url -->
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-
-                <Border Grid.Row="0"
-                        VerticalAlignment="Center"
-                        Margin="20 20 20 0"
-                        Width="100"
-                        Height="100"
-                        CornerRadius="0">
-                    <!-- CornerRadius for Image -->
+            <Grid Grid.Row="0" x:Name="Grid1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="2*" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0"
+                        VerticalAlignment="Stretch"
+                        Width="{Binding ActualHeight, ElementName=Grid1 }"
+                        HorizontalAlignment="Right"
+                        CornerRadius="5"
+                        BorderThickness="2"
+                        BorderBrush="MediumSpringGreen">
                     <Border.Background>
                         <VisualBrush>
                             <VisualBrush.Visual>
-                                <Image>
+                                <Image Margin="-1">
                                     <Image.Source>
                                         <Binding Path="CurrentSteamProfile"
                                                  Converter="{StaticResource ProfileImageConverter}" />
@@ -99,66 +203,113 @@
                         </VisualBrush>
                     </Border.Background>
                 </Border>
-
-                <Button Grid.Row="1"
-                        Style="{StaticResource InformationButton}"
-                        VerticalAlignment="Top"
-                        Margin="0 5 0 0"
-                        FontSize="12"
-                        Content="{Binding CurrentSteamProfile.PlayerSummaries.PersonaName}"
-                        Command="{Binding OpenInBrowserCommand}"
-                        CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.ProfileUrl}" />
+                <Grid Grid.Column="2">
+                    <Viewbox Stretch="Uniform" HorizontalAlignment="Left">
+                        <TextBlock
+                            Text="{Binding CurrentSteamProfile.PlayerSummaries.PersonaName}"
+                            FontFamily="{StaticResource Font}"
+                            Foreground="{StaticResource TextColor}" />
+                    </Viewbox>
+                </Grid>
             </Grid>
 
-            <!-- Profile SteamID, SteamID3, SteamID32, SteamID64 -->
-            <Grid Grid.Column="1" Margin="20 0 0 0">
+            <Grid Grid.Row="1" Margin="0 20 0 0">
 
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource PSTextBlock}"
-                               Width="100"
-                               Text="SteamID" />
-                    <Button x:Name="SteamId" Style="{StaticResource InformationButton}"
-                            Content="{Binding CurrentSteamProfile.SteamID, Mode=OneWay}"
-                            Command="{Binding CopyToClipboardCommand}"
-                            CommandParameter="{Binding CurrentSteamProfile.SteamID}" />
-                </StackPanel>
+                <Grid Grid.Column="0">
 
-                <StackPanel Grid.Row="1" Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource PSTextBlock}"
-                               Width="100"
-                               Text="SteamID3" />
-                    <Button Style="{StaticResource InformationButton}"
-                            Content="{Binding CurrentSteamProfile.SteamID3, Mode=OneWay}"
-                            Command="{Binding CopyToClipboardCommand}"
-                            CommandParameter="{Binding CurrentSteamProfile.SteamID3}" />
-                </StackPanel>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="2" Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource PSTextBlock}"
-                               Width="100"
-                               Text="SteamID32" />
-                    <Button Style="{StaticResource InformationButton}"
-                            Content="{Binding CurrentSteamProfile.SteamID32, Mode=OneWay}"
-                            Command="{Binding CopyToClipboardCommand}"
-                            CommandParameter="{Binding CurrentSteamProfile.SteamID32}" />
-                </StackPanel>
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Style="{StaticResource BaseTextBlock}" Text="SteamID" />
+                        <Button x:Name="SteamProfile" Grid.Row="1" Style="{StaticResource InformationButton}"
+                                Content="{Binding CurrentSteamProfile.SteamID, Mode=OneWay}"
+                                CommandParameter="{Binding CurrentSteamProfile.SteamID}" />
+                    </Grid>
 
-                <StackPanel Grid.Row="3" Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource PSTextBlock}"
-                               Width="100"
-                               Text="SteamID64" />
-                    <Button Style="{StaticResource InformationButton}"
-                            Content="{Binding CurrentSteamProfile.SteamID64, Mode=OneWay}"
-                            Command="{Binding CopyToClipboardCommand}"
-                            CommandParameter="{Binding CurrentSteamProfile.SteamID64}" />
-                </StackPanel>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Style="{StaticResource BaseTextBlock}" Text="SteamID3" />
+                        <Button Grid.Row="1" Style="{StaticResource InformationButton}"
+                                Content="{Binding CurrentSteamProfile.SteamID3, Mode=OneWay}"
+                                CommandParameter="{Binding CurrentSteamProfile.SteamID3}" />
+                    </Grid>
+
+                </Grid>
+
+                <Grid Grid.Column="1">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Button Grid.Row="0" Style="{StaticResource InformationButton}"
+                            Content="Profile Url"
+                            VerticalAlignment="Center"
+                            Command="{Binding OpenInBrowserCommand}"
+                            CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.ProfileUrl}" />
+
+                    <Button Grid.Row="1" Style="{StaticResource InformationButton}"
+                            Content="Permanent Url"
+                            VerticalAlignment="Center"
+                            Command="{Binding OpenInBrowserCommand}"
+                            CommandParameter="{Binding CurrentSteamProfile.ProfilePermanentUrl}" />
+
+                    <Button Grid.Row="2" Style="{StaticResource InformationButton}"
+                            Content="Avatar Url"
+                            VerticalAlignment="Center"
+                            Command="{Binding OpenInBrowserCommand}"
+                            CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.AvatarFull}" />
+
+                </Grid>
+
+                <Grid Grid.Column="2">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Style="{StaticResource BaseTextBlock}" Text="SteamID64" />
+                        <Button Grid.Row="1" Style="{StaticResource InformationButton}"
+                                Content="{Binding CurrentSteamProfile.SteamID64, Mode=OneWay}"
+                                CommandParameter="{Binding CurrentSteamProfile.SteamID64}" />
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Style="{StaticResource BaseTextBlock}" Text="SteamID32" />
+                        <Button Grid.Row="1" Style="{StaticResource InformationButton}"
+                                Content="{Binding CurrentSteamProfile.SteamID32, Mode=OneWay}"
+                                CommandParameter="{Binding CurrentSteamProfile.SteamID32}" />
+                    </Grid>
+
+                </Grid>
 
             </Grid>
 

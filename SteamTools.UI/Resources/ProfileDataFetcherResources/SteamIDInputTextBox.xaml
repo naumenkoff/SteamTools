@@ -19,14 +19,13 @@
                                        Foreground="{TemplateBinding Foreground}"
                                        FontSize="{TemplateBinding FontSize}"
                                        FontFamily="{TemplateBinding FontFamily}"
-                                       VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                        TextAlignment="{TemplateBinding TextAlignment}"
                                        Margin="1 0 0 0"
                                        Padding="{TemplateBinding Padding}"
                                        Visibility="{Binding Text, Converter={StaticResource StringNullOrEmptyToVisibilityConverter}, 
             ConverterParameter=Collapsed, RelativeSource={RelativeSource TemplatedParent}}" />
                             <ScrollViewer x:Name="PART_ContentHost"
-                                          VerticalAlignment="{TemplateBinding VerticalAlignment}"
                                           VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
                         </Grid>
                     </Border>

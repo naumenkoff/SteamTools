@@ -1,4 +1,4 @@
-﻿namespace SteamTools.Core.Models;
+﻿namespace SteamTools.Core.Models.Steam;
 
 public interface ISteamClient
 {
@@ -8,5 +8,5 @@ public interface ISteamClient
     DirectoryInfo UserdataDirectory { get; }
     DirectoryInfo GetSteamappsDirectory(FileSystemInfo steamLibraryPath);
     DirectoryInfo GetWorkshopDirectory(FileSystemInfo steamappsDirectory);
-    Task<HashSet<string>> GetExtensionsAsync();
+    Task<HashSet<string>> GetFileExtensionsAsync();
 }

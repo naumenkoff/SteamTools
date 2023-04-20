@@ -1,125 +1,68 @@
-﻿using System.Collections.Concurrent;
-using SteamTools.Core.Models;
+﻿using SteamTools.Core.Models;
+using SteamTools.Core.Models.Steam;
+using SteamTools.IDScanner.Models;
 
 namespace SteamTools.IDScanner.Services;
 
 public class ScanningService : IScanningService
 {
-    // SRP, => 
-    // нужен интерфейс DirectoryScanner и FileScanner
-    // 3 реализации = Extension, All и File сканнеры
-    // вынести IsSteamIDPresentHere в отдельный класс валидатор
-    // разделить метод StartScanning
-    // обработать исключения
-
+    private readonly ScanningResult _scanningResult;
     private readonly ISteamClient _steamClient;
-    private string[] _extensions;
-    private bool _hasExtensions;
-    private long _maximumFileSize;
-    private bool _maximumFileSizeLimited;
-    private ConcurrentBag<string> _paths;
-    private SteamID32 _steam32ID;
-    private SteamID64 _steam64ID;
+    private IFileScanner _fileScanner;
+    private ParallelOptions _parallelOptions;
 
-    public ScanningService(ISteamClient steamClient)
+    public ScanningService(ISteamClient steamClient, ScanningResult scanningResult)
     {
         _steamClient = steamClient;
+        _scanningResult = scanningResult;
     }
 
-    public int TotalFileCount { get; private set; }
-    public int ScannedFileCount { get; private set; }
-
-    public async Task<List<string>> StartScanning(SteamID64 steamID64, bool maximumFileSizeLimit, long maximumFileSize,
-        bool hasExtensions, CancellationToken cancellationToken, params string[] extensions)
+    public async Task<IScanningResult> StartScanning(SteamID64 steamID64, bool limitMaximumFileSize,
+        long maximumFileSizeInBytes, bool useSpecifiedExtensions, CancellationToken cancellationToken,
+        params string[] extensions)
     {
-        _paths = new ConcurrentBag<string>();
-        TotalFileCount = 0;
-        ScannedFileCount = 0;
+        var availableCores = Environment.ProcessorCount - 1;
+        var cores = useSpecifiedExtensions ? availableCores / 2 : availableCores;
 
-        _maximumFileSizeLimited = maximumFileSizeLimit;
-        if (_maximumFileSizeLimited) _maximumFileSize = maximumFileSize;
-
-        _steam64ID = steamID64;
-        _steam32ID = steamID64.ToSteamID32();
-
-        _hasExtensions = hasExtensions;
-        if (_hasExtensions) _extensions = extensions;
-
-        var options = new ParallelOptions
+        _parallelOptions = new ParallelOptions
         {
             CancellationToken = cancellationToken,
-            MaxDegreeOfParallelism = (int)Math.Max(Environment.ProcessorCount / 2.0, 1)
+            MaxDegreeOfParallelism = Math.Max(cores, 1)
         };
-        await Parallel.ForEachAsync(_steamClient.SteamLibraries, options, async (steamLibrary, _) =>
-        {
-            if (_hasExtensions) await ScanFilesOnlyWithSpecifiedExtensions(steamLibrary, options);
-            else await ScanAllFiles(steamLibrary, options);
-        });
-        return _paths.OrderBy(x => x.Length).ToList();
+        _fileScanner = new StreamFileScanner(_scanningResult, steamID64, limitMaximumFileSize, maximumFileSizeInBytes);
+        await Scan(useSpecifiedExtensions, extensions);
+        return _scanningResult;
     }
 
-    private Task ScanAllFiles(DirectoryInfo directory, ParallelOptions options)
+    private async Task Scan(bool useSpecifiedExtensions, string[] extensions)
     {
-        var token = options.CancellationToken;
+        await Parallel.ForEachAsync(_steamClient.SteamLibraries, _parallelOptions, (steamLibrary, _) =>
+        {
+            if (useSpecifiedExtensions) ScanFilesWithSpecifiedExtensions(extensions, steamLibrary);
+            else ScanAllFiles(steamLibrary);
+
+            return ValueTask.CompletedTask;
+        });
+    }
+
+    private void ScanAllFiles(DirectoryInfo directory)
+    {
         var files = directory.GetFiles("*.*", SearchOption.AllDirectories);
-        Parallel.ForEach(files, options, file =>
-        {
-            if (token.IsCancellationRequested) return;
-            token.ThrowIfCancellationRequested();
-
-            ScanFile(file, token);
-        });
-
-        return Task.CompletedTask;
+        ScanFiles(files);
     }
 
-    private Task ScanFilesOnlyWithSpecifiedExtensions(DirectoryInfo directory, ParallelOptions options)
+    private void ScanFilesWithSpecifiedExtensions(IEnumerable<string> extensions, DirectoryInfo directory)
     {
-        var token = options.CancellationToken;
-        Parallel.ForEach(_extensions, options, extension =>
+        Parallel.ForEach(extensions, _parallelOptions, extension =>
         {
             var files = directory.GetFiles(extension, SearchOption.AllDirectories);
-            Parallel.ForEach(files, options, file =>
-            {
-                if (token.IsCancellationRequested) return;
-                token.ThrowIfCancellationRequested();
-
-                ScanFile(file, token);
-            });
+            ScanFiles(files);
         });
-
-        return Task.CompletedTask;
     }
 
-    private void ScanFile(FileInfo file, CancellationToken token)
+    private void ScanFiles(IEnumerable<FileInfo> files)
     {
-        TotalFileCount++;
-        if (file is null) return;
-        if (_maximumFileSizeLimited && file.Length > _maximumFileSize) return;
-        try
-        {
-            using var streamReader = file.OpenText();
-            ScannedFileCount++;
-
-            if (token.IsCancellationRequested) return;
-            token.ThrowIfCancellationRequested();
-
-            while (!streamReader.EndOfStream)
-            {
-                var line = streamReader.ReadLine();
-                if (IsSteamIDPresentHere(line) is false) continue;
-                _paths.Add(file.FullName);
-                return;
-            }
-        }
-        catch
-        {
-            // ignore
-        }
-    }
-
-    private bool IsSteamIDPresentHere(string text)
-    {
-        return text.Contains(_steam32ID) || text.Contains(_steam64ID);
+        Parallel.ForEach(files, _parallelOptions,
+            file => { _fileScanner.ScanFile(file, _parallelOptions.CancellationToken); });
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SteamTools.Core.Models;
+using SteamTools.Core.Models.Steam;
 using SteamTools.LocalProfileScanner.Models.ProfileData;
 
 namespace SteamTools.LocalProfileScanner.Models.DataScanner;
@@ -17,6 +18,6 @@ public class UserdataScanner : IScanner
         if (_steamClient.UserdataDirectory is null) return Enumerable.Empty<UserdataData>();
         var directories = _steamClient.UserdataDirectory.GetDirectories();
         return directories.Select(directory => new SteamID32(uint.Parse(directory.Name)))
-            .Select(steamID32 => new UserdataData(steamID32)).ToList();
+            .Select(steamID32 => new UserdataData(steamID32.ToSteamID64(), steamID32)).ToList();
     }
 }

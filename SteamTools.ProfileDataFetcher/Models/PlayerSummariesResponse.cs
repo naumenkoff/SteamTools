@@ -1,6 +1,3 @@
 namespace SteamTools.ProfileDataFetcher.Models;
 
-public class PlayerSummariesResponse
-{
-    public List<PlayerSummaries> Players { get; set; }
-}
+public record PlayerSummariesResponse(List<PlayerSummaries> Players);

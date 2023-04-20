@@ -9,8 +9,9 @@ using System.Windows;
 using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SteamTools.Core.Enums;
+using Microsoft.Extensions.DependencyInjection;
 using SteamTools.Core.Models;
+using SteamTools.Core.Models.Steam;
 using SteamTools.Core.Services;
 using SteamTools.Core.Utilities;
 using SteamTools.IDScanner.Services;
@@ -21,210 +22,302 @@ namespace SteamTools.UI.ViewModels;
 
 public class IDScannerViewModel : ObservableObject
 {
-    private readonly CollectionViewSource _collectionViewSource;
+    private readonly CollectionViewSource _filteredCollectionViewSource;
     private readonly INotificationService _notificationService;
-    private readonly IScanningService _scanningService;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ISteamClient _steamClient;
+    private ObservableCollection<SearchExtension> _availableExtensions;
     private CancellationTokenSource _cancellationTokenSource;
-    private string _filterSearchQuery;
-    private ObservableCollection<string> _foundProfiles;
-    private bool _isLimitMaximumFileSizeEnabled;
-    private bool _isRunning;
-    private int _maximumFileSizeInMegaBytes;
+    private string _extensionQuery;
+    private bool _isScanning;
+    private bool _limitFileSize = true;
+    private ObservableCollection<string> _matchingFiles;
+    private int _maxFileSizeInMb = 1;
     private string _scanQuery;
-    private ObservableCollection<SearchExtension> _searchExtensions;
-    private bool _useExtensions;
+    private bool _useSelectedExtensions;
 
-    public IDScannerViewModel(ISteamClient steamClient, IScanningService scanningService,
-        INotificationService notificationService)
+    public IDScannerViewModel(ISteamClient steamClient, INotificationService notificationService,
+        IServiceProvider serviceProvider)
     {
-        DecreaseMaximumFileSizeCommand = new RelayCommand(() => MaximumFileSizeInMegaBytes--);
-        IncreaseMaximumFileSizeCommand = new RelayCommand(() => MaximumFileSizeInMegaBytes++);
-        SelectAllSearchExtensionsCommand = new RelayCommand(() => ChangeSelected(true));
-        ResetAllSearchExtensionsCommand = new RelayCommand(() => ChangeSelected(false));
-        RunScanCommand = new AsyncRelayCommand(RunScan);
-        CancelSearchCommand = new RelayCommand(CancelSearch);
-        OpenInExplorerCommand = new RelayCommand<string>(OpenInExplorer);
-
         _steamClient = steamClient;
-        _collectionViewSource = new CollectionViewSource();
-        _searchExtensions = new ObservableCollection<SearchExtension>();
-        _foundProfiles = new ObservableCollection<string>();
-        _scanningService = scanningService;
+        _serviceProvider = serviceProvider;
+        _filteredCollectionViewSource = new CollectionViewSource();
+        _availableExtensions = new ObservableCollection<SearchExtension>();
         _notificationService = notificationService;
         _cancellationTokenSource = new CancellationTokenSource();
+
+        LoadSearchExtensionsAsync();
+
+        DecreaseMaximumFileSizeCommand = new RelayCommand(() => MaxFileSizeInMb--);
+        IncreaseMaximumFileSizeCommand = new RelayCommand(() => MaxFileSizeInMb++);
+        SelectAllSearchExtensionsCommand = new RelayCommand(() => ChangeSelected(true));
+        ResetAllSearchExtensionsCommand = new RelayCommand(() => ChangeSelected(false));
+        RunScanCommand = new AsyncRelayCommand(RunScanAsync);
+        CancelScanCommand = new RelayCommand(CancelScan);
+        OpenInExplorerCommand = new RelayCommand<string>(OpenInExplorer);
+        MatchingFiles = new ObservableCollection<string>();
     }
 
-    public AsyncRelayCommand RunScanCommand { get; }
-    public RelayCommand SelectAllSearchExtensionsCommand { get; }
-    public RelayCommand ResetAllSearchExtensionsCommand { get; }
-    public RelayCommand DecreaseMaximumFileSizeCommand { get; }
-    public RelayCommand IncreaseMaximumFileSizeCommand { get; }
-    public RelayCommand<string> OpenInExplorerCommand { get; }
+    /// <summary>
+    ///     Provides access to the filtered view of the available extensions.
+    /// </summary>
+    public ICollectionView FilteredCollectionViewSource => _filteredCollectionViewSource.View;
 
+    /// <summary>
+    ///     Gets or sets the collection of matching files found during the scan.
+    /// </summary>
+    public ObservableCollection<string> MatchingFiles
+    {
+        get => _matchingFiles;
+        private set
+        {
+            _matchingFiles = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    ///     Gets or sets the search query entered by the user.
+    /// </summary>
     public string ScanQuery
     {
         get => _scanQuery;
         set
         {
+            if (_scanQuery == value) return;
+
             _scanQuery = value;
             OnPropertyChanged();
         }
     }
 
-    public string FilterSearchQuery
+    /// <summary>
+    ///     Gets or sets the filter query used to filter the available extensions.
+    /// </summary>
+    public string ExtensionQuery
     {
-        get => _filterSearchQuery;
+        get => _extensionQuery;
         set
         {
-            _filterSearchQuery = value;
+            if (_extensionQuery == value) return;
+
+            _extensionQuery = value;
             OnPropertyChanged();
-            _collectionViewSource.View.Refresh();
+            _filteredCollectionViewSource.View.Refresh();
         }
     }
 
-    public ICollectionView FilteredSearchExtensions => _collectionViewSource.View;
-
-    public bool IsLimitMaximumFileSizeEnabled
+    /// <summary>
+    ///     Gets or sets a value indicating whether the search should limit the file size.
+    /// </summary>
+    public bool LimitFileSize
     {
-        get => _isLimitMaximumFileSizeEnabled;
+        get => _limitFileSize;
         set
         {
-            _isLimitMaximumFileSizeEnabled = value;
-            OnPropertyChanged();
-        }
-    }
+            if (_limitFileSize == value) return;
 
-    public int MaximumFileSizeInMegaBytes
-    {
-        get => _maximumFileSizeInMegaBytes;
-        set
-        {
-            _maximumFileSizeInMegaBytes = Math.Min(Math.Max(0, value), 1024);
-            OnPropertyChanged();
-        }
-    }
-
-    public ObservableCollection<string> FoundProfiles
-    {
-        get => _foundProfiles;
-        set
-        {
-            _foundProfiles = value;
+            _limitFileSize = value;
+            if (value is false) _notificationService.ShowNotification("Life is short, don't disable limits!");
             OnPropertyChanged();
         }
     }
 
-    public bool UseExtensions
+    /// <summary>
+    ///     Gets or sets the maximum file size in megabytes allowed during the search.
+    /// </summary>
+    public int MaxFileSizeInMb
     {
-        get => _useExtensions;
+        get => _maxFileSizeInMb;
         set
         {
-            _useExtensions = value;
+            if (_maxFileSizeInMb == value) return;
+
+            _maxFileSizeInMb = Math.Min(Math.Max(0, value), 1024);
+            if (value > 5) _notificationService.ShowNotification("Size matters, limit it wisely!");
             OnPropertyChanged();
         }
     }
 
-    public RelayCommand CancelSearchCommand { get; }
+    /// <summary>
+    ///     Gets or sets a value indicating whether the search should use only selected file extensions.
+    /// </summary>
+    public bool UseSelectedExtensions
+    {
+        get => _useSelectedExtensions;
+        set
+        {
+            if (_useSelectedExtensions == value) return;
 
+            _useSelectedExtensions = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    ///     Gets the command to run the scan asynchronously.
+    /// </summary>
+    public AsyncRelayCommand RunScanCommand { get; }
+
+    /// <summary>
+    ///     Gets the command to cancel the ongoing scan.
+    /// </summary>
+    public RelayCommand CancelScanCommand { get; }
+
+    /// <summary>
+    ///     Gets the command to select all file extensions for the scan.
+    /// </summary>
+    public RelayCommand SelectAllSearchExtensionsCommand { get; }
+
+    /// <summary>
+    ///     Gets the command to reset all file extensions for the scan.
+    /// </summary>
+    public RelayCommand ResetAllSearchExtensionsCommand { get; }
+
+    /// <summary>
+    ///     Gets the command to decrease the maximum file size allowed during the search.
+    /// </summary>
+    public RelayCommand DecreaseMaximumFileSizeCommand { get; }
+
+    /// <summary>
+    ///     Gets the command to increase the maximum file size allowed during the search.
+    /// </summary>
+    public RelayCommand IncreaseMaximumFileSizeCommand { get; }
+
+    /// <summary>
+    ///     Gets the command to open the specified file path in Explorer.
+    /// </summary>
+    public RelayCommand<string> OpenInExplorerCommand { get; }
+
+    /// <summary>
+    ///     Opens the file explorer and selects the file at the given path.
+    /// </summary>
+    /// <param name="path">The path of the file or folder to select.</param>
     private static void OpenInExplorer(string path)
     {
-        Process.Start("explorer.exe", $"/select,\"{path}\"");
+        var processStartInfo = new ProcessStartInfo("explorer.exe", $"/select,\"{path}\"")
+        {
+            UseShellExecute = true
+        };
+        using var process = Process.Start(processStartInfo);
     }
 
-    private async Task RunScan()
+    /// <summary>
+    ///     Starts a scanning process asynchronously with the given parameters.
+    /// </summary>
+    private async Task RunScanAsync()
     {
-        if (ScanQuery.All(char.IsDigit) is false || SteamIDValidator.IsSteamID64(ScanQuery) is false)
+        if (SteamIDValidator.IsSteamID64(ScanQuery) is false)
         {
+            _notificationService.ShowNotification("This doesn't look like a SteamID64, please try again.");
             ScanQuery = string.Empty;
             return;
         }
 
+        _isScanning = true;
         var start = Stopwatch.GetTimestamp();
-        var extensions = _useExtensions ? GetSelectedExtensions() : Array.Empty<string>();
-        var size = _isLimitMaximumFileSizeEnabled ? ByteConverter.ConvertFromMegabytes(_maximumFileSizeInMegaBytes) : 0;
+
+        var extensions = _useSelectedExtensions ? GetSelectedExtensions() : Array.Empty<string>();
+        var size = _limitFileSize ? ByteConverter.ConvertFromMegabytes(_maxFileSizeInMb) : 0;
         var steamID64 = new SteamID64(long.Parse(ScanQuery));
+        var scanningService = _serviceProvider.GetRequiredService<IScanningService>();
+
         try
         {
-            _isRunning = true;
-            var result = await _scanningService.StartScanning(steamID64, _isLimitMaximumFileSizeEnabled, size,
-                _useExtensions,
-                _cancellationTokenSource.Token, extensions);
-            FoundProfiles = new ObservableCollection<string>(result);
+            _notificationService.ShowNotification("Keep your eyes open, scanning starts now!");
+
+            var result = await scanningService.StartScanning(steamID64, _limitFileSize, size, _useSelectedExtensions,
+                _cancellationTokenSource.Token, extensions).ConfigureAwait(false);
+            MatchingFiles = new ObservableCollection<string>(result.GetResultSortedByLength());
+
             _notificationService.ShowNotification(
-                $"Elapsed {Stopwatch.GetElapsedTime(start).TotalSeconds} sec, scanned {_scanningService.ScannedFileCount} out of {_scanningService.TotalFileCount} files!",
-                NotificationLevel.Common);
-            _isRunning = false;
+                $"We're done scanning! It took {Stopwatch.GetElapsedTime(start).TotalSeconds:F1} seconds to scan {result.TotalScannedFiles} out of {result.TotalFiles} files!");
         }
         catch (TaskCanceledException)
         {
-            _notificationService.ShowNotification("Search was canceled!", NotificationLevel.Common);
-            _isRunning = false;
-            GC.Collect();
+            _notificationService.ShowNotification("Scanning has been cancelled.");
+        }
+        finally
+        {
+            _isScanning = false;
         }
     }
 
-    private void CancelSearch()
+    /// <summary>
+    ///     Cancels the current scanning process, if there is one.
+    /// </summary>
+    private void CancelScan()
     {
-        if (_isRunning is false)
+        if (_isScanning is false)
         {
-            _notificationService.ShowNotification("There's no running scans", NotificationLevel.Common);
+            _notificationService.ShowNotification("Nothing to cancel - there are no active scanning processes.");
             return;
         }
 
         _cancellationTokenSource?.Cancel();
         _cancellationTokenSource = new CancellationTokenSource();
-        _notificationService.ShowNotification("Attempt to cancel search", NotificationLevel.Common);
+        _notificationService.ShowNotification("Cancelling scan. Please wait...");
     }
 
+    /// <summary>
+    ///     Returns an array of file extensions that have been selected for scanning.
+    /// </summary>
+    /// <returns>An array of selected file extensions in the format "*.[extension]".</returns>
     private string[] GetSelectedExtensions()
     {
-        return (from extension in _searchExtensions where extension.Selected select "*" + extension.Extension)
+        return (from extension in _availableExtensions where extension.Selected select "*" + extension.Extension)
             .ToArray();
     }
 
+    /// <summary>
+    ///     Changes the selected state of all available extensions to the given state.
+    /// </summary>
     private void ChangeSelected(bool check)
     {
-        foreach (var item in _searchExtensions.Where(x => x.Selected == !check).ToList()) item.Selected = check;
-        _collectionViewSource.View.Refresh();
+        foreach (var item in _availableExtensions.Where(x => x.Selected != check).ToList()) item.Selected = check;
+        FilteredCollectionViewSource.Refresh();
     }
 
-    public async Task InitializeAsync()
+    /// <summary>
+    ///     Loads the search extensions asynchronously and updates the collection view source.
+    /// </summary>
+    private async void LoadSearchExtensionsAsync()
     {
-        await LoadSearchExtensionsAsync();
-    }
-
-    private async Task LoadSearchExtensionsAsync()
-    {
-        var hashSet = await _steamClient.GetExtensionsAsync();
+        var hashSet = await _steamClient.GetFileExtensionsAsync();
         var searchExtensions = hashSet.Where(x => string.IsNullOrWhiteSpace(x) is false)
             .Select(x => new SearchExtension(x)).ToList();
         var observableSearchExtensions =
             new ObservableCollection<SearchExtension>(searchExtensions.OrderBy(x => x.Extension.Length));
-        _searchExtensions = observableSearchExtensions;
+        _availableExtensions = observableSearchExtensions;
         await UpdateCollectionViewSource();
     }
 
+    /// <summary>
+    ///     Updates the collection view source with the available search extensions.
+    /// </summary>
     private async Task UpdateCollectionViewSource()
     {
         await Application.Current.Dispatcher.InvokeAsync(() =>
         {
-            _collectionViewSource.Source = _searchExtensions;
-            _collectionViewSource.Filter += FilterSearchExtensions;
-            OnPropertyChanged(nameof(FilteredSearchExtensions));
+            _filteredCollectionViewSource.Source = _availableExtensions;
+            _filteredCollectionViewSource.Filter += FilterSearchExtensions;
+            OnPropertyChanged(nameof(FilteredCollectionViewSource));
         });
     }
 
+    /// <summary>
+    ///     Filters the search extensions based on a query string.
+    /// </summary>
     private void FilterSearchExtensions(object sender, FilterEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(FilterSearchQuery))
+        if (string.IsNullOrWhiteSpace(ExtensionQuery))
         {
             e.Accepted = true;
             return;
         }
 
         if (e.Item is SearchExtension searchExtension &&
-            searchExtension.Extension.Contains(FilterSearchQuery, StringComparison.OrdinalIgnoreCase))
+            searchExtension.Extension.Contains(ExtensionQuery, StringComparison.OrdinalIgnoreCase))
         {
             e.Accepted = true;
             return;

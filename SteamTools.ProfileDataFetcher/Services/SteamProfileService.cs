@@ -73,12 +73,12 @@ public class SteamProfileService : ISteamProfileService
     private async Task<SteamID64> GetSteamID64FromCustomUrlAsync(Match match)
     {
         var response = await _steamApiClient.ResolveVanityUrlAsync(match.Groups[1].Value);
-        return long.TryParse(response.SteamID, out var id) ? new SteamID64(id) : null;
+        return long.TryParse(response?.SteamID, out var id) ? new SteamID64(id) : null;
     }
 
     private async Task<SteamID64> GetSteamID64FromUnknownAsync(string input)
     {
         var response = await _steamApiClient.ResolveVanityUrlAsync(input);
-        return long.TryParse(response.SteamID, out var id) ? new SteamID64(id) : null;
+        return long.TryParse(response?.SteamID, out var id) ? new SteamID64(id) : null;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using SteamTools.Core.Models;
+using SteamTools.Core.Models.Steam;
 using SteamTools.LocalProfileScanner.Models.ProfileData;
 
 namespace SteamTools.LocalProfileScanner.Models.DataScanner;
@@ -55,6 +56,6 @@ public class AppworkshopScanner : IScanner
     {
         var appID = int.Parse(match.Groups[1].Value);
         var steam32 = new SteamID32(uint.Parse(match.Groups[2].Value));
-        return new AppworkshopData(appID, steam32);
+        return new AppworkshopData(appID, steam32.ToSteamID64(), steam32);
     }
 }

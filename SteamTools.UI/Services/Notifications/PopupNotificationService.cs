@@ -1,5 +1,4 @@
 ﻿using System;
-using SteamTools.Core.Enums;
 using SteamTools.Core.Models;
 using SteamTools.Core.Services;
 
@@ -9,8 +8,8 @@ public class PopupNotificationService : INotificationService
 {
     public event EventHandler<NotificationMessage> NotificationReceived;
 
-    public void ShowNotification(string message, NotificationLevel notificationLevel)
+    public void ShowNotification(string message)
     {
-        NotificationReceived?.Invoke(this, new NotificationMessage(message, notificationLevel));
+        NotificationReceived?.Invoke(this, new NotificationMessage(message, DateTime.Now));
     }
 }

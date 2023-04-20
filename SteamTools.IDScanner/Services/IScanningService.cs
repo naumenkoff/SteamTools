@@ -1,12 +1,11 @@
 ﻿using SteamTools.Core.Models;
+using SteamTools.IDScanner.Models;
 
 namespace SteamTools.IDScanner.Services;
 
 public interface IScanningService
 {
-    int TotalFileCount { get; }
-    int ScannedFileCount { get; }
-
-    Task<List<string>> StartScanning(SteamID64 steamID64, bool maximumFileSizeLimit, long maximumFileSize,
-        bool hasExtensions, CancellationToken cancellationToken, params string[] extensions);
+    Task<IScanningResult> StartScanning(SteamID64 steamID64, bool limitMaximumFileSize,
+        long maximumFileSizeInBytes, bool useSpecifiedExtensions, CancellationToken cancellationToken,
+        params string[] extensions);
 }

@@ -1,14 +1,16 @@
 ﻿using System.Text.RegularExpressions;
-using Microsoft.Win32;
 using SteamTools.Core.Utilities;
 
-namespace SteamTools.Core.Models;
+namespace SteamTools.Core.Models.Steam;
 
 public partial class SteamClient : ISteamClient
 {
-    public SteamClient()
+    public SteamClient(ISteamDirectoryFinder steamDirectoryFinder)
     {
-        var steamDirectory = FindSteamDirectory();
+        var steamDirectory = steamDirectoryFinder.FindSteamDirectory();
+        if (steamDirectoryFinder.IsSteamDirectoryValid(steamDirectory) is false)
+            throw new NotImplementedException();
+
         UserdataDirectory = FileSystemHelper.GetDirectory(steamDirectory.FullName, "userdata");
 
         var steamappsDirectory = GetSteamappsDirectory(steamDirectory);
@@ -24,7 +26,7 @@ public partial class SteamClient : ISteamClient
         ConfigFile = FileSystemHelper.GetFile(configDirectory.FullName, "config.vdf");
     }
 
-    public Task<HashSet<string>> GetExtensionsAsync()
+    public Task<HashSet<string>> GetFileExtensionsAsync()
     {
         var hashSet = new HashSet<string>();
         foreach (var file in SteamLibraries
@@ -48,29 +50,7 @@ public partial class SteamClient : ISteamClient
         return FileSystemHelper.GetDirectory(steamappsDirectory?.FullName, "workshop");
     }
 
-    private static DirectoryInfo FindSteamDirectory()
-    {
-        var registryPath = GetSteamInstallationDirectory();
-        if (IsSteamDirectoryValid(registryPath)) return registryPath;
-        throw new DirectoryNotFoundException("Failed to find the path to 'Steam' directory.");
-    }
-
-    private static DirectoryInfo GetSteamInstallationDirectory()
-    {
-        using var steam = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)
-            .OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam");
-        var path = steam?.GetValue("InstallPath");
-        return FileSystemHelper.GetDirectory(path?.ToString());
-    }
-
-    private static bool IsSteamDirectoryValid(DirectoryInfo directoryInfo)
-    {
-        if (directoryInfo is null) return false;
-        var files = directoryInfo.EnumerateFiles();
-        return files.Any(x => x.Name is "steam.exe");
-    }
-
-    private static IEnumerable<DirectoryInfo> GetSteamLibraries(FileInfo libraryfoldersFile)
+    private IEnumerable<DirectoryInfo> GetSteamLibraries(FileInfo libraryfoldersFile)
     {
         if (libraryfoldersFile is null) return Enumerable.Empty<DirectoryInfo>();
         var fileContent = FileSystemHelper.ReadAllText(libraryfoldersFile);

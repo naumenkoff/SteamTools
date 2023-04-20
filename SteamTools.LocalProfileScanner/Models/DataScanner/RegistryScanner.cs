@@ -11,6 +11,7 @@ public class RegistryScanner : IScanner
         using var registryKey = Registry.CurrentUser.OpenSubKey("Software")?.OpenSubKey("Valve")?.OpenSubKey("Steam")
             ?.OpenSubKey("Users");
         return registryKey?.GetSubKeyNames().Select(user => new SteamID32(uint.Parse(user)))
-            .Select(steamID32 => new RegistryData(steamID32)).ToList() ?? Enumerable.Empty<RegistryData>();
+                   .Select(steamID32 => new RegistryData(steamID32.ToSteamID64(), steamID32)).ToList() ??
+               Enumerable.Empty<RegistryData>();
     }
 }

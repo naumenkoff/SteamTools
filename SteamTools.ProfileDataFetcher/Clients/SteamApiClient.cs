@@ -34,7 +34,7 @@ public class SteamApiClient : ISteamApiClient
 
         var uri = string.Format(ResolveVanityUrl, _apiKey.GetSteamApiKey(), vanityUrl);
         var result = await GetSteamApiResponse<ResolvedVanityUrl>(uri);
-        if (result is null) return new ResolvedVanityUrl();
+        if (result is null) return default;
 
         _cacheService.Cache(vanityUrl, result.Response);
         return result.Response;
@@ -47,9 +47,8 @@ public class SteamApiClient : ISteamApiClient
 
         var uri = string.Format(GetPlayerSummaries, _apiKey.GetSteamApiKey(), steamId64.ID64);
         var result = await GetSteamApiResponse<PlayerSummariesResponse>(uri);
-        if (result is null) return new PlayerSummaries();
-        var player = result.Response.Players.FirstOrDefault();
-        if (player is null) return new PlayerSummaries();
+        var player = result?.Response.Players.FirstOrDefault();
+        if (player is null) return default;
 
         _cacheService.Cache(steamId64, player);
         return player;

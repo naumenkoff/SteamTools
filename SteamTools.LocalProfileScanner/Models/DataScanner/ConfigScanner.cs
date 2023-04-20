@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using SteamTools.Core.Models;
+using SteamTools.Core.Models.Steam;
 using SteamTools.LocalProfileScanner.Models.ProfileData;
 
 namespace SteamTools.LocalProfileScanner.Models.DataScanner;
@@ -26,6 +27,6 @@ public class ConfigScanner : IScanner
     private static ConfigData CreateConfigData(Match match)
     {
         var steam64 = new SteamID64(long.Parse(match.Groups[2].Value));
-        return new ConfigData(match.Groups[1].Value, steam64);
+        return new ConfigData(match.Groups[1].Value, steam64, steam64.ToSteamID32());
     }
 }
