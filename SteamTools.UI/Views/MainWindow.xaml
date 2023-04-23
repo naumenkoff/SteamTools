@@ -6,23 +6,24 @@
         xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels"
         mc:Ignorable="d"
         Title="Main"
-        MinHeight="360"
+        MinHeight="380"
         MinWidth="540"
-        Height="360"
+        Height="380"
         Width="540"
-        ResizeMode="NoResize"
+        ResizeMode="CanResize"
         WindowStyle="None"
-        Background="{StaticResource ApplicationBackgroundColor}"
+        Background="{StaticResource OverallApplicationBackgroundColor}"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
 
     <Window.Resources>
+
         <Style x:Key="LogoTextBlock" TargetType="TextBlock">
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Foreground" Value="{StaticResource TextColor}" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontFamily" Value="{StaticResource Font}" />
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Opacity" Value="0.5" />
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="Foreground" Value="{StaticResource TextColor}" />
             <Style.Triggers>
                 <EventTrigger RoutedEvent="TextBlock.MouseEnter">
                     <BeginStoryboard>
@@ -44,6 +45,7 @@
                 </EventTrigger>
             </Style.Triggers>
         </Style>
+
         <Style x:Key="NotificationTextBlock" TargetType="TextBlock">
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Bottom" />
@@ -56,25 +58,24 @@
                     <DataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation To="1.0" Duration="0:0:1" Storyboard.TargetProperty="Opacity" />
+                                <DoubleAnimation To="1" Duration="0:0:1" Storyboard.TargetProperty="Opacity" />
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>
                     <DataTrigger.ExitActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation To="0.0" Duration="0:0:1" Storyboard.TargetProperty="Opacity" />
+                                <DoubleAnimation To="0" Duration="0:0:1" Storyboard.TargetProperty="Opacity" />
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.ExitActions>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+
         <Style x:Key="ToggButton" TargetType="ToggleButton">
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="#808080" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontFamily" Value="{StaticResource Font}" />
             <Setter Property="Template">
@@ -87,23 +88,39 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
-                <Trigger Property="IsChecked" Value="True">
-                    <Setter Property="Background" Value="{StaticResource ToggleButtonCheckedColor}" />
-                </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource ControlButtonMouseOverColor}" />
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)"
+                                                To="#ff5260" Duration="0:0:0.25" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)"
+                                                To="#808080" Duration="0:0:0.25" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
                 </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="{StaticResource ControlButtonMousePressedColor}" />
+
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="Background" Value="{StaticResource TopPanelActiveButtonColor}" />
+                </Trigger>
+                <Trigger Property="IsChecked" Value="False">
+                    <Setter Property="Background" Value="Transparent" />
                 </Trigger>
             </Style.Triggers>
         </Style>
+
         <Style x:Key="ApplicationStateControlButtons" TargetType="Button">
-            <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontSize" Value="14" />
             <Setter Property="FontFamily" Value="{StaticResource Font}" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -116,15 +133,8 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource ControlButtonMouseOverColor}" />
-                </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="{StaticResource ControlButtonMousePressedColor}" />
-                </Trigger>
-            </Style.Triggers>
         </Style>
+
     </Window.Resources>
 
     <Grid>
@@ -134,15 +144,18 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="{StaticResource TopPanelColor}">
+        <Grid Grid.Row="0" Background="#292b33">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="SteamTools"
-                       Style="{StaticResource LogoTextBlock}" Padding="6 0 0 2" />
+            <Border>
+                <TextBlock HorizontalAlignment="Left" Text="SteamTools"
+                           Margin="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border},Converter={StaticResource DistanceToMarginConverter}, ConverterParameter=Left}"
+                           Style="{StaticResource LogoTextBlock}" />
+            </Border>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
 
@@ -176,7 +189,6 @@
             <Grid.InputBindings>
                 <MouseBinding MouseAction="LeftClick" Command="{Binding MoveApplicationCommand}" />
             </Grid.InputBindings>
-
         </Grid>
 
         <ContentControl Grid.Row="1" Content="{Binding Navigation.CurrentView}" />

@@ -6,10 +6,10 @@
              xmlns:converters="clr-namespace:SteamTools.UI.Converters">
     <Application.Resources>
         <ResourceDictionary>
-            <converters:StringNullOrEmptyToVisibilityConverter x:Key="StringIsNullOrEmptyToVisibleConverter" />
             <converters:ProfileImageConverter x:Key="ProfileImageConverter" />
             <converters:HeightToWidthConverter x:Key="HeightToWidthConverter" />
             <converters:HeightToMarginConverter x:Key="HeightToMarginConverter" />
+            <converters:DistanceToMarginConverter x:Key="DistanceToMarginConverter" />
             <DataTemplate DataType="{x:Type TypeName=viewModels:MainWindowViewModel}">
                 <views:MainWindow />
             </DataTemplate>
@@ -24,7 +24,8 @@
             </DataTemplate>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resources/Colors.xaml" />
-                <ResourceDictionary Source="Resources/ProfileDataFetcherResources/SteamIDInputTextBox.xaml" />
+                <ResourceDictionary Source="Resources/TextBoxWithPlaceholder.xaml" />
+                <ResourceDictionary Source="Resources/ThinScrollBar.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

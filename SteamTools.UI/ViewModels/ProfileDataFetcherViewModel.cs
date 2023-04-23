@@ -21,6 +21,8 @@ public class ProfileDataFetcherViewModel : ObservableObject
     private SteamProfile _currentSteamProfile;
     private string _enteredText;
 
+    private bool _showGrid;
+
     public ProfileDataFetcherViewModel(IServiceProvider serviceProvider, INotificationService notificationService)
     {
         _serviceProvider = serviceProvider;
@@ -50,6 +52,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
         get => _currentSteamProfile;
         private set
         {
+            ShowGrid = string.IsNullOrWhiteSpace(value.SteamID) is false;
             _currentSteamProfile = value;
             OnPropertyChanged();
         }
@@ -63,6 +66,17 @@ public class ProfileDataFetcherViewModel : ObservableObject
             if (_enteredText == value) return;
 
             _enteredText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowGrid
+    {
+        get => _showGrid;
+        set
+        {
+            if (_showGrid == value) return;
+            _showGrid = value;
             OnPropertyChanged();
         }
     }
@@ -124,14 +138,13 @@ public class ProfileDataFetcherViewModel : ObservableObject
 
     private bool SelectProfile(SteamProfile steamProfile)
     {
-        if (steamProfile.IsEmpty())
+        if (steamProfile.IsEmpty)
         {
             CurrentSteamProfile = SteamProfile.Empty;
             return false;
         }
 
         if (SelectExistingProfile(steamProfile) is false) SelectNewProfile(steamProfile);
-
         return true;
     }
 

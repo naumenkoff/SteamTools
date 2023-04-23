@@ -1,0 +1,65 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:models="clr-namespace:SteamTools.UI.Models"
+                    xmlns:converters="clr-namespace:SteamTools.UI.Converters">
+    <converters:StringIsNullOrEmptyConverter x:Key="StringIsNullOrEmptyConverter" />
+    <Style TargetType="{x:Type models:RoundTextBox}" x:Key="TextBoxWithPlaceholder">
+        <Setter Property="FontFamily" Value="{StaticResource Font}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="Padding" Value="20 0 20 0" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Foreground" Value="#FFFFFF" />
+        <Setter Property="Background" Value="#292b33" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="models:RoundTextBox">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius }"
+                            ClipToBounds="True">
+                        <Grid>
+                            <!-- Margin.Left 1 because Grid has a gap of 1 -->
+                            <TextBlock Margin="1 0 0 0"
+                                       Text="{TemplateBinding Placeholder}"
+                                       Foreground="#94a1b2"
+                                       FontSize="{TemplateBinding FontSize}"
+                                       FontFamily="{TemplateBinding FontFamily}"
+                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                       TextAlignment="{TemplateBinding TextAlignment}"
+                                       Padding="{TemplateBinding Padding}">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Text, Converter={StaticResource StringIsNullOrEmptyConverter}}"
+                                                Value="True">
+                                                <DataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1"
+                                                                             Duration="0:0:0.25" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.EnterActions>
+                                                <DataTrigger.ExitActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0"
+                                                                             Duration="0:0:0.1" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.ExitActions>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <ScrollViewer x:Name="PART_ContentHost" HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Stretch" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

@@ -30,7 +30,7 @@ public partial class ProfileScannerService
     [GeneratedRegex(@"""(\w{17})""\s*\{(?:\s*""([^""]+)""\s*""([^""]+)""\s*)+\s*\}")]
     private static partial Regex LoginusersPattern();
 
-    public async Task Execute()
+    public async Task ExecuteAsync()
     {
         await Task.Run(() =>
         {

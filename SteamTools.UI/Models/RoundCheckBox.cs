@@ -5,12 +5,21 @@ namespace SteamTools.UI.Models;
 
 public class RoundCheckBox : CheckBox
 {
-    public static readonly DependencyProperty TextPositionProperty =
-        DependencyProperty.Register(nameof(TextPosition), typeof(TextAlignment), typeof(RoundCheckBox));
+    public static readonly DependencyProperty TextAlignmentProperty =
+        DependencyProperty.Register(nameof(TextAlignment), typeof(TextAlignment), typeof(RoundCheckBox));
 
-    public TextAlignment TextPosition
+    public static readonly DependencyProperty CornerRadiusProperty =
+        DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(RoundCheckBox));
+
+    public TextAlignment TextAlignment
     {
-        get => (TextAlignment)GetValue(TextPositionProperty);
-        set => SetValue(TextPositionProperty, value);
+        get => (TextAlignment)GetValue(TextAlignmentProperty);
+        set => SetValue(TextAlignmentProperty, value);
+    }
+
+    public CornerRadius CornerRadius
+    {
+        get => (CornerRadius)GetValue(CornerRadiusProperty);
+        set => SetValue(CornerRadiusProperty, value);
     }
 }

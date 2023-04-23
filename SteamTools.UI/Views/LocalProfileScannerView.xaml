@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DesignHeight="335"
              d:DesignWidth="540"
-             Background="{StaticResource ApplicationBackgroundColor}"
+             Background="{StaticResource OverallApplicationBackgroundColor}"
              d:DataContext="{d:DesignInstance viewModels:LocalProfileScannerViewModel}">
     <Grid>
         <ListView ItemsSource="{Binding Path=LocalProfiles}" DisplayMemberPath="Steam64" />

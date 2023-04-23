@@ -23,7 +23,7 @@ public class LocalProfileScannerViewModel : ObservableObject
 
     private async void LoadSearchExtensionsAsync()
     {
-        await _scannerService.Execute();
+        await _scannerService.ExecuteAsync();
         foreach (var account in _localProfileStorage.Accounts) LocalProfiles.Add(account);
     }
 }
