@@ -4,8 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:behaviors="clr-namespace:SteamTools.UI.Behaviors"
         mc:Ignorable="d"
-        Title="Main"
+        Title="SteamTools"
         MinHeight="380"
         MinWidth="540"
         Height="380"
@@ -13,8 +15,12 @@
         Background="{StaticResource OverallApplicationBackgroundColor}"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
 
+    <b:Interaction.Behaviors>
+        <behaviors:WindowBehavior />
+    </b:Interaction.Behaviors>
+
     <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="0" CaptionHeight="0" ResizeBorderThickness="5" NonClientFrameEdges="None" />
+        <WindowChrome GlassFrameThickness="-1" CaptionHeight="0" ResizeBorderThickness="5" NonClientFrameEdges="None" />
     </WindowChrome.WindowChrome>
 
     <Window.Resources>
@@ -148,6 +154,9 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Background="#292b33">
+            <b:Interaction.Behaviors>
+                <behaviors:MoveWindowBehavior />
+            </b:Interaction.Behaviors>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -175,24 +184,29 @@
 
                 <Button Style="{StaticResource ApplicationStateControlButtons}"
                         Width="50"
-                        Content="—"
-                        Command="{Binding MinimizeApplicationCommand}" />
+                        Content="—">
+                    <b:Interaction.Behaviors>
+                        <behaviors:MinimizeWindowBehavior />
+                    </b:Interaction.Behaviors>
+                </Button>
 
                 <Button Style="{StaticResource ApplicationStateControlButtons}"
                         Width="50"
-                        Content="M"
-                        Command="{Binding MaximizeApplicationCommand}" />
+                        Content="M">
+                    <b:Interaction.Behaviors>
+                        <behaviors:MaximizeWindowBehavior />
+                    </b:Interaction.Behaviors>
+                </Button>
 
                 <Button Style="{StaticResource ApplicationStateControlButtons}"
                         Width="50"
-                        Content="✕"
-                        Command="{Binding ShutdownApplicationCommand}" />
+                        Content="✕">
+                    <b:Interaction.Behaviors>
+                        <behaviors:CloseWindowBehavior />
+                    </b:Interaction.Behaviors>
+                </Button>
 
             </StackPanel>
-
-            <Grid.InputBindings>
-                <MouseBinding MouseAction="LeftClick" Command="{Binding MoveApplicationCommand}" />
-            </Grid.InputBindings>
 
         </Grid>
 

@@ -29,10 +29,10 @@
                         <Grid Background="Transparent">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition
-                                    Width="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource HeightToWidthConverter}}" />
+                                    Width="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}}" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition
-                                    Width="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource HeightToWidthConverter}}" />
+                                    Width="{Binding ActualHeight, RelativeSource={RelativeSource TemplatedParent}}" />
                             </Grid.ColumnDefinitions>
 
                             <Border CornerRadius="{TemplateBinding CornerRadius}" ClipToBounds="True"

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Windows;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using SteamTools.Core.Models;
 using SteamTools.Core.Services;
 using SteamTools.UI.Services.Navigation;
@@ -17,11 +15,6 @@ public class MainWindowViewModel : ObservableObject
     public MainWindowViewModel(INavigationService navigationService, INotificationService notificationService)
     {
         Navigation = navigationService;
-
-        MoveApplicationCommand = new RelayCommand(MoveApplicationWindow);
-        ShutdownApplicationCommand = new RelayCommand(ShutdownApplication);
-        MaximizeApplicationCommand = new RelayCommand(MaximizeApplication);
-        MinimizeApplicationCommand = new RelayCommand(MinimizeApplication);
 
         var timer = new DispatcherTimer();
         timer.Interval = TimeSpan.FromSeconds(1);
@@ -96,10 +89,6 @@ public class MainWindowViewModel : ObservableObject
     }
 
     public INavigationService Navigation { get; }
-    public RelayCommand ShutdownApplicationCommand { get; }
-    public RelayCommand MoveApplicationCommand { get; }
-    public RelayCommand MinimizeApplicationCommand { get; }
-    public RelayCommand MaximizeApplicationCommand { get; }
 
     private void OnNotificationReceived(object sender, NotificationMessage newNotification)
     {
@@ -113,30 +102,5 @@ public class MainWindowViewModel : ObservableObject
         var timeSinceLastNotification = DateTime.Now - lastNotificationReceivedAt;
         var fadeOutTime = TimeSpan.FromSeconds(3);
         if (timeSinceLastNotification >= fadeOutTime) ShowNotification = false;
-    }
-
-    private static void MinimizeApplication()
-    {
-        Application.Current.MainWindow!.WindowState = WindowState.Minimized;
-    }
-
-    private static void ShutdownApplication()
-    {
-        Application.Current.Shutdown();
-    }
-
-    private static void MaximizeApplication()
-    {
-        Application.Current.MainWindow!.WindowState =
-            Application.Current.MainWindow.WindowState == WindowState.Maximized
-                ? WindowState.Normal
-                : WindowState.Maximized;
-    }
-
-    private static void MoveApplicationWindow()
-    {
-        if (Application.Current.MainWindow!.WindowState == WindowState.Maximized) MaximizeApplication();
-
-        Application.Current.MainWindow!.DragMove();
     }
 }

@@ -7,9 +7,6 @@
     <Application.Resources>
         <ResourceDictionary>
             <converters:ProfileImageConverter x:Key="ProfileImageConverter" />
-            <converters:HeightToWidthConverter x:Key="HeightToWidthConverter" />
-            <converters:HeightToMarginConverter x:Key="HeightToMarginConverter" />
-            <converters:DistanceToMarginConverter x:Key="DistanceToMarginConverter" />
             <DataTemplate DataType="{x:Type TypeName=viewModels:MainWindowViewModel}">
                 <views:MainWindow />
             </DataTemplate>
