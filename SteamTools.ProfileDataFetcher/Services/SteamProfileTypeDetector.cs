@@ -17,7 +17,7 @@ public class SteamProfileTypeDetector : ISteamProfileTypeDetector
 
     public Match GetCachedMatchBySteamProfileType(SteamProfileType steamProfileType)
     {
-        return _matches.TryGetValue(steamProfileType, out var match) ? match : null;
+        return _matches.TryGetValue(steamProfileType, out var match) ? match : default;
     }
 
     public SteamProfileType DetectSteamProfileType(string input)

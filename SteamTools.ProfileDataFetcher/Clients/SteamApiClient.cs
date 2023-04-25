@@ -33,7 +33,7 @@ public class SteamApiClient : ISteamApiClient
         if (cachedResult is not null) return cachedResult;
 
         var uri = string.Format(ResolveVanityUrl, _apiKey.GetSteamApiKey(), vanityUrl);
-        var result = await GetSteamApiResponse<ResolvedVanityUrl>(uri);
+        var result = await GetSteamApiResponseAsync<ResolvedVanityUrl>(uri);
         if (result is null) return default;
 
         _cacheService.Cache(vanityUrl, result.Response);
@@ -45,8 +45,8 @@ public class SteamApiClient : ISteamApiClient
         var cachedResult = _cacheService.GetFromCache<PlayerSummaries, SteamID64>(steamId64);
         if (cachedResult is not null) return cachedResult;
 
-        var uri = string.Format(GetPlayerSummaries, _apiKey.GetSteamApiKey(), steamId64.ID64);
-        var result = await GetSteamApiResponse<PlayerSummariesResponse>(uri);
+        var uri = string.Format(GetPlayerSummaries, _apiKey.GetSteamApiKey(), steamId64.AsLong);
+        var result = await GetSteamApiResponseAsync<PlayerSummariesResponse>(uri);
         var player = result?.Response.Players.FirstOrDefault();
         if (player is null) return default;
 
@@ -54,13 +54,13 @@ public class SteamApiClient : ISteamApiClient
         return player;
     }
 
-    private async ValueTask<GenericSteamResponse<T>> GetSteamApiResponse<T>(string uri)
+    private async ValueTask<GenericSteamResponse<T>> GetSteamApiResponseAsync<T>(string uri)
     {
         try
         {
             using var response = await _httpClient.GetAsync(uri);
             response.EnsureSuccessStatusCode();
-            return await DeserializeSteamApiResponse<T>(response);
+            return await DeserializeSteamApiResponseAsync<T>(response);
         }
         catch (HttpRequestException)
         {
@@ -72,7 +72,7 @@ public class SteamApiClient : ISteamApiClient
         }
     }
 
-    private static async ValueTask<GenericSteamResponse<T>> DeserializeSteamApiResponse<T>(
+    private static async ValueTask<GenericSteamResponse<T>> DeserializeSteamApiResponseAsync<T>(
         HttpResponseMessage httpResponseMessage)
     {
         var document = await httpResponseMessage.Content.ReadAsStringAsync();

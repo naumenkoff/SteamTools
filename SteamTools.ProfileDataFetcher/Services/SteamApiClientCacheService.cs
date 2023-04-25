@@ -16,11 +16,11 @@ public class SteamApiClientCacheService : ISteamApiClientCacheService
 
     public void Cache<T1, T2>(T1 key, T2 response)
     {
-        switch (response)
+        switch (response) // skipcq: CS-R1116
         {
             case PlayerSummaries playerSummaries when key is SteamID64 steamID64:
             {
-                CachedPlayerSummaries.TryAdd(steamID64.ID64, playerSummaries);
+                CachedPlayerSummaries.TryAdd(steamID64.AsLong, playerSummaries);
                 break;
             }
             case ResolvedVanityUrl resolvedVanityUrl when key is string vanityUrl:
@@ -35,7 +35,7 @@ public class SteamApiClientCacheService : ISteamApiClientCacheService
     {
         object result = key switch
         {
-            SteamID64 steamID64 when CachedPlayerSummaries.TryGetValue(steamID64.ID64, out var playerSummaries) =>
+            SteamID64 steamID64 when CachedPlayerSummaries.TryGetValue(steamID64.AsLong, out var playerSummaries) =>
                 playerSummaries,
             string vanityUrl when CachedResolvedVanityUrls.TryGetValue(vanityUrl, out var resolvedVanityUrl) =>
                 resolvedVanityUrl,

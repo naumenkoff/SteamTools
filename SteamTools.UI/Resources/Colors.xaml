@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
     <Brush x:Key="TopPanelPressedButtonColor">#252525</Brush>
     <Brush x:Key="OverallApplicationBackgroundColor">#1e2025</Brush>
     <Brush x:Key="TextBoxColor">#16181c</Brush>
@@ -14,24 +15,5 @@
     <Brush x:Key="HighlightColor">#3D3D3D</Brush>
     <Brush x:Key="TextColor">#FFFFFF</Brush>
     <Brush x:Key="BackgroundColor">#333333</Brush>
-
-    <!-- 
-        Нужны следующие цвета:
-        MainWindowView:
-        +    1. Всего приложения
-        +    2. Верхнего меню
-        -    3. При наведении и нажатии на кнопки верхнего меню
-        ProfileDataFetcherView:
-            1. Input TextBox
-            2. При наведении и нажатии на Lookup Button
-            3. Рамки аватарки профиля
-            4. Границы и фона пары имя-значение SteamID
-            5. При наведении на значение из пары имя-значение SteamID
-        IDScannerView:
-            1. Цвет CheckBox'ов, при IsChecked = true и false.
-            2. При наведении на CheckBox'ы.
-            3. При наведении на все кнопки, при нажатии на все кнопки
-            4. Цвета элементов (зебра)
-    -->
 
 </ResourceDictionary>

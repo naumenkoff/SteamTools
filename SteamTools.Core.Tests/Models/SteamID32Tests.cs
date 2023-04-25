@@ -51,6 +51,6 @@ public class SteamID32Tests
     {
         var steamID64 = new SteamID64(id64);
         var steamID32 = new SteamID32(steamID64);
-        return steamID32.ID32;
+        return steamID32.AsUInt;
     }
 }

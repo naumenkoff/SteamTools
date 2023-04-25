@@ -17,7 +17,7 @@ public class ScanningService : IScanningService
         _scanningResult = scanningResult;
     }
 
-    public async Task<IScanningResult> StartScanning(SteamID64 steamID64, bool limitMaximumFileSize,
+    public async Task<IScanningResult> StartScanningAsync(SteamID64 steamID64, bool limitMaximumFileSize,
         long maximumFileSizeInBytes, bool useSpecifiedExtensions, CancellationToken cancellationToken,
         params string[] extensions)
     {
@@ -30,11 +30,11 @@ public class ScanningService : IScanningService
             MaxDegreeOfParallelism = Math.Max(cores, 1)
         };
         _fileScanner = new StreamFileScanner(_scanningResult, steamID64, limitMaximumFileSize, maximumFileSizeInBytes);
-        await Scan(useSpecifiedExtensions, extensions);
+        await ScanAsync(useSpecifiedExtensions, extensions);
         return _scanningResult;
     }
 
-    private async Task Scan(bool useSpecifiedExtensions, string[] extensions)
+    private async Task ScanAsync(bool useSpecifiedExtensions, string[] extensions)
     {
         await Parallel.ForEachAsync(_steamClient.SteamLibraries, _parallelOptions, (steamLibrary, _) =>
         {

@@ -22,6 +22,7 @@ namespace SteamTools.UI.ViewModels;
 
 public class IDScannerViewModel : ObservableObject
 {
+    private readonly string[] _defaultExtensions = { ".acf", ".vdf", ".txt", ".json" };
     private readonly CollectionViewSource _filteredCollectionViewSource;
     private readonly INotificationService _notificationService;
     private readonly IServiceProvider _serviceProvider;
@@ -52,6 +53,7 @@ public class IDScannerViewModel : ObservableObject
         IncreaseMaximumFileSizeCommand = new RelayCommand(() => MaxFileSizeInMb++);
         SelectAllSearchExtensionsCommand = new RelayCommand(() => ChangeSelected(true));
         ResetAllSearchExtensionsCommand = new RelayCommand(() => ChangeSelected(false));
+        SelectDefaultExtensionsCommand = new RelayCommand(SelectDefaultExtensions);
         RunScanCommand = new AsyncRelayCommand(RunScanAsync);
         CancelScanCommand = new RelayCommand(CancelScan);
         OpenInExplorerCommand = new RelayCommand<string>(OpenInExplorer);
@@ -189,6 +191,8 @@ public class IDScannerViewModel : ObservableObject
     /// </summary>
     public RelayCommand<string> OpenInExplorerCommand { get; }
 
+    public RelayCommand SelectDefaultExtensionsCommand { get; }
+
     /// <summary>
     ///     Opens the file explorer and selects the file at the given path.
     /// </summary>
@@ -226,7 +230,8 @@ public class IDScannerViewModel : ObservableObject
         {
             _notificationService.ShowNotification("Keep your eyes open, scanning starts now!");
 
-            var result = await scanningService.StartScanning(steamID64, _limitFileSize, size, _useSelectedExtensions,
+            var result = await scanningService.StartScanningAsync(steamID64, _limitFileSize, size,
+                _useSelectedExtensions,
                 _cancellationTokenSource.Token, extensions).ConfigureAwait(false);
             MatchingFiles = new ObservableCollection<string>(result.GetResultSortedByLength());
 
@@ -281,7 +286,7 @@ public class IDScannerViewModel : ObservableObject
     /// <summary>
     ///     Loads the search extensions asynchronously and updates the collection view source.
     /// </summary>
-    private async void LoadSearchExtensionsAsync()
+    private async void LoadSearchExtensionsAsync() // skipcq: CS-R1005
     {
         var hashSet = await _steamClient.GetFileExtensionsAsync();
         var searchExtensions = hashSet.Where(x => string.IsNullOrWhiteSpace(x) is false)
@@ -289,13 +294,21 @@ public class IDScannerViewModel : ObservableObject
         var observableSearchExtensions =
             new ObservableCollection<SearchExtension>(searchExtensions.OrderBy(x => x.Extension.Length));
         _availableExtensions = observableSearchExtensions;
-        await UpdateCollectionViewSource();
+        await UpdateCollectionViewSourceAsync();
+    }
+
+    private void SelectDefaultExtensions()
+    {
+        foreach (var item in _availableExtensions.Where(item => _defaultExtensions.Contains(item.Extension)).ToList())
+            item.Selected = true;
+
+        FilteredCollectionViewSource.Refresh();
     }
 
     /// <summary>
     ///     Updates the collection view source with the available search extensions.
     /// </summary>
-    private async Task UpdateCollectionViewSource()
+    private async Task UpdateCollectionViewSourceAsync()
     {
         await Application.Current.Dispatcher.InvokeAsync(() =>
         {

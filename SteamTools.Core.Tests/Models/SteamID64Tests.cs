@@ -10,7 +10,7 @@ public class SteamID64Tests
     public uint ToSteamID32_ShouldReturnCorrectSteamID32(long steamID64)
     {
         var steamID = new SteamID64(steamID64);
-        return steamID.ToSteamID32().ID32;
+        return steamID.ToSteamID32().AsUInt;
     }
 
     [Test]

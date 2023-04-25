@@ -230,7 +230,7 @@
                                  CornerRadius="5 0 0 5"
                                  TextAlignment="Left"
                                  Text="{Binding EnteredText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 Placeholder="Enter Steam ID">
+                                 PlaceholderText="Enter Steam ID">
                 <TextBox.InputBindings>
                     <KeyBinding Command="{Binding GetProfileDetailsCommand}" Key="Enter" />
                 </TextBox.InputBindings>

@@ -4,30 +4,35 @@ namespace SteamTools.Core.Models;
 
 public class SteamID32
 {
-    private readonly string _id32;
+    private readonly string _asString;
 
     public SteamID32(uint steamID32)
     {
-        ID32 = steamID32;
-        _id32 = ID32.ToString();
+        AsUInt = steamID32;
+        _asString = AsUInt.ToString();
     }
 
     public SteamID32(SteamID64 steamID64)
     {
-        ID32 = SteamIDConverter.ToSteamID32(steamID64.ID64);
-        _id32 = ID32.ToString();
+        AsUInt = SteamIDConverter.ToSteamID32(steamID64);
+        _asString = AsUInt.ToString();
     }
 
-    public uint ID32 { get; }
+    public uint AsUInt { get; }
 
     public override string ToString()
     {
-        return _id32;
+        return _asString;
     }
 
     public static implicit operator string(SteamID32 steamID32)
     {
-        return steamID32.ToString();
+        return steamID32._asString;
+    }
+
+    public static implicit operator uint(SteamID32 steamID32)
+    {
+        return steamID32.AsUInt;
     }
 
     public SteamID64 ToSteamID64()
@@ -37,11 +42,11 @@ public class SteamID32
 
     public string ToSteamID3()
     {
-        return SteamIDConverter.ToSteamID3(ID32);
+        return SteamIDConverter.ToSteamID3(AsUInt);
     }
 
     public string ToSteamID()
     {
-        return SteamIDConverter.ToSteamID(ID32);
+        return SteamIDConverter.ToSteamID(AsUInt);
     }
 }

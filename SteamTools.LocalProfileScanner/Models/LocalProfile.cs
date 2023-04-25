@@ -38,7 +38,7 @@ public class LocalProfile : ILocalProfile
 
     public void Attach(ISteamID account)
     {
-        if (SteamIDValidator.IsSteamID64(account.Steam64.ID64) is false) return;
+        if (SteamIDValidator.IsSteamID64(account.Steam64.AsLong) is false) return;
 
         switch (account)
         {

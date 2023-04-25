@@ -9,7 +9,7 @@ public class SteamProfile
         SteamID64 = steamID64;
         SteamID32 = steamID64.ToSteamID32();
         IsEmpty = SteamID64 is null;
-        if (IsEmpty) { return; }
+        if (IsEmpty) return;
         SteamID = SteamID32.ToSteamID();
         SteamID3 = SteamID32.ToSteamID3();
         ProfilePermanentUrl = steamID64.ToSteamPermanentUrl();

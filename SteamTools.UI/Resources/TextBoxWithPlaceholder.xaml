@@ -2,6 +2,10 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:models="clr-namespace:SteamTools.UI.Models"
                     xmlns:converters="clr-namespace:SteamTools.UI.Converters">
+
+    <Duration x:Key="HidePlaceholderTextAnimationDuration">0:0:0.1</Duration>
+    <Duration x:Key="ShowPlaceholderTextAnimationDuration">0:0:0.25</Duration>
+
     <converters:StringIsNullOrEmptyConverter x:Key="StringIsNullOrEmptyConverter" />
     <Style TargetType="{x:Type models:RoundTextBox}" x:Key="TextBoxWithPlaceholder">
         <Setter Property="FontFamily" Value="{StaticResource Font}" />
@@ -12,6 +16,7 @@
         <Setter Property="Foreground" Value="#FFFFFF" />
         <Setter Property="Background" Value="#292b33" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="PlaceholderForeground" Value="#94a1b2" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="models:RoundTextBox">
@@ -20,8 +25,8 @@
                         <Grid>
                             <!-- Margin.Left 1 because Grid has a gap of 1 -->
                             <TextBlock Margin="1 0 0 0"
-                                       Text="{TemplateBinding Placeholder}"
-                                       Foreground="#94a1b2"
+                                       Text="{TemplateBinding PlaceholderText}"
+                                       Foreground="{TemplateBinding PlaceholderForeground}"
                                        FontSize="{TemplateBinding FontSize}"
                                        FontFamily="{TemplateBinding FontFamily}"
                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
@@ -37,7 +42,7 @@
                                                     <BeginStoryboard>
                                                         <Storyboard>
                                                             <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1"
-                                                                             Duration="0:0:0.25" />
+                                                                             Duration="{StaticResource ShowPlaceholderTextAnimationDuration}" />
                                                         </Storyboard>
                                                     </BeginStoryboard>
                                                 </DataTrigger.EnterActions>
@@ -45,7 +50,7 @@
                                                     <BeginStoryboard>
                                                         <Storyboard>
                                                             <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0"
-                                                                             Duration="0:0:0.1" />
+                                                                             Duration="{StaticResource HidePlaceholderTextAnimationDuration}" />
                                                         </Storyboard>
                                                     </BeginStoryboard>
                                                 </DataTrigger.ExitActions>

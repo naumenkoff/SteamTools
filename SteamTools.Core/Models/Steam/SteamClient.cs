@@ -29,9 +29,10 @@ public partial class SteamClient : ISteamClient
     public Task<HashSet<string>> GetFileExtensionsAsync()
     {
         var hashSet = new HashSet<string>();
-        foreach (var file in SteamLibraries
-                     .Select(directory => directory.GetFiles("*.*", SearchOption.AllDirectories))
-                     .SelectMany(files => files)) hashSet.Add(file.Extension);
+        foreach (var extension in SteamLibraries
+                     .Select(directory =>
+                         directory.GetFiles("*.*", SearchOption.AllDirectories).Select(x => x.Extension))
+                     .SelectMany(extensions => extensions)) hashSet.Add(extension);
         return Task.FromResult(hashSet);
     }
 

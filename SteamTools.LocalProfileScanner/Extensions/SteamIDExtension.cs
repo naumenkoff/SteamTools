@@ -6,6 +6,6 @@ public static class SteamIDExtension
 {
     public static bool IsMatch(this ISteamID first, ISteamID second)
     {
-        return first.Steam32.ID32 == second.Steam32.ID32 && first.Steam64.ID64 == second.Steam64.ID64;
+        return first.Steam32.AsUInt == second.Steam32.AsUInt && first.Steam64.AsLong == second.Steam64.AsLong;
     }
 }

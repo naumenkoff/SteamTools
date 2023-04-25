@@ -31,10 +31,10 @@ public class ProfileDataFetcherViewModel : ObservableObject
         CurrentSteamProfile = SteamProfile.Empty;
         SteamProfiles = new ObservableCollection<SteamProfile>();
 
-        GetProfileDetailsCommand = new AsyncRelayCommand(RetrieveProfileInformationWithNotification);
+        GetProfileDetailsCommand = new AsyncRelayCommand(RetrieveProfileInformationWithNotificationAsync);
         CopyToClipboardCommand = new RelayCommand<object>(CopyText);
         OpenInBrowserCommand = new RelayCommand<object>(OpenInBrowser);
-        SelectProfileFromHistoryCommand = new AsyncRelayCommand<object>(SelectProfileFromHistory);
+        SelectProfileFromHistoryCommand = new AsyncRelayCommand<object>(SelectProfileFromHistoryAsync);
     }
 
     public ObservableCollection<SteamProfile> SteamProfiles
@@ -106,21 +106,21 @@ public class ProfileDataFetcherViewModel : ObservableObject
         _notificationService.ShowNotification("Opened in the browser!");
     }
 
-    private async Task SelectProfileFromHistory(object parameter)
+    private async Task SelectProfileFromHistoryAsync(object parameter)
     {
         if (parameter is not SteamProfile steamProfile) return;
         EnteredText = steamProfile.Request;
-        await RetrieveProfileInformationWithNotification();
+        await RetrieveProfileInformationWithNotificationAsync();
     }
 
     // Click or Enter => RetrieveProfileInformationWithNotification
     // RetrieveProfileInformationWithNotification => RetrieveProfileInformation
     // RetrieveProfileInformation => SelectProfile
     // SelectProfile => SelectExistingProfile, SelectNewProfile
-    private async Task RetrieveProfileInformationWithNotification()
+    private async Task RetrieveProfileInformationWithNotificationAsync()
     {
         var start = Stopwatch.GetTimestamp();
-        var selected = await RetrieveProfileInformation();
+        var selected = await RetrieveProfileInformationAsync();
         var responseTime = Stopwatch.GetElapsedTime(start);
         var notification = selected
             ? $"Found your profile in {responseTime.TotalSeconds:F1} seconds!"
@@ -128,7 +128,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
         _notificationService.ShowNotification(notification);
     }
 
-    private async Task<bool> RetrieveProfileInformation()
+    private async Task<bool> RetrieveProfileInformationAsync()
     {
         _notificationService.ShowNotification("Searching for your profile...");
         var factory = _serviceProvider.GetRequiredService<ISteamProfileService>();
@@ -150,7 +150,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
 
     private bool SelectExistingProfile(SteamProfile newProfile)
     {
-        var existingProfile = SteamProfiles.FirstOrDefault(x => x.SteamID32.ID32 == newProfile.SteamID32.ID32);
+        var existingProfile = SteamProfiles.FirstOrDefault(x => x.SteamID32.AsUInt == newProfile.SteamID32.AsUInt);
         if (existingProfile is null) return false;
 
         var oldIndex = SteamProfiles.IndexOf(existingProfile);
