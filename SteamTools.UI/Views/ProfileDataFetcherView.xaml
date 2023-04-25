@@ -382,11 +382,13 @@
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="10" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <Viewbox Grid.Column="0" Stretch="Uniform" HorizontalAlignment="Center" Margin="0 0 5 0">
+                    <Viewbox Grid.Column="0" Stretch="Uniform" HorizontalAlignment="Center">
                         <TextBlock Style="{StaticResource TextBlockForLinks}">
                             <Hyperlink Style="{StaticResource HyperLinkForLinks}"
                                        Command="{Binding OpenInBrowserCommand}"
@@ -396,7 +398,7 @@
                         </TextBlock>
                     </Viewbox>
 
-                    <Viewbox Grid.Column="1" Stretch="Uniform" HorizontalAlignment="Center" Margin="5 0 5 0">
+                    <Viewbox Grid.Column="2" Stretch="Uniform" HorizontalAlignment="Center">
                         <TextBlock Style="{StaticResource TextBlockForLinks}">
                             <Hyperlink Style="{StaticResource HyperLinkForLinks}"
                                        Command="{Binding OpenInBrowserCommand}"
@@ -406,7 +408,7 @@
                         </TextBlock>
                     </Viewbox>
 
-                    <Viewbox Grid.Column="2" Stretch="Uniform" HorizontalAlignment="Center" Margin="5 0 0 0">
+                    <Viewbox Grid.Column="4" Stretch="Uniform" HorizontalAlignment="Center">
                         <TextBlock Style="{StaticResource TextBlockForLinks}">
                             <Hyperlink Style="{StaticResource HyperLinkForLinks}"
                                        Command="{Binding OpenInBrowserCommand}"
@@ -421,7 +423,7 @@
             </Grid>
 
             <Border Grid.Row="1" Grid.Column="1" Margin="0 20 0 0" CornerRadius="5" ClipToBounds="True"
-                    Style="{StaticResource SteamIdBorder}">
+                    Style="{StaticResource SteamIdBorder}" Padding="14.5 0">
                 <Grid>
 
                     <Grid.ColumnDefinitions>
@@ -436,76 +438,61 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
 
-                    <Border Grid.Column="0" Grid.Row="0">
-                        <TextBlock Style="{StaticResource TextBlockForSteamIdName}"
-                                   Text="SteamID"
-                                   Margin="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border},Converter={StaticResource DistanceToMarginConverter}, ConverterParameter=Left}" />
-                    </Border>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TextBlockForSteamIdName}"
+                               Text="SteamID" />
 
-                    <Border Grid.Column="0" Grid.Row="1">
-                        <TextBlock Style="{StaticResource TextBlockForSteamIdName}"
-                                   Text="SteamID3"
-                                   Margin="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border},Converter={StaticResource DistanceToMarginConverter}, ConverterParameter=Left}" />
-                    </Border>
 
-                    <Border Grid.Column="0" Grid.Row="2">
-                        <TextBlock Style="{StaticResource TextBlockForSteamIdName}"
-                                   Text="SteamID32"
-                                   Margin="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border},Converter={StaticResource DistanceToMarginConverter}, ConverterParameter=Left}" />
-                    </Border>
+                    <TextBlock Grid.Column="0" Grid.Row="1" Style="{StaticResource TextBlockForSteamIdName}"
+                               Text="SteamID3" />
 
-                    <Border Grid.Column="0" Grid.Row="3">
-                        <TextBlock Style="{StaticResource TextBlockForSteamIdName}"
-                                   Text="SteamID64"
-                                   Margin="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border},Converter={StaticResource DistanceToMarginConverter}, ConverterParameter=Left}" />
-                    </Border>
 
-                    <Border Grid.Column="1" Grid.Row="0">
-                        <TextBlock Style="{StaticResource TextBlockForSteamIdValue}"
-                                   Margin="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border},Converter={StaticResource DistanceToMarginConverter}, ConverterParameter=Right}">
-                            <Hyperlink Style="{StaticResource HyperLinkForSteamIdValue}"
-                                       CommandParameter="{Binding CurrentSteamProfile.SteamID}"
-                                       Command="{Binding CopyToClipboardCommand}">
-                                <Run x:Name="SteamProfile" Text="{Binding CurrentSteamProfile.SteamID, Mode=OneWay}" />
-                            </Hyperlink>
-                        </TextBlock>
-                    </Border>
+                    <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource TextBlockForSteamIdName}"
+                               Text="SteamID32" />
 
-                    <Border Grid.Column="1" Grid.Row="1">
-                        <TextBlock Style="{StaticResource TextBlockForSteamIdValue}"
-                                   Margin="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border},Converter={StaticResource DistanceToMarginConverter}, ConverterParameter=Right}">
-                            <Hyperlink Style="{StaticResource HyperLinkForSteamIdValue}"
-                                       CommandParameter="{Binding CurrentSteamProfile.SteamID3}"
-                                       Command="{Binding CopyToClipboardCommand}">
-                                <Run Text="{Binding CurrentSteamProfile.SteamID3, Mode=OneWay}" />
-                            </Hyperlink>
-                        </TextBlock>
-                    </Border>
 
-                    <Border Grid.Column="1" Grid.Row="2">
-                        <TextBlock Style="{StaticResource TextBlockForSteamIdValue}"
-                                   Margin="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border},Converter={StaticResource DistanceToMarginConverter}, ConverterParameter=Right}">
-                            <Hyperlink Style="{StaticResource HyperLinkForSteamIdValue}"
-                                       CommandParameter="{Binding CurrentSteamProfile.SteamID32}"
-                                       Command="{Binding CopyToClipboardCommand}">
-                                <Run Text="{Binding CurrentSteamProfile.SteamID32, Mode=OneWay}" />
-                            </Hyperlink>
-                        </TextBlock>
-                    </Border>
+                    <TextBlock Grid.Column="0" Grid.Row="3" Margin="0 0 0 3"
+                               Style="{StaticResource TextBlockForSteamIdName}"
+                               Text="SteamID64" />
 
-                    <Border Grid.Column="1" Grid.Row="3">
-                        <TextBlock Style="{StaticResource TextBlockForSteamIdValue}"
-                                   Margin="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border},Converter={StaticResource DistanceToMarginConverter}, ConverterParameter=Right}">
-                            <Hyperlink Style="{StaticResource HyperLinkForSteamIdValue}"
-                                       CommandParameter="{Binding CurrentSteamProfile.SteamID64}"
-                                       Command="{Binding CopyToClipboardCommand}">
-                                <Run Text="{Binding CurrentSteamProfile.SteamID64, Mode=OneWay}" />
-                            </Hyperlink>
-                        </TextBlock>
-                    </Border>
+
+                    <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TextBlockForSteamIdValue}">
+                        <Hyperlink Style="{StaticResource HyperLinkForSteamIdValue}"
+                                   CommandParameter="{Binding CurrentSteamProfile.SteamID}"
+                                   Command="{Binding CopyToClipboardCommand}">
+                            <Run Text="{Binding CurrentSteamProfile.SteamID, Mode=OneWay}" />
+                        </Hyperlink>
+                    </TextBlock>
+
+
+                    <TextBlock Grid.Column="1" Grid.Row="1" Style="{StaticResource TextBlockForSteamIdValue}">
+                        <Hyperlink Style="{StaticResource HyperLinkForSteamIdValue}"
+                                   CommandParameter="{Binding CurrentSteamProfile.SteamID3}"
+                                   Command="{Binding CopyToClipboardCommand}">
+                            <Run Text="{Binding CurrentSteamProfile.SteamID3, Mode=OneWay}" />
+                        </Hyperlink>
+                    </TextBlock>
+
+
+                    <TextBlock Grid.Column="1" Grid.Row="2" Style="{StaticResource TextBlockForSteamIdValue}">
+                        <Hyperlink Style="{StaticResource HyperLinkForSteamIdValue}"
+                                   CommandParameter="{Binding CurrentSteamProfile.SteamID32}"
+                                   Command="{Binding CopyToClipboardCommand}">
+                            <Run Text="{Binding CurrentSteamProfile.SteamID32, Mode=OneWay}" />
+                        </Hyperlink>
+                    </TextBlock>
+
+
+                    <TextBlock Grid.Column="1" Grid.Row="3" Style="{StaticResource TextBlockForSteamIdValue}"
+                               Margin="0 0 0 4">
+                        <Hyperlink Style="{StaticResource HyperLinkForSteamIdValue}"
+                                   CommandParameter="{Binding CurrentSteamProfile.SteamID64}"
+                                   Command="{Binding CopyToClipboardCommand}">
+                            <Run Text="{Binding CurrentSteamProfile.SteamID64, Mode=OneWay}" />
+                        </Hyperlink>
+                    </TextBlock>
+
                 </Grid>
             </Border>
-
         </Grid>
     </Grid>
     <!-- Добавить изменение цвета текста SteamIDValue при наведении мыши -->

@@ -20,6 +20,7 @@ public class MainWindowViewModel : ObservableObject
 
         MoveApplicationCommand = new RelayCommand(MoveApplicationWindow);
         ShutdownApplicationCommand = new RelayCommand(ShutdownApplication);
+        MaximizeApplicationCommand = new RelayCommand(MaximizeApplication);
         MinimizeApplicationCommand = new RelayCommand(MinimizeApplication);
 
         var timer = new DispatcherTimer();
@@ -98,6 +99,7 @@ public class MainWindowViewModel : ObservableObject
     public RelayCommand ShutdownApplicationCommand { get; }
     public RelayCommand MoveApplicationCommand { get; }
     public RelayCommand MinimizeApplicationCommand { get; }
+    public RelayCommand MaximizeApplicationCommand { get; }
 
     private void OnNotificationReceived(object sender, NotificationMessage newNotification)
     {
@@ -123,8 +125,18 @@ public class MainWindowViewModel : ObservableObject
         Application.Current.Shutdown();
     }
 
+    private static void MaximizeApplication()
+    {
+        Application.Current.MainWindow!.WindowState =
+            Application.Current.MainWindow.WindowState == WindowState.Maximized
+                ? WindowState.Normal
+                : WindowState.Maximized;
+    }
+
     private static void MoveApplicationWindow()
     {
+        if (Application.Current.MainWindow!.WindowState == WindowState.Maximized) MaximizeApplication();
+
         Application.Current.MainWindow!.DragMove();
     }
 }

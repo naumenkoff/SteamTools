@@ -10,20 +10,23 @@
         MinWidth="540"
         Height="380"
         Width="540"
-        ResizeMode="CanResize"
-        WindowStyle="None"
         Background="{StaticResource OverallApplicationBackgroundColor}"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="0" CaptionHeight="0" ResizeBorderThickness="5" NonClientFrameEdges="None" />
+    </WindowChrome.WindowChrome>
 
     <Window.Resources>
 
         <Style x:Key="LogoTextBlock" TargetType="TextBlock">
             <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="TextAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Foreground" Value="{StaticResource TextColor}" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="FontFamily" Value="{StaticResource Font}" />
-            <Setter Property="TextAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Center" />
             <Style.Triggers>
                 <EventTrigger RoutedEvent="TextBlock.MouseEnter">
                     <BeginStoryboard>
@@ -151,11 +154,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Border>
-                <TextBlock HorizontalAlignment="Left" Text="SteamTools"
-                           Margin="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border},Converter={StaticResource DistanceToMarginConverter}, ConverterParameter=Left}"
-                           Style="{StaticResource LogoTextBlock}" />
-            </Border>
+            <TextBlock Grid.Column="0" Style="{StaticResource LogoTextBlock}" Text="SteamTools" Padding="7 0 0 2" />
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
 
@@ -181,6 +180,11 @@
 
                 <Button Style="{StaticResource ApplicationStateControlButtons}"
                         Width="50"
+                        Content="M"
+                        Command="{Binding MaximizeApplicationCommand}" />
+
+                <Button Style="{StaticResource ApplicationStateControlButtons}"
+                        Width="50"
                         Content="✕"
                         Command="{Binding ShutdownApplicationCommand}" />
 
@@ -189,13 +193,39 @@
             <Grid.InputBindings>
                 <MouseBinding MouseAction="LeftClick" Command="{Binding MoveApplicationCommand}" />
             </Grid.InputBindings>
+
         </Grid>
 
         <ContentControl Grid.Row="1" Content="{Binding Navigation.CurrentView}" />
 
-        <TextBlock Grid.Row="1"
-                   Text="{Binding NotificationMessage.Text, Mode=OneWay}"
-                   Style="{StaticResource NotificationTextBlock}" />
+        <TextBlock Grid.Row="1" Style="{StaticResource NotificationTextBlock}"
+                   Text="{Binding NotificationMessage.Text, Mode=OneWay}" />
 
+
+        <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
+                <Style.Triggers>
+                    <DataTrigger
+                        Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}"
+                        Value="{x:Static WindowState.Maximized}">
+                        <DataTrigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ThicknessAnimation To="8" Storyboard.TargetProperty="Margin" Duration="0" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.EnterActions>
+                        <DataTrigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ThicknessAnimation To="0" Storyboard.TargetProperty="Margin" Duration="0" />
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </DataTrigger.ExitActions>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
     </Grid>
+
 </Window>
