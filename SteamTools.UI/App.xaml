@@ -20,9 +20,13 @@
                 <views:ProfileDataFetcherView />
             </DataTemplate>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Colors.xaml" />
+                <ResourceDictionary Source="Resources/BaseControlStyles.xaml" />
                 <ResourceDictionary Source="Resources/TextBoxWithPlaceholder.xaml" />
-                <ResourceDictionary Source="Resources/ThinScrollBar.xaml" />
+                <ResourceDictionary Source="Resources/ScrollViewerStyle.xaml" />
+                <ResourceDictionary Source="Resources/ListViewStyle.xaml" />
+                <ResourceDictionary Source="Resources/HeaderValueBorderStyle.xaml" />
+                <ResourceDictionary Source="Resources/ListViewButtonStyle.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -6,43 +6,49 @@
              xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels"
              xmlns:models="clr-namespace:SteamTools.UI.Models"
              mc:Ignorable="d"
-             Background="{StaticResource OverallApplicationBackgroundColor}"
-             d:DesignHeight="355"
-             d:DesignWidth="540"
+             Background="#202020"
+             d:DesignHeight="505"
+             d:DesignWidth="720"
              d:DataContext="{d:DesignInstance viewModels:ProfileDataFetcherViewModel}">
 
     <UserControl.Resources>
-        <Style x:Key="FadeInOutGrid" TargetType="Grid">
+
+        <Storyboard x:Key="FadeInStoryboard">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+        </Storyboard>
+
+        <Storyboard x:Key="FadeOutStoryboard">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.25" Value="{x:Static Visibility.Hidden}" />
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Style x:Key="FadeInOutGrid" TargetType="Border">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding ShowGrid, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                <DataTrigger Binding="{Binding ShowGrid}" Value="True">
                     <DataTrigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25"
-                                                 FillBehavior="HoldEnd" />
-                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility">
-                                    <DiscreteObjectKeyFrame KeyTime="0:0:0.25" Value="{x:Static Visibility.Hidden}" />
-                                </ObjectAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
+                        <BeginStoryboard Storyboard="{StaticResource FadeInStoryboard}" />
                     </DataTrigger.EnterActions>
                     <DataTrigger.ExitActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility">
-                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
-                                </ObjectAnimationUsingKeyFrames>
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25"
-                                                 FillBehavior="Stop" />
-                            </Storyboard>
-                        </BeginStoryboard>
+                        <BeginStoryboard Storyboard="{StaticResource FadeOutStoryboard}" />
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ShowGrid}" Value="False">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource FadeOutStoryboard}" />
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard Storyboard="{StaticResource FadeInStoryboard}" />
                     </DataTrigger.ExitActions>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
 
         <Style x:Key="TextBlockWithOpacity" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
             <Style.Triggers>
                 <EventTrigger RoutedEvent="MouseEnter">
                     <BeginStoryboard>
@@ -66,145 +72,56 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="5 0 5 0" />
             <Setter Property="Opacity" Value="0.5" />
-            <Setter Property="Foreground" Value="#e3e3e3" />
         </Style>
 
-        <Style x:Key="TextBlockForName" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#e3e3e3" />
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
-        </Style>
-
-        <Style x:Key="TextBlockForLinks" TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
-            <Setter Property="Foreground" Value="#94a1b2" />
-        </Style>
-
-        <Style x:Key="TextBlockForSteamIdName" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#94a1b2" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
-            <Setter Property="TextAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-        </Style>
-
-        <Style x:Key="TextBlockForSteamIdValue" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#94a1b2" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
-            <Setter Property="TextAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="HorizontalAlignment" Value="Right" />
-        </Style>
-
-        <Style x:Key="HyperLinkForSteamIdValue" TargetType="Hyperlink">
-            <Setter Property="Foreground" Value="#94a1b2" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
+        <Style x:Key="HistoryBorder" TargetType="Border">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="0 0 0 60" />
             <Style.Triggers>
-                <EventTrigger RoutedEvent="MouseLeave">
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <ColorAnimation Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
-                                            To="#94a1b2" Duration="0:0:0.25" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-                <EventTrigger RoutedEvent="MouseEnter">
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <ColorAnimation Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
-                                            To="#ff5260" Duration="0:0:0.25" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-                <EventTrigger RoutedEvent="Click">
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <ColorAnimation Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
-                                            To="#2d9cfc" Duration="0:0:0.25" />
-                            <ColorAnimation Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"
-                                            To="#94a1b2" Duration="0:0:0.25" BeginTime="0:0:0.75" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="HyperLinkForLinks" TargetType="Hyperlink">
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
-            <Setter Property="Foreground" Value="#94a1b2" />
-            <Style.Triggers>
-                <EventTrigger RoutedEvent="MouseEnter">
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <ColorAnimation Storyboard.TargetProperty="(Hyperlink.Foreground).(SolidColorBrush.Color)"
-                                            To="#ff5260" Duration="0:0:0.25" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-                <EventTrigger RoutedEvent="MouseLeave">
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <ColorAnimation Storyboard.TargetProperty="(Hyperlink.Foreground).(SolidColorBrush.Color)"
-                                            To="#94a1b2" Duration="0:0:0.25" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="HyperLinkForHistory" TargetType="Hyperlink">
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
-        </Style>
-
-        <Style x:Key="SteamIdBorder" TargetType="Border">
-            <Setter Property="Background" Value="#292b33" />
-        </Style>
-
-        <Style x:Key="LookupButton" TargetType="Button">
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Background" Value="#2d9cfc" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
-            <Setter Property="Cursor" Value="Hand" />
-            <Setter Property="FontSize" Value="18" />
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                Background="{TemplateBinding Background}"
-                                CornerRadius="0 5 5 0">
-                            <ContentPresenter Content="{TemplateBinding Content}"
-                                              ContentTemplate="{TemplateBinding ContentTemplate}"
-                                              VerticalAlignment="Center"
-                                              HorizontalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Trigger.EnterActions>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding ShowGrid}" Value="True" />
+                        <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}"
+                                   Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
-                                                To="#ff5260" Duration="0:0:0.20" />
+                                <ThicknessAnimation BeginTime="0:0:0.25" Duration="0:0:0.25"
+                                                    Storyboard.TargetProperty="Padding"
+                                                    To="0" FillBehavior="HoldEnd" />
                             </Storyboard>
                         </BeginStoryboard>
-                    </Trigger.EnterActions>
-                    <Trigger.ExitActions>
+                    </MultiDataTrigger.EnterActions>
+                    <MultiDataTrigger.ExitActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Storyboard.TargetProperty="(Button.Background).(SolidColorBrush.Color)"
-                                                To="#2d9cfc" Duration="0:0:0.20" />
+                                <ThicknessAnimation BeginTime="0:0:0.25" Duration="0:0:0.25"
+                                                    Storyboard.TargetProperty="Padding"
+                                                    To="0 0 0 60" FillBehavior="Stop" />
                             </Storyboard>
                         </BeginStoryboard>
-                    </Trigger.ExitActions>
-                </Trigger>
+                    </MultiDataTrigger.ExitActions>
+                </MultiDataTrigger>
+                <DataTrigger Binding="{Binding ShowGrid}" Value="False">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Duration="0:0:0.25" Storyboard.TargetProperty="Padding"
+                                                    To="0 0 0 0" FillBehavior="HoldEnd" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Duration="0:0:0.25" Storyboard.TargetProperty="Padding"
+                                                    To="0 0 0 60" FillBehavior="Stop" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
             </Style.Triggers>
         </Style>
 
@@ -218,31 +135,22 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
+        <models:RoundTextBox Grid.Row="0"
+                             Style="{StaticResource TextBoxWithPlaceholder}"
+                             CornerRadius="5"
+                             TextAlignment="Left"
+                             ClearButtonCommand="{Binding ResetSelectedProfileCommand}"
+                             SearchButtonCommand="{Binding GetProfileDetailsCommand}"
+                             SearchButtonCommandParameter="{Binding Text, RelativeSource={RelativeSource Self}}"
+                             PlaceholderText="Enter Steam ID">
+            <TextBox.InputBindings>
+                <KeyBinding Command="{Binding GetProfileDetailsCommand}"
+                            CommandParameter="{Binding Path=Text, RelativeSource={RelativeSource AncestorType=models:RoundTextBox}}"
+                            Key="Enter" />
+            </TextBox.InputBindings>
+        </models:RoundTextBox>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4*" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
-
-            <models:RoundTextBox Grid.Column="0"
-                                 Style="{StaticResource TextBoxWithPlaceholder}"
-                                 CornerRadius="5 0 0 5"
-                                 TextAlignment="Left"
-                                 Text="{Binding EnteredText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 PlaceholderText="Enter Steam ID">
-                <TextBox.InputBindings>
-                    <KeyBinding Command="{Binding GetProfileDetailsCommand}" Key="Enter" />
-                </TextBox.InputBindings>
-            </models:RoundTextBox>
-
-            <Button Grid.Column="1"
-                    Style="{StaticResource LookupButton}"
-                    Content="Lookup"
-                    Command="{Binding GetProfileDetailsCommand}" />
-
-        </Grid>
-        <Border Grid.Row="1" HorizontalAlignment="Stretch" Background="Transparent" Padding="0 0 0 40">
+        <Border Grid.Row="1" Style="{StaticResource HistoryBorder}">
             <ItemsControl ItemsSource="{Binding SteamProfiles}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -252,7 +160,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Style="{StaticResource TextBlockForHistory}">
-                            <Hyperlink Style="{StaticResource HyperLinkForHistory}" CommandParameter="{Binding}"
+                            <Hyperlink CommandParameter="{Binding}" Foreground="#a0a0a0"
                                        Command="{Binding DataContext.SelectProfileFromHistoryCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
                                 <Run Text="{Binding SteamID64, Mode=OneWay}" />
                             </Hyperlink>
@@ -260,242 +168,56 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <Border.Style>
-                <Style TargetType="{x:Type Border}">
-                    <Style.Triggers>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding ShowGrid}" Value="True" />
-                                <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}"
-                                           Value="True" />
-                            </MultiDataTrigger.Conditions>
-                            <MultiDataTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ThicknessAnimation BeginTime="0:0:0.25" Duration="0:0:0.25"
-                                                            Storyboard.TargetProperty="Padding"
-                                                            To="0" FillBehavior="HoldEnd" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </MultiDataTrigger.EnterActions>
-                            <MultiDataTrigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ThicknessAnimation BeginTime="0:0:0.25" Duration="0:0:0.25"
-                                                            Storyboard.TargetProperty="Padding"
-                                                            To="0 0 0 40" FillBehavior="Stop" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </MultiDataTrigger.ExitActions>
-                        </MultiDataTrigger>
-                        <DataTrigger Binding="{Binding ShowGrid}" Value="False">
-                            <DataTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ThicknessAnimation Duration="0:0:0.25" Storyboard.TargetProperty="Padding"
-                                                            To="0 0 0 0" FillBehavior="HoldEnd" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.EnterActions>
-                            <DataTrigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ThicknessAnimation Duration="0:0:0.25" Storyboard.TargetProperty="Padding"
-                                                            To="0 0 0 40" FillBehavior="Stop" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.ExitActions>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
         </Border>
 
-        <Grid Style="{StaticResource FadeInOutGrid}" Grid.Row="2">
+        <Border CornerRadius="5" ClipToBounds="True" Style="{StaticResource FadeInOutGrid}" Grid.Row="2">
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="2*" />
-            </Grid.RowDefinitions>
+            <models:StackPanelWithSpacing Spacing="0 5">
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="5*" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
+                <models:HeaderValueBorder Header="Name"
+                                          ImageSource="{Binding CurrentSteamProfile, Converter={StaticResource ProfileImageConverter}}"
+                                          Value="{Binding CurrentSteamProfile.PlayerSummaries.PersonaName}"
+                                          ImageVisibility="Visible"
+                                          Command="{Binding CopyToClipboardCommand}"
+                                          CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.PersonaName}" />
 
-            <Grid Grid.Row="0" Grid.Column="1">
+                <models:HeaderValueBorder Header="SteamID"
+                                          Value="{Binding CurrentSteamProfile.SteamID}"
+                                          Command="{Binding CopyToClipboardCommand}"
+                                          CommandParameter="{Binding CurrentSteamProfile.SteamID}" />
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="3*" />
-                    <RowDefinition Height="1*" />
-                </Grid.RowDefinitions>
+                <models:HeaderValueBorder Header="SteamID3"
+                                          Value="{Binding CurrentSteamProfile.SteamID3}"
+                                          Command="{Binding CopyToClipboardCommand}"
+                                          CommandParameter="{Binding CurrentSteamProfile.SteamID3}" />
 
+                <models:HeaderValueBorder Header="SteamID32"
+                                          Value="{Binding CurrentSteamProfile.SteamID32}"
+                                          Command="{Binding CopyToClipboardCommand}"
+                                          CommandParameter="{Binding CurrentSteamProfile.SteamID32}" />
 
-                <!-- 
-                Вопрос вот в чём: как разместить ImageBorder и имя профиля? А если имени нет? Пустое, например.
-                Если имя пустое - аватар по центру, Если имя есть - аватар слева, Имя всегда по центру 
-                Например, если текст пустой - сделать его Collapsed и тогда аватар станет по центру, иначе он слева
-                Но тогда он будет нагружать визуал
-                Можно ещё сделать слайдер, например аватар по центру, под ним имя, если имя нет - collapsed
-                И отображать информацию об профиле при наведении на Border, т.е. сделать ImageBorder collapsed
-                но как тогда скриншоты например делать :(
-                -->
+                <models:HeaderValueBorder Header="SteamID64"
+                                          Value="{Binding CurrentSteamProfile.SteamID64}"
+                                          Command="{Binding CopyToClipboardCommand}"
+                                          CommandParameter="{Binding CurrentSteamProfile.SteamID64}" />
 
-                <!-- PERSONA NAME -->
-                <Border Grid.Row="0">
-                    <Grid>
-                        <!--
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition
-                                Width="{Binding ElementName=ImageBorder, Path=ActualHeight, Converter={StaticResource HeightToWidthConverter}}" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+                <models:HeaderValueBorder Header="Custom URL"
+                                          Value="{Binding CurrentSteamProfile.PlayerSummaries.ProfileUrl}"
+                                          Command="{Binding OpenInBrowserCommand}"
+                                          CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.ProfileUrl}" />
 
-                        <Border x:Name="ImageBorder" Style="{StaticResource ImageBorder}">
-                            <Border.Background>
-                                <VisualBrush>
-                                    <VisualBrush.Visual>
-                                        <Image>
-                                            <Image.Source>
-                                                <Binding Path="CurrentSteamProfile"
-                                                         Converter="{StaticResource ProfileImageConverter}" />
-                                            </Image.Source>
-                                        </Image>
-                                    </VisualBrush.Visual>
-                                </VisualBrush>
-                            </Border.Background>
-                        </Border>
-                        -->
-                        <Viewbox Stretch="Uniform" HorizontalAlignment="Center"
-                                 VerticalAlignment="Center">
-                            <TextBlock Style="{StaticResource TextBlockForName}"
-                                       Text="{Binding CurrentSteamProfile.PlayerSummaries.PersonaName}" />
+                <models:HeaderValueBorder Header="Permanent URL"
+                                          Value="{Binding CurrentSteamProfile.ProfilePermanentUrl}"
+                                          Command="{Binding OpenInBrowserCommand}"
+                                          CommandParameter="{Binding CurrentSteamProfile.ProfilePermanentUrl}" />
 
-                        </Viewbox>
+                <models:HeaderValueBorder Header="Avatar URL"
+                                          Value="{Binding CurrentSteamProfile.PlayerSummaries.AvatarFull}"
+                                          Command="{Binding OpenInBrowserCommand}"
+                                          CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.AvatarFull}" />
 
-                    </Grid>
-                </Border>
+            </models:StackPanelWithSpacing>
 
-                <!-- CUSTOM, PERMA & AVATAR URLs -->
-                <Grid Grid.Row="1">
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="10" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Viewbox Grid.Column="0" Stretch="Uniform" HorizontalAlignment="Center">
-                        <TextBlock Style="{StaticResource TextBlockForLinks}">
-                            <Hyperlink Style="{StaticResource HyperLinkForLinks}"
-                                       Command="{Binding OpenInBrowserCommand}"
-                                       CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.ProfileUrl}">
-                                CUSTOM URL
-                            </Hyperlink>
-                        </TextBlock>
-                    </Viewbox>
-
-                    <Viewbox Grid.Column="2" Stretch="Uniform" HorizontalAlignment="Center">
-                        <TextBlock Style="{StaticResource TextBlockForLinks}">
-                            <Hyperlink Style="{StaticResource HyperLinkForLinks}"
-                                       Command="{Binding OpenInBrowserCommand}"
-                                       CommandParameter="{Binding CurrentSteamProfile.ProfilePermanentUrl}">
-                                PERMALINK
-                            </Hyperlink>
-                        </TextBlock>
-                    </Viewbox>
-
-                    <Viewbox Grid.Column="4" Stretch="Uniform" HorizontalAlignment="Center">
-                        <TextBlock Style="{StaticResource TextBlockForLinks}">
-                            <Hyperlink Style="{StaticResource HyperLinkForLinks}"
-                                       Command="{Binding OpenInBrowserCommand}"
-                                       CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.AvatarFull}">
-                                AVATAR URL
-                            </Hyperlink>
-                        </TextBlock>
-                    </Viewbox>
-
-                </Grid>
-
-            </Grid>
-
-            <Border Grid.Row="1" Grid.Column="1" Margin="0 20 0 0" CornerRadius="5" ClipToBounds="True"
-                    Style="{StaticResource SteamIdBorder}" Padding="14.5 0">
-                <Grid>
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="3*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Grid.Column="0" Grid.Row="0" Style="{StaticResource TextBlockForSteamIdName}"
-                               Text="SteamID" />
-
-
-                    <TextBlock Grid.Column="0" Grid.Row="1" Style="{StaticResource TextBlockForSteamIdName}"
-                               Text="SteamID3" />
-
-
-                    <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource TextBlockForSteamIdName}"
-                               Text="SteamID32" />
-
-
-                    <TextBlock Grid.Column="0" Grid.Row="3" Margin="0 0 0 3"
-                               Style="{StaticResource TextBlockForSteamIdName}"
-                               Text="SteamID64" />
-
-
-                    <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource TextBlockForSteamIdValue}">
-                        <Hyperlink Style="{StaticResource HyperLinkForSteamIdValue}"
-                                   CommandParameter="{Binding CurrentSteamProfile.SteamID}"
-                                   Command="{Binding CopyToClipboardCommand}">
-                            <Run Text="{Binding CurrentSteamProfile.SteamID, Mode=OneWay}" />
-                        </Hyperlink>
-                    </TextBlock>
-
-
-                    <TextBlock Grid.Column="1" Grid.Row="1" Style="{StaticResource TextBlockForSteamIdValue}">
-                        <Hyperlink Style="{StaticResource HyperLinkForSteamIdValue}"
-                                   CommandParameter="{Binding CurrentSteamProfile.SteamID3}"
-                                   Command="{Binding CopyToClipboardCommand}">
-                            <Run Text="{Binding CurrentSteamProfile.SteamID3, Mode=OneWay}" />
-                        </Hyperlink>
-                    </TextBlock>
-
-
-                    <TextBlock Grid.Column="1" Grid.Row="2" Style="{StaticResource TextBlockForSteamIdValue}">
-                        <Hyperlink Style="{StaticResource HyperLinkForSteamIdValue}"
-                                   CommandParameter="{Binding CurrentSteamProfile.SteamID32}"
-                                   Command="{Binding CopyToClipboardCommand}">
-                            <Run Text="{Binding CurrentSteamProfile.SteamID32, Mode=OneWay}" />
-                        </Hyperlink>
-                    </TextBlock>
-
-
-                    <TextBlock Grid.Column="1" Grid.Row="3" Style="{StaticResource TextBlockForSteamIdValue}"
-                               Margin="0 0 0 4">
-                        <Hyperlink Style="{StaticResource HyperLinkForSteamIdValue}"
-                                   CommandParameter="{Binding CurrentSteamProfile.SteamID64}"
-                                   Command="{Binding CopyToClipboardCommand}">
-                            <Run Text="{Binding CurrentSteamProfile.SteamID64, Mode=OneWay}" />
-                        </Hyperlink>
-                    </TextBlock>
-
-                </Grid>
-            </Border>
-        </Grid>
+        </Border>
     </Grid>
-    <!-- Добавить изменение цвета текста SteamIDValue при наведении мыши -->
-    <!-- Добавить плавность анимации показа истории аккаунтов -->
-    <!-- Сделать Image по середине, а при наведении на информацию об аккаунте, слайдить её вверх и скрывать Image  -->
 </UserControl>

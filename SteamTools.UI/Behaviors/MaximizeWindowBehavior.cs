@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
 
 namespace SteamTools.UI.Behaviors;
@@ -10,18 +9,19 @@ public class MaximizeWindowBehavior : Behavior<Button>
     protected override void OnAttached()
     {
         base.OnAttached();
-        AssociatedObject.MouseLeftButtonUp += OnMouseLeftButtonUp;
+        AssociatedObject.Click += OnClick;
     }
 
     protected override void OnDetaching()
     {
         base.OnDetaching();
-        AssociatedObject.MouseLeftButtonUp -= OnMouseLeftButtonUp;
+        AssociatedObject.Click -= OnClick;
     }
 
-    private void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    private void OnClick(object sender, RoutedEventArgs e)
     {
-        var window = Window.GetWindow(AssociatedObject);
-        SystemCommands.MaximizeWindow(window);
+        var window = Window.GetWindow(AssociatedObject)!;
+        if (window.WindowState == WindowState.Maximized) SystemCommands.RestoreWindow(window);
+        else SystemCommands.MaximizeWindow(window);
     }
 }

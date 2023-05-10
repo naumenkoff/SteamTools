@@ -34,7 +34,6 @@ public class IDScannerViewModel : ObservableObject
     private bool _limitFileSize = true;
     private ObservableCollection<string> _matchingFiles;
     private int _maxFileSizeInMb = 1;
-    private string _scanQuery;
     private bool _useSelectedExtensions;
 
     public IDScannerViewModel(ISteamClient steamClient, INotificationService notificationService,
@@ -54,7 +53,7 @@ public class IDScannerViewModel : ObservableObject
         SelectAllSearchExtensionsCommand = new RelayCommand(() => ChangeSelected(true));
         ResetAllSearchExtensionsCommand = new RelayCommand(() => ChangeSelected(false));
         SelectDefaultExtensionsCommand = new RelayCommand(SelectDefaultExtensions);
-        RunScanCommand = new AsyncRelayCommand(RunScanAsync);
+        RunScanCommand = new AsyncRelayCommand<string>(RunScanAsync);
         CancelScanCommand = new RelayCommand(CancelScan);
         OpenInExplorerCommand = new RelayCommand<string>(OpenInExplorer);
         MatchingFiles = new ObservableCollection<string>();
@@ -74,21 +73,6 @@ public class IDScannerViewModel : ObservableObject
         private set
         {
             _matchingFiles = value;
-            OnPropertyChanged();
-        }
-    }
-
-    /// <summary>
-    ///     Gets or sets the search query entered by the user.
-    /// </summary>
-    public string ScanQuery
-    {
-        get => _scanQuery;
-        set
-        {
-            if (_scanQuery == value) return;
-
-            _scanQuery = value;
             OnPropertyChanged();
         }
     }
@@ -159,7 +143,7 @@ public class IDScannerViewModel : ObservableObject
     /// <summary>
     ///     Gets the command to run the scan asynchronously.
     /// </summary>
-    public AsyncRelayCommand RunScanCommand { get; }
+    public AsyncRelayCommand<string> RunScanCommand { get; }
 
     /// <summary>
     ///     Gets the command to cancel the ongoing scan.
@@ -209,12 +193,11 @@ public class IDScannerViewModel : ObservableObject
     /// <summary>
     ///     Starts a scanning process asynchronously with the given parameters.
     /// </summary>
-    private async Task RunScanAsync()
+    private async Task RunScanAsync(string query)
     {
-        if (SteamIDValidator.IsSteamID64(ScanQuery) is false)
+        if (SteamIDValidator.IsSteamID64(query) is false)
         {
             _notificationService.ShowNotification("This doesn't look like a SteamID64, please try again.");
-            ScanQuery = string.Empty;
             return;
         }
 
@@ -223,7 +206,7 @@ public class IDScannerViewModel : ObservableObject
 
         var extensions = _useSelectedExtensions ? GetSelectedExtensions() : Array.Empty<string>();
         var size = _limitFileSize ? ByteConverter.ConvertFromMegabytes(_maxFileSizeInMb) : 0;
-        var steamID64 = new SteamID64(long.Parse(ScanQuery));
+        var steamID64 = new SteamID64(long.Parse(query));
         var scanningService = _serviceProvider.GetRequiredService<IScanningService>();
 
         try
@@ -289,11 +272,11 @@ public class IDScannerViewModel : ObservableObject
     private async void LoadSearchExtensionsAsync() // skipcq: CS-R1005
     {
         var hashSet = await _steamClient.GetFileExtensionsAsync();
-        var searchExtensions = hashSet.Where(x => string.IsNullOrWhiteSpace(x) is false)
-            .Select(x => new SearchExtension(x)).ToList();
-        var observableSearchExtensions =
+        var searchExtensions = (from extension in hashSet
+            where string.IsNullOrWhiteSpace(extension) is false
+            select new SearchExtension(extension)).ToList();
+        _availableExtensions =
             new ObservableCollection<SearchExtension>(searchExtensions.OrderBy(x => x.Extension.Length));
-        _availableExtensions = observableSearchExtensions;
         await UpdateCollectionViewSourceAsync();
     }
 
@@ -301,7 +284,6 @@ public class IDScannerViewModel : ObservableObject
     {
         foreach (var item in _availableExtensions.Where(item => _defaultExtensions.Contains(item.Extension)).ToList())
             item.Selected = true;
-
         FilteredCollectionViewSource.Refresh();
     }
 

@@ -20,4 +20,12 @@ public class SteamID64Tests
         var steamID = new SteamID64(steamID64);
         return steamID.ToSteamPermanentUrl();
     }
+
+    [Test]
+    [TestCase(76561198073887158, ExpectedResult = "76561198073887158")]
+    public string ToString_ShouldReturnString(long steamID64)
+    {
+        var steamID = new SteamID64(steamID64);
+        return steamID.ToString();
+    }
 }

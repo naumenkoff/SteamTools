@@ -19,8 +19,6 @@ public class ProfileDataFetcherViewModel : ObservableObject
     private readonly IServiceProvider _serviceProvider;
     private readonly ObservableCollection<SteamProfile> _steamProfiles;
     private SteamProfile _currentSteamProfile;
-    private string _enteredText;
-
     private bool _showGrid;
 
     public ProfileDataFetcherViewModel(IServiceProvider serviceProvider, INotificationService notificationService)
@@ -31,10 +29,11 @@ public class ProfileDataFetcherViewModel : ObservableObject
         CurrentSteamProfile = SteamProfile.Empty;
         SteamProfiles = new ObservableCollection<SteamProfile>();
 
-        GetProfileDetailsCommand = new AsyncRelayCommand(RetrieveProfileInformationWithNotificationAsync);
+        GetProfileDetailsCommand = new AsyncRelayCommand<string>(GetSteamProfileAsync);
         CopyToClipboardCommand = new RelayCommand<object>(CopyText);
         OpenInBrowserCommand = new RelayCommand<object>(OpenInBrowser);
         SelectProfileFromHistoryCommand = new AsyncRelayCommand<object>(SelectProfileFromHistoryAsync);
+        ResetSelectedProfileCommand = new RelayCommand(ResetSelectedProfile);
     }
 
     public ObservableCollection<SteamProfile> SteamProfiles
@@ -58,33 +57,28 @@ public class ProfileDataFetcherViewModel : ObservableObject
         }
     }
 
-    public string EnteredText
-    {
-        get => _enteredText;
-        set
-        {
-            if (_enteredText == value) return;
-
-            _enteredText = value;
-            OnPropertyChanged();
-        }
-    }
-
     public bool ShowGrid
     {
         get => _showGrid;
         set
         {
             if (_showGrid == value) return;
+
             _showGrid = value;
             OnPropertyChanged();
         }
     }
 
     public RelayCommand<object> OpenInBrowserCommand { get; }
-    public AsyncRelayCommand GetProfileDetailsCommand { get; }
+    public AsyncRelayCommand<string> GetProfileDetailsCommand { get; }
     public RelayCommand<object> CopyToClipboardCommand { get; }
+    public RelayCommand ResetSelectedProfileCommand { get; }
     public AsyncRelayCommand<object> SelectProfileFromHistoryCommand { get; }
+
+    private void ResetSelectedProfile()
+    {
+        CurrentSteamProfile = SteamProfile.Empty;
+    }
 
     private void CopyText(object parameter)
     {
@@ -92,7 +86,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
         if (string.IsNullOrWhiteSpace(text)) return;
 
         Clipboard.SetText(text);
-        _notificationService.ShowNotification("Copied!");
+        _notificationService.ShowNotification("Text copied like a boss! Let's paste it where it belongs.");
     }
 
     private void OpenInBrowser(object parameter)
@@ -103,69 +97,71 @@ public class ProfileDataFetcherViewModel : ObservableObject
         var processStartInfo = new ProcessStartInfo { FileName = text, UseShellExecute = true };
         using var process = Process.Start(processStartInfo);
 
-        _notificationService.ShowNotification("Opened in the browser!");
+        _notificationService.ShowNotification("Time to open up that browser and see what we've got! Let's gooo!");
     }
 
     private async Task SelectProfileFromHistoryAsync(object parameter)
     {
         if (parameter is not SteamProfile steamProfile) return;
-        EnteredText = steamProfile.Request;
-        await RetrieveProfileInformationWithNotificationAsync();
+        await GetSteamProfileAsync(steamProfile.SteamID64);
     }
 
-    // Click or Enter => RetrieveProfileInformationWithNotification
-    // RetrieveProfileInformationWithNotification => RetrieveProfileInformation
-    // RetrieveProfileInformation => SelectProfile
-    // SelectProfile => SelectExistingProfile, SelectNewProfile
-    private async Task RetrieveProfileInformationWithNotificationAsync()
+    private async Task GetSteamProfileAsync(string text)
     {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            ResetSelectedProfile();
+            return;
+        }
+
         var start = Stopwatch.GetTimestamp();
-        var selected = await RetrieveProfileInformationAsync();
-        var responseTime = Stopwatch.GetElapsedTime(start);
-        var notification = selected
-            ? $"Found your profile in {responseTime.TotalSeconds:F1} seconds!"
-            : "Selection cleared!";
-        _notificationService.ShowNotification(notification);
-    }
+        _notificationService.ShowNotification("Hold tight, we're on the prowl for your profile!");
 
-    private async Task<bool> RetrieveProfileInformationAsync()
-    {
-        _notificationService.ShowNotification("Searching for your profile...");
         var factory = _serviceProvider.GetRequiredService<ISteamProfileService>();
-        var profile = await factory.GetProfileAsync(EnteredText);
-        return SelectProfile(profile);
+        var profile = await factory.GetProfileAsync(text);
+
+        if (profile.IsEmpty)
+        {
+            _notificationService.ShowNotification("Uh-oh, looks like this profile needs a bit of filling up!");
+            return;
+        }
+
+        SelectSteamProfile(profile);
+        _notificationService.ShowNotification(
+            $"Tada! Your profile has been found in just {Stopwatch.GetElapsedTime(start).TotalSeconds:F1} sec. flat!");
     }
 
-    private bool SelectProfile(SteamProfile steamProfile)
+    private void SelectSteamProfile(SteamProfile steamProfile)
     {
         if (steamProfile.IsEmpty)
         {
-            CurrentSteamProfile = SteamProfile.Empty;
-            return false;
+            ResetSelectedProfile();
+            return;
         }
 
-        if (SelectExistingProfile(steamProfile) is false) SelectNewProfile(steamProfile);
-        return true;
+        var existingProfile = SteamProfiles.FirstOrDefault(x => x.SteamID32.AsUInt == steamProfile.SteamID32.AsUInt);
+        if (existingProfile?.IsEmpty is false) SelectExistingSteamProfile(existingProfile);
+        else SelectNewSteamProfile(steamProfile);
     }
 
-    private bool SelectExistingProfile(SteamProfile newProfile)
+    private void SelectExistingSteamProfile(SteamProfile steamProfile)
     {
-        var existingProfile = SteamProfiles.FirstOrDefault(x => x.SteamID32.AsUInt == newProfile.SteamID32.AsUInt);
-        if (existingProfile is null) return false;
-
-        var oldIndex = SteamProfiles.IndexOf(existingProfile);
+        var oldIndex = SteamProfiles.IndexOf(steamProfile);
         SteamProfiles.Move(oldIndex, 0);
-        CurrentSteamProfile = existingProfile;
-        return true;
+        CurrentSteamProfile = steamProfile;
     }
 
-    private void SelectNewProfile(SteamProfile newProfile)
+    private void SelectNewSteamProfile(SteamProfile steamProfile)
     {
-        SteamProfiles.Insert(0, newProfile);
-        CurrentSteamProfile = newProfile;
+        SteamProfiles.Insert(0, steamProfile);
+        CurrentSteamProfile = steamProfile;
+        RemoveLastSteamProfile();
+    }
 
+    private void RemoveLastSteamProfile()
+    {
         if (SteamProfiles.Count <= 4) return;
-        var lastItem = SteamProfiles.Last();
-        SteamProfiles.Remove(lastItem);
+        var steamProfile = SteamProfiles.Last();
+        SteamProfiles.Remove(steamProfile);
     }
 }

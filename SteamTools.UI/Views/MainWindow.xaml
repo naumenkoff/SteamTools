@@ -8,60 +8,48 @@
         xmlns:behaviors="clr-namespace:SteamTools.UI.Behaviors"
         mc:Ignorable="d"
         Title="SteamTools"
-        MinHeight="380"
-        MinWidth="540"
-        Height="380"
-        Width="540"
-        Background="{StaticResource OverallApplicationBackgroundColor}"
+        MinHeight="530"
+        Height="530"
+        MinWidth="720"
+        Width="720"
+        UseLayoutRounding="True"
+        Background="#202020"
         d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}">
+
+    <!-- https://github.com/dotnet/wpf/issues/7769 -->
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="25" UseAeroCaptionButtons="False" CornerRadius="0" GlassFrameThickness="0"
+                      ResizeBorderThickness="5" />
+    </WindowChrome.WindowChrome>
 
     <b:Interaction.Behaviors>
         <behaviors:WindowBehavior />
     </b:Interaction.Behaviors>
 
-    <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="-1" CaptionHeight="0" ResizeBorderThickness="5" NonClientFrameEdges="None" />
-    </WindowChrome.WindowChrome>
+    <!-- https://github.com/dotnet/wpf/issues/7769 -->
 
     <Window.Resources>
 
         <Style x:Key="LogoTextBlock" TargetType="TextBlock">
-            <Setter Property="Opacity" Value="0.5" />
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="TextAlignment" Value="Left" />
+            <Setter Property="Margin" Value="7 0 0 0" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Foreground" Value="{StaticResource TextColor}" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
-            <Style.Triggers>
-                <EventTrigger RoutedEvent="TextBlock.MouseEnter">
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <DoubleAnimation
-                                Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                To="1" Duration="0:0:0.15" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-                <EventTrigger RoutedEvent="TextBlock.MouseLeave">
-                    <BeginStoryboard>
-                        <Storyboard>
-                            <DoubleAnimation
-                                Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                To="0.5" Duration="0:0:0.15" />
-                        </Storyboard>
-                    </BeginStoryboard>
-                </EventTrigger>
-            </Style.Triggers>
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+
+            <Setter Property="FontFamily" Value="Segoe UI Bold" />
+            <Setter Property="Foreground" Value="#777777" />
         </Style>
 
         <Style x:Key="NotificationTextBlock" TargetType="TextBlock">
+
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Bottom" />
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="{StaticResource TextColor}" />
             <Setter Property="Opacity" Value="0" />
+
+            <Setter Property="FontFamily" Value="Segoe UI SemiBold" />
+            <Setter Property="Foreground" Value="#777777" />
+
             <Style.Triggers>
                 <DataTrigger Binding="{Binding ShowNotification}" Value="True">
                     <DataTrigger.EnterActions>
@@ -80,13 +68,17 @@
                     </DataTrigger.ExitActions>
                 </DataTrigger>
             </Style.Triggers>
+
         </Style>
 
         <Style x:Key="ToggButton" TargetType="ToggleButton">
+            <Setter Property="Width" Value="72" />
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Opacity" Value="0.4" />
+            <Setter Property="Foreground" Value="White" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="#808080" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
+
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -97,110 +89,157 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Trigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <ColorAnimation Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)"
-                                                To="#ff5260" Duration="0:0:0.25" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </Trigger.EnterActions>
-                    <Trigger.ExitActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <ColorAnimation Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)"
-                                                To="#808080" Duration="0:0:0.25" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </Trigger.ExitActions>
-                </Trigger>
 
                 <Trigger Property="IsChecked" Value="True">
-                    <Setter Property="Background" Value="{StaticResource TopPanelActiveButtonColor}" />
+                    <Setter Property="Opacity" Value="1" />
                 </Trigger>
-                <Trigger Property="IsChecked" Value="False">
-                    <Setter Property="Background" Value="Transparent" />
-                </Trigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsMouseOver" Value="True" />
+                        <Condition Property="IsChecked" Value="False" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Opacity" Value="0.6" />
+                </MultiTrigger>
+
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsMouseOver" Value="True" />
+                        <Condition Property="IsChecked" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Opacity" Value="0.8" />
+                </MultiTrigger>
             </Style.Triggers>
         </Style>
 
         <Style x:Key="ApplicationStateControlButtons" TargetType="Button">
             <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontSize" Value="9" />
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Width" Value="36" />
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <Border Background="{TemplateBinding Background}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 BorderBrush="{TemplateBinding BorderBrush}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <TextBlock
+                                Padding="{TemplateBinding Padding}"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Text="{TemplateBinding Content}"
+                                TextOptions.TextRenderingMode="Grayscale"
+                                TextOptions.TextFormattingMode="Ideal" />
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="1" />
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Opacity" Value="0.8" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="CloseApplicationButton" TargetType="Button"
+               BasedOn="{StaticResource ApplicationStateControlButtons}">
+            <Setter Property="Content" Value="&#xE8BB;" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#c42b1c" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="MinimizeButton" TargetType="Button" BasedOn="{StaticResource ApplicationStateControlButtons}">
+            <Setter Property="Content" Value="&#xE949;" />
+            <Setter Property="Padding" Value="0 8 0 0" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#2d2d2d" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="MaximizeRestoreButton" TargetType="Button" BasedOn="{StaticResource MinimizeButton}">
+            <Setter Property="Content" Value="&#xE739;" />
+            <Setter Property="Padding" Value="0" />
+            <Style.Triggers>
+                <DataTrigger
+                    Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}"
+                    Value="{x:Static WindowState.Maximized}">
+                    <Setter Property="Content" Value="&#xE923;" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="WindowChromeGrid" TargetType="Grid">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Background" Value="#202020" />
+            <Style.Triggers>
+                <DataTrigger
+                    Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}"
+                    Value="{x:Static WindowState.Maximized}">
+                    <Setter Property="Margin" Value="8" />
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
 
     </Window.Resources>
 
-    <Grid>
+    <Grid Style="{StaticResource WindowChromeGrid}">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Background="#292b33">
-            <b:Interaction.Behaviors>
-                <behaviors:MoveWindowBehavior />
-            </b:Interaction.Behaviors>
+        <Grid Grid.Row="0">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" Style="{StaticResource LogoTextBlock}" Text="SteamTools" Padding="7 0 0 2" />
+            <TextBlock Grid.Column="0" Style="{StaticResource LogoTextBlock}" Text="SteamTools" />
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
 
                 <ToggleButton Style="{StaticResource ToggButton}"
-                              Width="65"
                               IsChecked="{Binding IsCurrentViewIDScanner, Mode=TwoWay}"
                               Content="Scan" />
 
                 <ToggleButton Style="{StaticResource ToggButton}"
-                              Width="65"
                               IsChecked="{Binding IsCurrentViewLocalProfileScanner, Mode=TwoWay}"
                               Content="Trace" />
 
                 <ToggleButton Style="{StaticResource ToggButton}"
-                              Width="65"
                               IsChecked="{Binding IsCurrentViewProfileDataFetcher, Mode=TwoWay}"
                               Content="Lookup" />
 
-                <Button Style="{StaticResource ApplicationStateControlButtons}"
-                        Width="50"
-                        Content="—">
+                <Button Style="{StaticResource MinimizeButton}">
                     <b:Interaction.Behaviors>
                         <behaviors:MinimizeWindowBehavior />
                     </b:Interaction.Behaviors>
                 </Button>
 
-                <Button Style="{StaticResource ApplicationStateControlButtons}"
-                        Width="50"
-                        Content="M">
+                <Button Style="{StaticResource MaximizeRestoreButton}">
                     <b:Interaction.Behaviors>
                         <behaviors:MaximizeWindowBehavior />
                     </b:Interaction.Behaviors>
                 </Button>
 
-                <Button Style="{StaticResource ApplicationStateControlButtons}"
-                        Width="50"
-                        Content="✕">
+                <Button Style="{StaticResource CloseApplicationButton}">
                     <b:Interaction.Behaviors>
                         <behaviors:CloseWindowBehavior />
                     </b:Interaction.Behaviors>
@@ -214,32 +253,6 @@
 
         <TextBlock Grid.Row="1" Style="{StaticResource NotificationTextBlock}"
                    Text="{Binding NotificationMessage.Text, Mode=OneWay}" />
-
-
-        <Grid.Style>
-            <Style TargetType="{x:Type Grid}">
-                <Style.Triggers>
-                    <DataTrigger
-                        Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}"
-                        Value="{x:Static WindowState.Maximized}">
-                        <DataTrigger.EnterActions>
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ThicknessAnimation To="8" Storyboard.TargetProperty="Margin" Duration="0" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </DataTrigger.EnterActions>
-                        <DataTrigger.ExitActions>
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <ThicknessAnimation To="0" Storyboard.TargetProperty="Margin" Duration="0" />
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </DataTrigger.ExitActions>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Grid.Style>
     </Grid>
 
 </Window>
