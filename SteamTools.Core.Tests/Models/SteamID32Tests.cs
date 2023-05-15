@@ -26,32 +26,6 @@ public class SteamID32Tests
     public string ToSteamID64_ShouldReturnCorrectSteamID64(uint steamID32)
     {
         var steamID = new SteamID32(steamID32);
-        return steamID.ToSteamID64();
-    }
-
-    [Test]
-    [TestCase(113621430u, ExpectedResult = "113621430")]
-    public string ImplicitConversionOperator_ShouldReturnID32AsString(uint id32)
-    {
-        var steamID32 = new SteamID32(id32);
-        return steamID32;
-    }
-
-    [Test]
-    [TestCase(76561198073887158, ExpectedResult = 113621430u)]
-    public uint Constructor_ShouldConvertSteamID64ToSteamID32(long id64)
-    {
-        var steamID64 = new SteamID64(id64);
-        var steamID32 = new SteamID32(steamID64);
-        return steamID32.AsUInt;
-    }
-
-
-    [Test]
-    [TestCase(113621430u, ExpectedResult = "113621430")]
-    public string ToString_ShouldReturnString(uint steamID32)
-    {
-        var steamID = new SteamID32(steamID32);
-        return steamID.ToString();
+        return steamID.ToSteamID64().AsString;
     }
 }

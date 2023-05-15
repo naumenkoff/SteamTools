@@ -1,0 +1,117 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+
+    <system:Double x:Key="RepeatButtonFillZoneHeight">8</system:Double>
+
+    <Style x:Key="RepeatButtonTransparentLeft" TargetType="{x:Type RepeatButton}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
+                          Background="{TemplateBinding Background}">
+                        <Border CornerRadius="4 0 0 4"
+                                Height="{StaticResource RepeatButtonFillZoneHeight}"
+                                Background="{TemplateBinding Foreground}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="RepeatButtonTransparentRight" TargetType="{x:Type RepeatButton}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Rectangle Fill="Transparent" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ControlTemplate x:Key="SliderThumbHorizontalDefault" TargetType="{x:Type Thumb}">
+        <Grid HorizontalAlignment="Center" UseLayoutRounding="True" VerticalAlignment="Center">
+            <Rectangle x:Name="grip" Width="8" Height="24" RadiusX="5" RadiusY="5" Fill="White" />
+        </Grid>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="SliderHorizontal" TargetType="{x:Type Slider}">
+        <Border x:Name="border" Background="Transparent" CornerRadius="4" ClipToBounds="True"
+                BorderThickness="0" SnapsToDevicePixels="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" x:Name="TrackBackground" Margin="3 0"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="4" ClipToBounds="True"
+                        Height="{StaticResource RepeatButtonFillZoneHeight}"
+                        VerticalAlignment="Center" />
+
+                <Track Grid.Row="0" x:Name="PART_Track" Margin="1 0">
+                    <Track.DecreaseRepeatButton>
+                        <RepeatButton Command="{x:Static Slider.DecreaseLarge}" Foreground="#7189FF"
+                                      Style="{StaticResource RepeatButtonTransparentLeft}" />
+                    </Track.DecreaseRepeatButton>
+                    <Track.IncreaseRepeatButton>
+                        <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                      Style="{StaticResource RepeatButtonTransparentRight}" />
+                    </Track.IncreaseRepeatButton>
+                    <Track.Thumb>
+                        <Thumb x:Name="Thumb" Focusable="False" Height="24" OverridesDefaultStyle="True"
+                               Cursor="SizeWE"
+                               Template="{StaticResource SliderThumbHorizontalDefault}" VerticalAlignment="Center"
+                               Width="8" />
+                    </Track.Thumb>
+                </Track>
+
+                <TextBlock Grid.Row="1" VerticalAlignment="Bottom" Margin="1 0 0 0" Foreground="#9a9a9a"
+                           HorizontalAlignment="Left"
+                           Text="{Binding Minimum, RelativeSource={RelativeSource TemplatedParent}}" />
+                <TextBlock Grid.Row="1" VerticalAlignment="Bottom" Margin="0 0 1 0" Foreground="#9a9a9a"
+                           HorizontalAlignment="Right"
+                           Text="{Binding Maximum, RelativeSource={RelativeSource TemplatedParent}}" />
+            </Grid>
+        </Border>
+    </ControlTemplate>
+
+    <Style TargetType="{x:Type ToolTip}">
+        <Setter Property="Background" Value="#2C2C2C" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Width" Value="35" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="ToolTipService.VerticalOffset" Value="-7" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <Border CornerRadius="5" Background="{TemplateBinding Background}"
+                            Width="{TemplateBinding Width}" BorderBrush="#1F1F1F" BorderThickness="1"
+                            Height="{TemplateBinding Height}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SliderStyle" TargetType="{x:Type Slider}">
+        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false" />
+        <Setter Property="Background" Value="#9a9a9a" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="MaxHeight" Value="36" />
+        <Setter Property="Template" Value="{StaticResource SliderHorizontal}" />
+        <Setter Property="AutoToolTipPlacement" Value="TopLeft" />
+    </Style>
+
+</ResourceDictionary>

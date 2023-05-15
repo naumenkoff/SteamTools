@@ -4,36 +4,20 @@ namespace SteamTools.Core.Models;
 
 public class SteamID64
 {
-    private readonly string _asString;
-
     public SteamID64(long steamID64)
     {
         AsLong = steamID64;
-        _asString = AsLong.ToString();
+        AsString = AsLong.ToString();
     }
 
     public SteamID64(SteamID32 steamID32)
     {
-        AsLong = SteamIDConverter.ToSteamID64(steamID32);
-        _asString = AsLong.ToString();
+        AsLong = SteamIDConverter.ToSteamID64(steamID32.AsUInt);
+        AsString = AsLong.ToString();
     }
 
     public long AsLong { get; }
-
-    public override string ToString()
-    {
-        return _asString;
-    }
-
-    public static implicit operator string(SteamID64 steamID64)
-    {
-        return steamID64._asString;
-    }
-
-    public static implicit operator long(SteamID64 steamID64)
-    {
-        return steamID64.AsLong;
-    }
+    public string AsString { get; }
 
     public SteamID32 ToSteamID32()
     {

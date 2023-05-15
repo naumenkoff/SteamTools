@@ -18,7 +18,7 @@
                     <Border x:Name="Bd" Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
-                        <ScrollViewer Style="{DynamicResource ScrollViewerStyle}" Focusable="false"
+                        <ScrollViewer Style="{StaticResource ScrollViewerStyle}" Focusable="false"
                                       Padding="{TemplateBinding Padding}">
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                             Margin="0 0 0 4" />

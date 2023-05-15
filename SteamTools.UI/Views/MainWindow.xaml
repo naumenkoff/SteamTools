@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         Title="SteamTools"
         MinHeight="530"
-        Height="530"
+        Height="535"
         MinWidth="720"
         Width="720"
         UseLayoutRounding="True"
@@ -25,6 +25,7 @@
 
     <b:Interaction.Behaviors>
         <behaviors:WindowBehavior />
+        <behaviors:ClearTextBoxFocusOnClickBehavior />
     </b:Interaction.Behaviors>
 
     <!-- https://github.com/dotnet/wpf/issues/7769 -->

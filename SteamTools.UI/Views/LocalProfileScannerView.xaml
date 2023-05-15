@@ -5,12 +5,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels"
              mc:Ignorable="d"
-             d:DesignHeight="335"
-             d:DesignWidth="540"
+             d:DesignHeight="510"
+             d:DesignWidth="720"
              Background="#202020"
              d:DataContext="{d:DesignInstance viewModels:LocalProfileScannerViewModel}">
     <Grid>
-        <ListView ItemsSource="{Binding Path=LocalProfiles}" DisplayMemberPath="Steam64" />
+        <ListView ItemsSource="{Binding Path=LocalProfiles}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="SteamID64" DisplayMemberBinding="{Binding Steam64.AsString}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
     <!--
     Здесь нужен один ListView.

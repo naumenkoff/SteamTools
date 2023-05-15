@@ -10,6 +10,8 @@ namespace SteamTools.UI.Behaviors;
 
 public class WindowBehavior : Behavior<Window>
 {
+    private const int Windows11 = 22000;
+
     [DllImport("dwmapi.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
     private static extern void DwmSetWindowAttribute(IntPtr hwnd,
         DWMWINDOWATTRIBUTE attribute,
@@ -30,6 +32,11 @@ public class WindowBehavior : Behavior<Window>
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        if (Environment.OSVersion.Version.Major < 10 || Environment.OSVersion.Version.Build < Windows11)
+        {
+            return;
+        }
+
         var window = Window.GetWindow(AssociatedObject);
         if (window is null) return;
 

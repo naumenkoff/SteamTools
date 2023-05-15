@@ -21,15 +21,15 @@ public class ClearTextBoxFocusOnClickBehavior : Behavior<FrameworkElement>
 
     private static void OnLostFocus(object sender, RoutedEventArgs e)
     {
-        Application.Current.MainWindow!.MouseLeftButtonUp -= OnMouseLeftButtonUp;
+        Application.Current.MainWindow!.MouseLeftButtonDown -= OnMouseLeftButtonDown;
     }
 
     private static void OnGotFocus(object sender, RoutedEventArgs e)
     {
-        Application.Current.MainWindow!.MouseLeftButtonUp += OnMouseLeftButtonUp;
+        Application.Current.MainWindow!.MouseLeftButtonDown += OnMouseLeftButtonDown;
     }
 
-    private static void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+    private static void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         Keyboard.ClearFocus();
     }

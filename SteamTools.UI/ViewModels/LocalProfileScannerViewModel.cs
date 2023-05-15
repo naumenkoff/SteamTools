@@ -1,17 +1,16 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using SteamTools.LocalProfileScanner;
 using SteamTools.LocalProfileScanner.Models;
-using SteamTools.LocalProfileScanner.Services;
+using SteamTools.LocalProfileScanner.Services.Interfaces;
 
 namespace SteamTools.UI.ViewModels;
 
 public class LocalProfileScannerViewModel : ObservableObject
 {
-    private readonly LocalProfileStorage _localProfileStorage;
-    private readonly ProfileScannerService _scannerService;
+    private readonly ILocalProfileStorage _localProfileStorage;
+    private readonly IProfileScannerService _scannerService;
 
-    public LocalProfileScannerViewModel(ProfileScannerService scannerService, LocalProfileStorage localProfileStorage)
+    public LocalProfileScannerViewModel(IProfileScannerService scannerService, ILocalProfileStorage localProfileStorage)
     {
         LocalProfiles = new ObservableCollection<ILocalProfile>();
         _localProfileStorage = localProfileStorage;

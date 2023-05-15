@@ -8,5 +8,4 @@ public interface ISteamClient
     DirectoryInfo UserdataDirectory { get; }
     DirectoryInfo GetSteamappsDirectory(FileSystemInfo steamLibraryPath);
     DirectoryInfo GetWorkshopDirectory(FileSystemInfo steamappsDirectory);
-    Task<HashSet<string>> GetFileExtensionsAsync();
 }

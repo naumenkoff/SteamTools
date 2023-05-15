@@ -14,14 +14,14 @@ public class ThumbHalfSizeConverter : IValueConverter
     /// </summary>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        var doubleValue = value switch
+        var size = value switch
         {
-            double dv => dv,
-            string tv when double.TryParse(tv, out var v) => v,
+            double doubleValue => doubleValue,
+            string stringValue when double.TryParse(stringValue, out var doubleValue) => doubleValue,
             _ => 0
         };
 
-        return doubleValue / 2;
+        return size / 2;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

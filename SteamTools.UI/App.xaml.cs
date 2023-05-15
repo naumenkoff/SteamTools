@@ -5,15 +5,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SteamTools.Core.Models.Steam;
 using SteamTools.Core.Services;
-using SteamTools.IDScanner.Models;
-using SteamTools.IDScanner.Services;
-using SteamTools.LocalProfileScanner;
-using SteamTools.LocalProfileScanner.Services;
-using SteamTools.ProfileDataFetcher.Clients;
-using SteamTools.ProfileDataFetcher.Providers;
-using SteamTools.ProfileDataFetcher.Services;
+using SteamTools.IDScanner.Factories.Implementations;
+using SteamTools.IDScanner.Factories.Interfaces;
+using SteamTools.LocalProfileScanner.Models;
+using SteamTools.LocalProfileScanner.Services.Implementations;
+using SteamTools.LocalProfileScanner.Services.Interfaces;
+using SteamTools.ProfileDataFetcher.Providers.Implementations;
+using SteamTools.ProfileDataFetcher.Providers.Interfaces;
+using SteamTools.ProfileDataFetcher.Services.Implementations;
+using SteamTools.ProfileDataFetcher.Services.Interfaces;
 using SteamTools.UI.Services.Navigation;
-using SteamTools.UI.Services.Notifications;
 using SteamTools.UI.ViewModels;
 using SteamTools.UI.Views;
 
@@ -37,7 +38,7 @@ public partial class App
     {
         var main = _serviceProvider.GetRequiredService<MainWindow>();
         var navigator = _serviceProvider.GetRequiredService<INavigationService>();
-        navigator.Navigate<ProfileDataFetcherViewModel>();
+        navigator.Navigate<IDScannerViewModel>();
         main.Show();
         base.OnStartup(e);
     }
@@ -71,16 +72,17 @@ public partial class App
         services.AddSingleton<ISteamApiClientCacheService, SteamApiClientCacheService>();
         services.AddSingleton<ISteamProfileRegexProvider, SteamProfileRegexProvider>();
         services.AddSingleton<ISteamClient, SteamClient>();
-        services.AddSingleton<INotificationService, PopupNotificationService>();
-        services.AddSingleton<LocalProfileStorage>();
+        services.AddSingleton<INotificationService, SimpleNotificationService>();
+        services.AddSingleton<ILocalProfileStorage, LocalProfileStorage>();
+        services.AddSingleton<IFileScannerFactory, FileScannerFactory>();
+        services.AddSingleton<ISteamIDValidatorFactory, SteamIDValidatorFactory>();
+        services.AddSingleton<IScanningServiceFactory, ScanningServiceFactory>();
 
         services.AddHttpClient<ISteamApiClient, SteamApiClient>();
         services.AddTransient<ISteamDirectoryFinder, SteamDirectoryFinder>();
         services.AddTransient<ISteamProfileTypeDetector, SteamProfileTypeDetector>();
         services.AddTransient<ISteamProfileService, SteamProfileService>();
-        services.AddTransient<ProfileScannerService>();
-        services.AddTransient<ScanningResult>();
-        services.AddTransient<IScanningService, ScanningService>();
+        services.AddTransient<IProfileScannerService, ProfileScannerService>();
 
         return services.BuildServiceProvider();
     }

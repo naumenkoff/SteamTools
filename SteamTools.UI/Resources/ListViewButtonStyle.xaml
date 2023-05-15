@@ -5,7 +5,6 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="18 0" />
-        <Setter Property="ClipToBounds" Value="True" />
         <Setter Property="MaxHeight" Value="36" />
         <Setter Property="MinHeight" Value="36" />
         <Setter Property="Template">
@@ -13,7 +12,6 @@
                 <ControlTemplate TargetType="{x:Type ButtonBase}">
                     <Border Background="{TemplateBinding Background}"
                             CornerRadius="5"
-                            ClipToBounds="{TemplateBinding ClipToBounds}"
                             MaxHeight="{TemplateBinding MaxHeight}"
                             MinHeight="{TemplateBinding MinHeight}" Padding="{TemplateBinding Padding}">
                         <TextBlock Foreground="White" VerticalAlignment="Center"

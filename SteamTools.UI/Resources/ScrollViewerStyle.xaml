@@ -48,7 +48,7 @@
         <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false" />
         <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+        <Setter Property="Foreground" Value="{StaticResource {x:Static SystemColors.ControlTextBrushKey}}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Width" Value="12" />
         <Setter Property="MinWidth" Value="12" />
@@ -240,7 +240,7 @@
                                                 Margin="{TemplateBinding Padding}" Grid.Row="0" />
                         <ScrollBar x:Name="PART_VerticalScrollBar"
                                    AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1"
-                                   Style="{DynamicResource ScrollBarStyle}"
+                                   Style="{StaticResource ScrollBarStyle}"
                                    Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0"
                                    Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                    ViewportSize="NaN"
@@ -248,7 +248,7 @@
                         <ScrollBar x:Name="PART_HorizontalScrollBar"
                                    AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow"
                                    Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0"
-                                   Style="{DynamicResource ScrollBarStyle}"
+                                   Style="{StaticResource ScrollBarStyle}"
                                    Orientation="Horizontal" Grid.Row="1"
                                    Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                    ViewportSize="NaN"

@@ -21,7 +21,7 @@ public class MainWindowViewModel : ObservableObject
         timer.Tick += DispatcherTimer_OnTick;
         timer.Start();
 
-        notificationService.NotificationReceived += OnNotificationReceived;
+        notificationService.Subscribe(OnNotificationReceived);
     }
 
     public bool IsCurrentViewIDScanner

@@ -26,7 +26,7 @@
                 <ResourceDictionary Source="Resources/ListViewStyle.xaml" />
                 <ResourceDictionary Source="Resources/HeaderValueBorderStyle.xaml" />
                 <ResourceDictionary Source="Resources/ListViewButtonStyle.xaml" />
-
+                <ResourceDictionary Source="Resources/SliderStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

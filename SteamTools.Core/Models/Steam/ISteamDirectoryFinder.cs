@@ -2,6 +2,5 @@
 
 public interface ISteamDirectoryFinder
 {
-    DirectoryInfo FindSteamDirectory();
-    bool IsSteamDirectoryValid(DirectoryInfo directoryInfo);
+    DirectoryInfo GetSteamDirectory();
 }

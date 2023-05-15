@@ -14,6 +14,7 @@ public static class FileSystemHelper
 
     private static T GetFileSystemInfo<T>(params string[] paths) where T : FileSystemInfo
     {
+        if (paths is null) return null;
         if (paths.Any(string.IsNullOrEmpty)) return null;
 
         var path = Path.Combine(paths);
@@ -40,9 +41,8 @@ public static class FileSystemHelper
             var content = streamReader.ReadToEnd();
             return content;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine($"Unable to read file: {ex.Message}");
             return null;
         }
     }

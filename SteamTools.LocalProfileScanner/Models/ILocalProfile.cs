@@ -1,16 +1,16 @@
-﻿using SteamTools.LocalProfileScanner.Models.ProfileData;
+﻿using SteamTools.Core.Models;
 
 namespace SteamTools.LocalProfileScanner.Models;
 
-public interface ILocalProfile : ISteamID
+public interface ILocalProfile : ISteamIDPair
 {
-    IReadOnlyCollection<AppmanifestData> Appmanifest { get; }
-    IReadOnlyCollection<AppworkshopData> Appworkshop { get; }
+    IEnumerable<AppmanifestData> Appmanifest { get; }
+    IEnumerable<AppworkshopData> Appworkshop { get; }
     UserdataData Userdata { get; }
     ConfigData Config { get; }
     LoginusersData Loginusers { get; }
     RegistryData Registry { get; }
     int DetectionsCount { get; }
     public string GetLogin();
-    void Attach(ISteamID account);
+    void Attach(ISteamIDPair account);
 }

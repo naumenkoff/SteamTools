@@ -35,17 +35,51 @@
                                 </Border.Background>
                             </Border>
 
-                            <models:StackPanelWithSpacing Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Foreground="White" VerticalAlignment="Center"
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock x:Name="PART_Header" Foreground="White" VerticalAlignment="Center"
                                            FontFamily="Segoe UI Bold"
                                            Text="{TemplateBinding Header}" />
-                                <TextBlock Foreground="White" VerticalAlignment="Center"
+                                <TextBlock x:Name="PART_Value" Foreground="White" VerticalAlignment="Center"
                                            Text="{TemplateBinding Value}" />
-                            </models:StackPanelWithSpacing>
+                            </StackPanel>
 
 
                         </Grid>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="PreviewMouseDown">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimationUsingKeyFrames
+                                        Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)">
+                                        <LinearColorKeyFrame Value="#292929" KeyTime="00:00:00" />
+                                    </ColorAnimationUsingKeyFrames>
+                                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="PART_Header"
+                                                                  Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)">
+                                        <EasingColorKeyFrame KeyTime="0:0:0.25" Value="#FF7189FF" />
+                                        <EasingColorKeyFrame KeyTime="0:0:1.00" Value="#FF7189FF" />
+                                        <EasingColorKeyFrame KeyTime="0:0:1.25" Value="White" />
+                                    </ColorAnimationUsingKeyFrames>
+                                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="PART_Value"
+                                                                  Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)">
+                                        <EasingColorKeyFrame KeyTime="0:0:0.25" Value="#AA7189FF" />
+                                        <EasingColorKeyFrame KeyTime="0:0:1.00" Value="#AA7189FF" />
+                                        <EasingColorKeyFrame KeyTime="0:0:1.25" Value="White" />
+                                    </ColorAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="PreviewMouseUp">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimationUsingKeyFrames
+                                        Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)">
+                                        <LinearColorKeyFrame Value="#2d2d2d" KeyTime="00:00:00" />
+                                    </ColorAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -69,27 +103,6 @@
                 </MultiTrigger.Conditions>
                 <Setter Property="Background" Value="#292929" />
             </MultiTrigger>
-
-            <EventTrigger RoutedEvent="PreviewMouseDown">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <ColorAnimationUsingKeyFrames
-                            Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)">
-                            <LinearColorKeyFrame Value="#292929" KeyTime="00:00:00" />
-                        </ColorAnimationUsingKeyFrames>
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-            <EventTrigger RoutedEvent="PreviewMouseUp">
-                <BeginStoryboard>
-                    <Storyboard>
-                        <ColorAnimationUsingKeyFrames
-                            Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)">
-                            <LinearColorKeyFrame Value="#2d2d2d" KeyTime="00:00:00" />
-                        </ColorAnimationUsingKeyFrames>
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
         </Style.Triggers>
     </Style>
 </ResourceDictionary>

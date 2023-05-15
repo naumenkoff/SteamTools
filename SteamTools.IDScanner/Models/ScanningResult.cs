@@ -1,15 +1,15 @@
-﻿using System.Collections.Concurrent;
-
-namespace SteamTools.IDScanner.Models;
+﻿namespace SteamTools.IDScanner.Models;
 
 public class ScanningResult : IScanningResult, IScanningResultWriter
 {
-    private readonly ConcurrentBag<string> _paths;
+    private readonly List<string> _paths;
 
-    public ScanningResult()
+    private ScanningResult()
     {
-        _paths = new ConcurrentBag<string>();
+        _paths = new List<string>();
     }
+
+    public static ScanningResult Empty => new();
 
     public int TotalFiles { get; private set; }
     public int TotalScannedFiles { get; private set; }

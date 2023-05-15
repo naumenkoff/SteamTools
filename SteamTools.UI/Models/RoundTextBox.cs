@@ -16,17 +16,17 @@ public class RoundTextBox : TextBox
     public static readonly DependencyProperty PlaceholderForegroundProperty =
         DependencyProperty.Register(nameof(PlaceholderForeground), typeof(Brush), typeof(RoundTextBox));
 
-    public static readonly DependencyProperty SearchButtonCommandProperty = DependencyProperty.Register(
-        nameof(SearchButtonCommand),
-        typeof(ICommand), typeof(RoundTextBox), new FrameworkPropertyMetadata((ICommand)null));
+    public static readonly DependencyProperty SearchButtonCommandProperty =
+        DependencyProperty.Register(nameof(SearchButtonCommand), typeof(ICommand), typeof(RoundTextBox),
+            new FrameworkPropertyMetadata((ICommand)null));
 
     public static readonly DependencyProperty SearchButtonCommandParameterProperty =
         DependencyProperty.Register(nameof(SearchButtonCommandParameter), typeof(object), typeof(RoundTextBox),
             new FrameworkPropertyMetadata((object)null));
 
-    public static readonly DependencyProperty ClearButtonShouldHideProperty =
-        DependencyProperty.Register(nameof(ClearButtonShouldHide), typeof(bool), typeof(RoundTextBox),
-            new FrameworkPropertyMetadata(true));
+    public static readonly DependencyProperty SearchButtonVisibilityProperty =
+        DependencyProperty.Register(nameof(SearchButtonVisibility), typeof(Visibility), typeof(RoundTextBox),
+            new FrameworkPropertyMetadata(Visibility.Visible));
 
     public static readonly DependencyProperty ClearButtonCommandProperty =
         DependencyProperty.Register(nameof(ClearButtonCommand), typeof(ICommand), typeof(RoundTextBox),
@@ -37,24 +37,14 @@ public class RoundTextBox : TextBox
             new FrameworkPropertyMetadata((object)null));
 
     public static readonly DependencyProperty ClearButtonVisibilityProperty =
-        DependencyProperty.Register(nameof(ClearButtonVisibility), typeof(Visibility), typeof(RoundTextBox));
-
-    public static readonly DependencyProperty SearchButtonVisibilityProperty =
-        DependencyProperty.Register(nameof(SearchButtonVisibility), typeof(Visibility), typeof(RoundTextBox));
+        DependencyProperty.Register(nameof(ClearButtonVisibility), typeof(Visibility), typeof(RoundTextBox),
+            new FrameworkPropertyMetadata(Visibility.Collapsed));
 
     public static readonly DependencyProperty ClearButtonUsesBehaviorProperty =
         DependencyProperty.Register(nameof(ClearButtonUsesBehavior), typeof(bool), typeof(RoundTextBox),
             new FrameworkPropertyMetadata(true));
 
-
-    /// <summary>
-    ///     Determines whether the clear button should be hidden when the textbox is empty.
-    /// </summary>
-    public bool ClearButtonShouldHide
-    {
-        get => (bool)GetValue(ClearButtonShouldHideProperty);
-        set => SetValue(ClearButtonShouldHideProperty, value);
-    }
+    private RoundButton _clearButton;
 
     /// <summary>
     ///     Determines whether the clear button should clear the contents of the textbox.
@@ -144,5 +134,19 @@ public class RoundTextBox : TextBox
     {
         get => (Brush)GetValue(PlaceholderForegroundProperty);
         set => SetValue(PlaceholderForegroundProperty, value);
+    }
+
+    public override void OnApplyTemplate()
+    {
+        base.OnApplyTemplate();
+
+        _clearButton = GetTemplateChild("PART_ClearButton") as RoundButton;
+
+        if (_clearButton != null) _clearButton.Click += ClearButtonClick;
+    }
+
+    private void ClearButtonClick(object sender, RoutedEventArgs e)
+    {
+        if (ClearButtonUsesBehavior) Text = string.Empty;
     }
 }

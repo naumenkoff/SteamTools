@@ -1,6 +1,5 @@
 ﻿using SteamTools.Core.Models;
 using SteamTools.Core.Utilities;
-using SteamTools.LocalProfileScanner.Models.ProfileData;
 
 namespace SteamTools.LocalProfileScanner.Models;
 
@@ -9,7 +8,7 @@ public class LocalProfile : ILocalProfile
     private readonly List<AppmanifestData> _appmanifest;
     private readonly List<AppworkshopData> _appworkshop;
 
-    public LocalProfile(ISteamID steamData)
+    public LocalProfile(ISteamIDPair steamData)
     {
         Steam32 = steamData.Steam32;
         Steam64 = steamData.Steam64;
@@ -17,8 +16,8 @@ public class LocalProfile : ILocalProfile
         _appworkshop = new List<AppworkshopData>();
     }
 
-    public IReadOnlyCollection<AppmanifestData> Appmanifest => _appmanifest;
-    public IReadOnlyCollection<AppworkshopData> Appworkshop => _appworkshop;
+    public IEnumerable<AppmanifestData> Appmanifest => _appmanifest;
+    public IEnumerable<AppworkshopData> Appworkshop => _appworkshop;
     public UserdataData Userdata { get; private set; }
     public ConfigData Config { get; private set; }
     public LoginusersData Loginusers { get; private set; }
@@ -36,7 +35,7 @@ public class LocalProfile : ILocalProfile
     public SteamID32 Steam32 { get; }
     public SteamID64 Steam64 { get; }
 
-    public void Attach(ISteamID account)
+    public void Attach(ISteamIDPair account)
     {
         if (SteamIDValidator.IsSteamID64(account.Steam64.AsLong) is false) return;
 

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +16,7 @@ using SteamTools.Core.Models;
 using SteamTools.Core.Models.Steam;
 using SteamTools.Core.Services;
 using SteamTools.Core.Utilities;
-using SteamTools.IDScanner.Services;
+using SteamTools.IDScanner.Factories.Interfaces;
 using SteamTools.UI.Models;
 using ByteConverter = SteamTools.Core.Utilities.ByteConverter;
 
@@ -34,6 +36,8 @@ public class IDScannerViewModel : ObservableObject
     private bool _limitFileSize = true;
     private ObservableCollection<string> _matchingFiles;
     private int _maxFileSizeInMb = 1;
+
+    private int _processors;
     private bool _useSelectedExtensions;
 
     public IDScannerViewModel(ISteamClient steamClient, INotificationService notificationService,
@@ -57,6 +61,7 @@ public class IDScannerViewModel : ObservableObject
         CancelScanCommand = new RelayCommand(CancelScan);
         OpenInExplorerCommand = new RelayCommand<string>(OpenInExplorer);
         MatchingFiles = new ObservableCollection<string>();
+        Processors = Math.Max(Environment.ProcessorCount / 2, 1);
     }
 
     /// <summary>
@@ -104,7 +109,7 @@ public class IDScannerViewModel : ObservableObject
             if (_limitFileSize == value) return;
 
             _limitFileSize = value;
-            if (value is false) _notificationService.ShowNotification("Life is short, don't disable limits!");
+            if (value is false) _notificationService.RegisterNotification("Life is short, don't disable limits!");
             OnPropertyChanged();
         }
     }
@@ -120,7 +125,7 @@ public class IDScannerViewModel : ObservableObject
             if (_maxFileSizeInMb == value) return;
 
             _maxFileSizeInMb = Math.Min(Math.Max(0, value), 1024);
-            if (value > 5) _notificationService.ShowNotification("Size matters, limit it wisely!");
+            if (value > 5) _notificationService.RegisterNotification("Size matters, limit it wisely!");
             OnPropertyChanged();
         }
     }
@@ -177,6 +182,18 @@ public class IDScannerViewModel : ObservableObject
 
     public RelayCommand SelectDefaultExtensionsCommand { get; }
 
+    public int Processors
+    {
+        get => _processors;
+        set
+        {
+            if (_processors == value) return;
+
+            _processors = value;
+            OnPropertyChanged();
+        }
+    }
+
     /// <summary>
     ///     Opens the file explorer and selects the file at the given path.
     /// </summary>
@@ -197,7 +214,7 @@ public class IDScannerViewModel : ObservableObject
     {
         if (SteamIDValidator.IsSteamID64(query) is false)
         {
-            _notificationService.ShowNotification("This doesn't look like a SteamID64, please try again.");
+            _notificationService.RegisterNotification("This doesn't look like a SteamID64, please try again.");
             return;
         }
 
@@ -207,23 +224,24 @@ public class IDScannerViewModel : ObservableObject
         var extensions = _useSelectedExtensions ? GetSelectedExtensions() : Array.Empty<string>();
         var size = _limitFileSize ? ByteConverter.ConvertFromMegabytes(_maxFileSizeInMb) : 0;
         var steamID64 = new SteamID64(long.Parse(query));
-        var scanningService = _serviceProvider.GetRequiredService<IScanningService>();
+        var scanningServiceFactory = _serviceProvider.GetRequiredService<IScanningServiceFactory>();
 
         try
         {
-            _notificationService.ShowNotification("Keep your eyes open, scanning starts now!");
+            _notificationService.RegisterNotification("Keep your eyes open, scanning starts now!");
 
-            var result = await scanningService.StartScanningAsync(steamID64, _limitFileSize, size,
-                _useSelectedExtensions,
-                _cancellationTokenSource.Token, extensions).ConfigureAwait(false);
+            var scanningService = scanningServiceFactory.Create(steamID64, _limitFileSize, size,
+                _useSelectedExtensions, Processors,
+                _cancellationTokenSource.Token, extensions);
+            var result = await scanningService.StartScanningAsync().ConfigureAwait(false);
             MatchingFiles = new ObservableCollection<string>(result.GetResultSortedByLength());
 
-            _notificationService.ShowNotification(
+            _notificationService.RegisterNotification(
                 $"We're done scanning! It took {Stopwatch.GetElapsedTime(start).TotalSeconds:F1} seconds to scan {result.TotalScannedFiles} out of {result.TotalFiles} files!");
         }
         catch (TaskCanceledException)
         {
-            _notificationService.ShowNotification("Scanning has been cancelled.");
+            _notificationService.RegisterNotification("Scanning has been cancelled.");
         }
         finally
         {
@@ -238,13 +256,13 @@ public class IDScannerViewModel : ObservableObject
     {
         if (_isScanning is false)
         {
-            _notificationService.ShowNotification("Nothing to cancel - there are no active scanning processes.");
+            _notificationService.RegisterNotification("Nothing to cancel - there are no active scanning processes.");
             return;
         }
 
         _cancellationTokenSource?.Cancel();
         _cancellationTokenSource = new CancellationTokenSource();
-        _notificationService.ShowNotification("Cancelling scan. Please wait...");
+        _notificationService.RegisterNotification("Cancelling scan. Please wait...");
     }
 
     /// <summary>
@@ -253,7 +271,7 @@ public class IDScannerViewModel : ObservableObject
     /// <returns>An array of selected file extensions in the format "*.[extension]".</returns>
     private string[] GetSelectedExtensions()
     {
-        return (from extension in _availableExtensions where extension.Selected select "*" + extension.Extension)
+        return (from extension in _availableExtensions where extension.Selected select extension.Extension)
             .ToArray();
     }
 
@@ -271,13 +289,23 @@ public class IDScannerViewModel : ObservableObject
     /// </summary>
     private async void LoadSearchExtensionsAsync() // skipcq: CS-R1005
     {
-        var hashSet = await _steamClient.GetFileExtensionsAsync();
+        var hashSet = await GetFileExtensions();
         var searchExtensions = (from extension in hashSet
             where string.IsNullOrWhiteSpace(extension) is false
             select new SearchExtension(extension)).ToList();
         _availableExtensions =
             new ObservableCollection<SearchExtension>(searchExtensions.OrderBy(x => x.Extension.Length));
         await UpdateCollectionViewSourceAsync();
+    }
+
+    private Task<HashSet<string>> GetFileExtensions()
+    {
+        var hashSet = new HashSet<string>();
+        foreach (var extension in _steamClient.SteamLibraries
+                     .Select(directory =>
+                         directory.GetFiles("*.*", SearchOption.AllDirectories).Select(x => x.Extension))
+                     .SelectMany(extensions => extensions)) hashSet.Add(extension);
+        return Task.FromResult(hashSet);
     }
 
     private void SelectDefaultExtensions()

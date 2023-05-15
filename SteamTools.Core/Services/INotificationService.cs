@@ -4,6 +4,6 @@ namespace SteamTools.Core.Services;
 
 public interface INotificationService
 {
-    event EventHandler<NotificationMessage> NotificationReceived;
-    void ShowNotification(string message);
+    void Subscribe(EventHandler<NotificationMessage> eventHandler);
+    void RegisterNotification(string message);
 }

@@ -9,7 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using SteamTools.Core.Services;
 using SteamTools.ProfileDataFetcher.Models;
-using SteamTools.ProfileDataFetcher.Services;
+using SteamTools.ProfileDataFetcher.Services.Interfaces;
 
 namespace SteamTools.UI.ViewModels;
 
@@ -84,9 +84,15 @@ public class ProfileDataFetcherViewModel : ObservableObject
     {
         var text = parameter.ToString();
         if (string.IsNullOrWhiteSpace(text)) return;
-
-        Clipboard.SetText(text);
-        _notificationService.ShowNotification("Text copied like a boss! Let's paste it where it belongs.");
+        try
+        {
+            Clipboard.SetText(text);
+            _notificationService.RegisterNotification("Text copied like a boss! Let's paste it where it belongs");
+        }
+        catch
+        {
+            _notificationService.RegisterNotification("System clipboard is unavailable");
+        }
     }
 
     private void OpenInBrowser(object parameter)
@@ -97,13 +103,13 @@ public class ProfileDataFetcherViewModel : ObservableObject
         var processStartInfo = new ProcessStartInfo { FileName = text, UseShellExecute = true };
         using var process = Process.Start(processStartInfo);
 
-        _notificationService.ShowNotification("Time to open up that browser and see what we've got! Let's gooo!");
+        _notificationService.RegisterNotification("Time to open up that browser and see what we've got! Let's gooo!");
     }
 
     private async Task SelectProfileFromHistoryAsync(object parameter)
     {
         if (parameter is not SteamProfile steamProfile) return;
-        await GetSteamProfileAsync(steamProfile.SteamID64);
+        await GetSteamProfileAsync(steamProfile.SteamID64.AsString);
     }
 
     private async Task GetSteamProfileAsync(string text)
@@ -115,19 +121,19 @@ public class ProfileDataFetcherViewModel : ObservableObject
         }
 
         var start = Stopwatch.GetTimestamp();
-        _notificationService.ShowNotification("Hold tight, we're on the prowl for your profile!");
+        _notificationService.RegisterNotification("Hold tight, we're on the prowl for your profile!");
 
         var factory = _serviceProvider.GetRequiredService<ISteamProfileService>();
         var profile = await factory.GetProfileAsync(text);
 
         if (profile.IsEmpty)
         {
-            _notificationService.ShowNotification("Uh-oh, looks like this profile needs a bit of filling up!");
+            _notificationService.RegisterNotification("Uh-oh, looks like this profile needs a bit of filling up!");
             return;
         }
 
         SelectSteamProfile(profile);
-        _notificationService.ShowNotification(
+        _notificationService.RegisterNotification(
             $"Tada! Your profile has been found in just {Stopwatch.GetElapsedTime(start).TotalSeconds:F1} sec. flat!");
     }
 

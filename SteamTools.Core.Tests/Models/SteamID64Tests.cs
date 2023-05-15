@@ -6,11 +6,11 @@ namespace SteamTools.Core.Tests.Models;
 public class SteamID64Tests
 {
     [Test]
-    [TestCase(76561198073887158, ExpectedResult = 113621430u)]
-    public uint ToSteamID32_ShouldReturnCorrectSteamID32(long steamID64)
+    [TestCase(76561198073887158, ExpectedResult = "113621430")]
+    public string ToSteamID32_ShouldReturnCorrectSteamID32(long steamID64)
     {
         var steamID = new SteamID64(steamID64);
-        return steamID.ToSteamID32().AsUInt;
+        return steamID.ToSteamID32().AsString;
     }
 
     [Test]
@@ -19,13 +19,5 @@ public class SteamID64Tests
     {
         var steamID = new SteamID64(steamID64);
         return steamID.ToSteamPermanentUrl();
-    }
-
-    [Test]
-    [TestCase(76561198073887158, ExpectedResult = "76561198073887158")]
-    public string ToString_ShouldReturnString(long steamID64)
-    {
-        var steamID = new SteamID64(steamID64);
-        return steamID.ToString();
     }
 }

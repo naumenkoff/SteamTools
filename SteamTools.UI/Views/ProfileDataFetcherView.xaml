@@ -7,7 +7,7 @@
              xmlns:models="clr-namespace:SteamTools.UI.Models"
              mc:Ignorable="d"
              Background="#202020"
-             d:DesignHeight="505"
+             d:DesignHeight="510"
              d:DesignWidth="720"
              d:DataContext="{d:DesignInstance viewModels:ProfileDataFetcherViewModel}">
 
@@ -27,7 +27,7 @@
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
 
-        <Style x:Key="FadeInOutGrid" TargetType="Border">
+        <Style x:Key="FadeInOutGrid" TargetType="Grid">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding ShowGrid}" Value="True">
                     <DataTrigger.EnterActions>
@@ -77,7 +77,7 @@
         <Style x:Key="HistoryBorder" TargetType="Border">
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Padding" Value="0 0 0 60" />
+            <Setter Property="Padding" Value="0 0 0 40" />
             <Style.Triggers>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
@@ -88,7 +88,7 @@
                     <MultiDataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ThicknessAnimation BeginTime="0:0:0.25" Duration="0:0:0.25"
+                                <ThicknessAnimation BeginTime="0:0:0.25" Duration="0:0:0.15"
                                                     Storyboard.TargetProperty="Padding"
                                                     To="0" FillBehavior="HoldEnd" />
                             </Storyboard>
@@ -97,9 +97,9 @@
                     <MultiDataTrigger.ExitActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ThicknessAnimation BeginTime="0:0:0.25" Duration="0:0:0.25"
+                                <ThicknessAnimation BeginTime="0:0:0.25" Duration="0:0:0.15"
                                                     Storyboard.TargetProperty="Padding"
-                                                    To="0 0 0 60" FillBehavior="Stop" />
+                                                    To="0 0 0 40" FillBehavior="Stop" />
                             </Storyboard>
                         </BeginStoryboard>
                     </MultiDataTrigger.ExitActions>
@@ -108,7 +108,7 @@
                     <DataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ThicknessAnimation Duration="0:0:0.25" Storyboard.TargetProperty="Padding"
+                                <ThicknessAnimation Duration="0:0:0.15" Storyboard.TargetProperty="Padding"
                                                     To="0 0 0 0" FillBehavior="HoldEnd" />
                             </Storyboard>
                         </BeginStoryboard>
@@ -116,8 +116,8 @@
                     <DataTrigger.ExitActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ThicknessAnimation Duration="0:0:0.25" Storyboard.TargetProperty="Padding"
-                                                    To="0 0 0 60" FillBehavior="Stop" />
+                                <ThicknessAnimation Duration="0:0:0.15" Storyboard.TargetProperty="Padding"
+                                                    To="0 0 0 40" FillBehavior="Stop" />
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.ExitActions>
@@ -162,7 +162,7 @@
                         <TextBlock Style="{StaticResource TextBlockForHistory}">
                             <Hyperlink CommandParameter="{Binding}" Foreground="#a0a0a0"
                                        Command="{Binding DataContext.SelectProfileFromHistoryCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
-                                <Run Text="{Binding SteamID64, Mode=OneWay}" />
+                                <Run Text="{Binding SteamID64.AsString, Mode=OneWay}" />
                             </Hyperlink>
                         </TextBlock>
                     </DataTemplate>
@@ -170,54 +170,52 @@
             </ItemsControl>
         </Border>
 
-        <Border CornerRadius="5" ClipToBounds="True" Style="{StaticResource FadeInOutGrid}" Grid.Row="2">
-
-            <models:StackPanelWithSpacing Spacing="0 5">
-
-                <models:HeaderValueBorder Header="Name"
+        <Grid Grid.Row="2" Style="{StaticResource FadeInOutGrid}">
+            <Rectangle Style="{StaticResource RectangleStyle}" />
+            <StackPanel Margin="1">
+                <models:HeaderValueBorder Header="Name" Margin="5 5 5 0"
                                           ImageSource="{Binding CurrentSteamProfile, Converter={StaticResource ProfileImageConverter}}"
                                           Value="{Binding CurrentSteamProfile.PlayerSummaries.PersonaName}"
                                           ImageVisibility="Visible"
                                           Command="{Binding CopyToClipboardCommand}"
                                           CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.PersonaName}" />
 
-                <models:HeaderValueBorder Header="SteamID"
+                <models:HeaderValueBorder Header="SteamID" Margin="5 5 5 0"
                                           Value="{Binding CurrentSteamProfile.SteamID}"
                                           Command="{Binding CopyToClipboardCommand}"
                                           CommandParameter="{Binding CurrentSteamProfile.SteamID}" />
 
-                <models:HeaderValueBorder Header="SteamID3"
+                <models:HeaderValueBorder Header="SteamID3" Margin="5 5 5 0"
                                           Value="{Binding CurrentSteamProfile.SteamID3}"
                                           Command="{Binding CopyToClipboardCommand}"
                                           CommandParameter="{Binding CurrentSteamProfile.SteamID3}" />
 
-                <models:HeaderValueBorder Header="SteamID32"
-                                          Value="{Binding CurrentSteamProfile.SteamID32}"
+                <models:HeaderValueBorder Header="SteamID32" Margin="5 5 5 0"
+                                          Value="{Binding CurrentSteamProfile.SteamID32.AsString}"
                                           Command="{Binding CopyToClipboardCommand}"
-                                          CommandParameter="{Binding CurrentSteamProfile.SteamID32}" />
+                                          CommandParameter="{Binding CurrentSteamProfile.SteamID32.AsString}" />
 
-                <models:HeaderValueBorder Header="SteamID64"
-                                          Value="{Binding CurrentSteamProfile.SteamID64}"
+                <models:HeaderValueBorder Header="SteamID64" Margin="5 5 5 0"
+                                          Value="{Binding CurrentSteamProfile.SteamID64.AsString}"
                                           Command="{Binding CopyToClipboardCommand}"
-                                          CommandParameter="{Binding CurrentSteamProfile.SteamID64}" />
+                                          CommandParameter="{Binding CurrentSteamProfile.SteamID64.AsString}" />
 
-                <models:HeaderValueBorder Header="Custom URL"
+                <models:HeaderValueBorder Header="Custom URL" Margin="5 5 5 0"
                                           Value="{Binding CurrentSteamProfile.PlayerSummaries.ProfileUrl}"
                                           Command="{Binding OpenInBrowserCommand}"
                                           CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.ProfileUrl}" />
 
-                <models:HeaderValueBorder Header="Permanent URL"
+                <models:HeaderValueBorder Header="Permanent URL" Margin="5 5 5 0"
                                           Value="{Binding CurrentSteamProfile.ProfilePermanentUrl}"
                                           Command="{Binding OpenInBrowserCommand}"
                                           CommandParameter="{Binding CurrentSteamProfile.ProfilePermanentUrl}" />
 
-                <models:HeaderValueBorder Header="Avatar URL"
+                <models:HeaderValueBorder Header="Avatar URL" Margin="5"
                                           Value="{Binding CurrentSteamProfile.PlayerSummaries.AvatarFull}"
                                           Command="{Binding OpenInBrowserCommand}"
                                           CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.AvatarFull}" />
 
-            </models:StackPanelWithSpacing>
-
-        </Border>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>
