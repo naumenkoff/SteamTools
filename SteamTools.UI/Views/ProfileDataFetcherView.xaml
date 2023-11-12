@@ -139,6 +139,7 @@
                              Style="{StaticResource TextBoxWithPlaceholder}"
                              CornerRadius="5"
                              TextAlignment="Left"
+                             Text="{Binding CachedText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              ClearButtonCommand="{Binding ResetSelectedProfileCommand}"
                              SearchButtonCommand="{Binding GetProfileDetailsCommand}"
                              SearchButtonCommandParameter="{Binding Text, RelativeSource={RelativeSource Self}}"

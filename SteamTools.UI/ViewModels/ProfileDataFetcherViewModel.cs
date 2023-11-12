@@ -18,6 +18,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
     private readonly INotificationService _notificationService;
     private readonly IServiceProvider _serviceProvider;
     private readonly ObservableCollection<SteamProfile> _steamProfiles;
+    private string _cachedText;
     private SteamProfile _currentSteamProfile;
     private bool _showGrid;
 
@@ -65,6 +66,18 @@ public class ProfileDataFetcherViewModel : ObservableObject
             if (_showGrid == value) return;
 
             _showGrid = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CachedText
+    {
+        get => _cachedText;
+        set
+        {
+            if (_cachedText == value) return;
+
+            _cachedText = value;
             OnPropertyChanged();
         }
     }
