@@ -7,9 +7,8 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using SteamTools.Core.Services;
-using SteamTools.ProfileDataFetcher.Models;
-using SteamTools.ProfileDataFetcher.Services.Interfaces;
+using SteamTools.Domain.Models;
+using SteamTools.Domain.Services;
 
 namespace SteamTools.UI.ViewModels;
 
@@ -29,7 +28,6 @@ public class ProfileDataFetcherViewModel : ObservableObject
 
         CurrentSteamProfile = SteamProfile.Empty;
         SteamProfiles = new ObservableCollection<SteamProfile>();
-
         GetProfileDetailsCommand = new AsyncRelayCommand<string>(GetSteamProfileAsync);
         CopyToClipboardCommand = new RelayCommand<object>(CopyText);
         OpenInBrowserCommand = new RelayCommand<object>(OpenInBrowser);
@@ -52,7 +50,9 @@ public class ProfileDataFetcherViewModel : ObservableObject
         get => _currentSteamProfile;
         private set
         {
-            ShowGrid = string.IsNullOrWhiteSpace(value.SteamID) is false;
+            if (_currentSteamProfile == value) return;
+
+            ShowGrid = value.ExistOnline;
             _currentSteamProfile = value;
             OnPropertyChanged();
         }
@@ -97,15 +97,13 @@ public class ProfileDataFetcherViewModel : ObservableObject
     {
         var text = parameter.ToString();
         if (string.IsNullOrWhiteSpace(text)) return;
+
         try
         {
             Clipboard.SetText(text);
-            _notificationService.RegisterNotification("Text copied like a boss! Let's paste it where it belongs");
+            _notificationService.RegisterNotification("Copied");
         }
-        catch
-        {
-            _notificationService.RegisterNotification("System clipboard is unavailable");
-        }
+        catch { _notificationService.RegisterNotification("System clipboard is unavailable"); }
     }
 
     private void OpenInBrowser(object parameter)
@@ -113,7 +111,11 @@ public class ProfileDataFetcherViewModel : ObservableObject
         var text = parameter.ToString();
         if (string.IsNullOrWhiteSpace(text)) return;
 
-        var processStartInfo = new ProcessStartInfo { FileName = text, UseShellExecute = true };
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = text,
+            UseShellExecute = true
+        };
         using var process = Process.Start(processStartInfo);
 
         _notificationService.RegisterNotification("Time to open up that browser and see what we've got! Let's gooo!");
@@ -122,7 +124,8 @@ public class ProfileDataFetcherViewModel : ObservableObject
     private async Task SelectProfileFromHistoryAsync(object parameter)
     {
         if (parameter is not SteamProfile steamProfile) return;
-        await GetSteamProfileAsync(steamProfile.SteamID64.AsString);
+
+        await GetSteamProfileAsync(steamProfile.ID64.AsString);
     }
 
     private async Task GetSteamProfileAsync(string text)
@@ -139,7 +142,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
         var factory = _serviceProvider.GetRequiredService<ISteamProfileService>();
         var profile = await factory.GetProfileAsync(text);
 
-        if (profile.IsEmpty)
+        if (!profile.ExistOnline)
         {
             _notificationService.RegisterNotification("Uh-oh, looks like this profile needs a bit of filling up!");
             return;
@@ -152,15 +155,17 @@ public class ProfileDataFetcherViewModel : ObservableObject
 
     private void SelectSteamProfile(SteamProfile steamProfile)
     {
-        if (steamProfile.IsEmpty)
+        if (!steamProfile.ExistOnline)
         {
             ResetSelectedProfile();
             return;
         }
 
-        var existingProfile = SteamProfiles.FirstOrDefault(x => x.SteamID32.AsUInt == steamProfile.SteamID32.AsUInt);
-        if (existingProfile?.IsEmpty is false) SelectExistingSteamProfile(existingProfile);
-        else SelectNewSteamProfile(steamProfile);
+        var existingProfile = SteamProfiles.FirstOrDefault(x => x.ID32.AsUInt == steamProfile.ID32.AsUInt);
+        if (existingProfile?.ExistOnline is true)
+            SelectExistingSteamProfile(existingProfile);
+        else
+            SelectNewSteamProfile(steamProfile);
     }
 
     private void SelectExistingSteamProfile(SteamProfile steamProfile)
@@ -174,12 +179,14 @@ public class ProfileDataFetcherViewModel : ObservableObject
     {
         SteamProfiles.Insert(0, steamProfile);
         CurrentSteamProfile = steamProfile;
+
         RemoveLastSteamProfile();
     }
 
     private void RemoveLastSteamProfile()
     {
         if (SteamProfiles.Count <= 4) return;
+
         var steamProfile = SteamProfiles.Last();
         SteamProfiles.Remove(steamProfile);
     }

@@ -21,7 +21,9 @@ public class MaximizeWindowBehavior : Behavior<Button>
     private void OnClick(object sender, RoutedEventArgs e)
     {
         var window = Window.GetWindow(AssociatedObject)!;
-        if (window.WindowState == WindowState.Maximized) SystemCommands.RestoreWindow(window);
-        else SystemCommands.MaximizeWindow(window);
+        if (window.WindowState == WindowState.Maximized)
+            SystemCommands.RestoreWindow(window);
+        else
+            SystemCommands.MaximizeWindow(window);
     }
 }

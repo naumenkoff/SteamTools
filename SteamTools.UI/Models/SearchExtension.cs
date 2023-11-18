@@ -1,6 +1,27 @@
-﻿namespace SteamTools.UI.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public record SearchExtension(string Extension)
+namespace SteamTools.UI.Models;
+
+public class SearchExtension : ObservableObject
 {
-    public bool Selected { get; set; }
+    private bool _selected;
+
+    public SearchExtension(string extension)
+    {
+        Extension = extension;
+    }
+
+    public string Extension { get; }
+
+    public bool Selected
+    {
+        get => _selected;
+        set
+        {
+            if (_selected == value) return;
+
+            _selected = value;
+            OnPropertyChanged();
+        }
+    }
 }

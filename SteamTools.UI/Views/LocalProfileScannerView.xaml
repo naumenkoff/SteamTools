@@ -13,7 +13,7 @@
         <ListView ItemsSource="{Binding Path=LocalProfiles}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="SteamID64" DisplayMemberBinding="{Binding Steam64.AsString}" />
+                    <GridViewColumn Header="SteamID64" DisplayMemberBinding="{Binding ID64.AsString}" />
                 </GridView>
             </ListView.View>
         </ListView>
