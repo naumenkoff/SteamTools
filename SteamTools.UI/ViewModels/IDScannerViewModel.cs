@@ -11,9 +11,11 @@ using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SProject.Steam;
-using SteamTools.Domain.Factories;
 using SteamTools.Domain.Models;
 using SteamTools.Domain.Services;
+using SteamTools.Infrastructure.Models;
+using SteamTools.SignatureSearcher.Abstractions;
+using SteamTools.SignatureSearcher.Factories;
 using SteamTools.UI.Models;
 
 namespace SteamTools.UI.ViewModels;
@@ -24,13 +26,13 @@ public class IDScannerViewModel : ObservableObject
     private readonly CollectionViewSource _filteredCollectionViewSource;
     private readonly INotificationService _notificationService;
     private readonly IScanningServiceFactory _scanningServiceFactory;
-    private readonly ISteamClient _steamClient;
+    private readonly SteamClient _steamClient;
     private ObservableCollection<SearchExtension> _availableExtensions;
     private CancellationTokenSource _cancellationTokenSource;
     private string _extensionQuery;
     private ObservableCollection<string> _matchingFiles;
 
-    public IDScannerViewModel(ISteamClient steamClient, INotificationService notificationService, ScanningOptions scanningOptions,
+    public IDScannerViewModel(SteamClient steamClient, INotificationService notificationService, ScanningOptions scanningOptions,
         IScanningServiceFactory scanningServiceFactory)
     {
         ScanningOptions = scanningOptions;
@@ -214,8 +216,10 @@ public class IDScannerViewModel : ObservableObject
 
     private IEnumerable<SearchExtension> GetFileExtensions()
     {
-        return _steamClient.SteamLibraries.SelectMany(steamLibrary =>
-                steamLibrary.EnumerateFiles("*.*", SearchOption.AllDirectories).Select(file => file.Extension)).Distinct()
+        if (_steamClient.Steam is null) return Enumerable.Empty<SearchExtension>();
+        
+        return _steamClient.Steam.GetAnotherInstallations().SelectMany(steamLibrary =>
+                steamLibrary.WorkingDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories).Select(file => file.Extension)).Distinct()
             .Select(x => new SearchExtension(x)).OrderBy(x => x.Extension.Length);
     }
 

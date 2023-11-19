@@ -3,14 +3,19 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SProject.Steam;
 using SteamTools.Domain.Enumerations;
-using SteamTools.Domain.Factories;
 using SteamTools.Domain.Models;
 using SteamTools.Domain.Providers;
 using SteamTools.Domain.Services;
-using SteamTools.Infrastructure.Factories;
 using SteamTools.Infrastructure.Models;
 using SteamTools.Infrastructure.Services;
+using SteamTools.ProfileScanner;
+using SteamTools.ProfileScanner.Abstractions;
+using SteamTools.ProfileScanner.Providers;
+using SteamTools.ProfileScanner.Services;
+using SteamTools.SignatureSearcher.Abstractions;
+using SteamTools.SignatureSearcher.Factories;
 using SteamTools.UI.Services.Navigation;
 using SteamTools.UI.Utilities;
 using SteamTools.UI.ViewModels;
@@ -99,9 +104,10 @@ public partial class App
         services.AddSingleton<ScanningOptions>();
 
         #region Core
-
-        services.AddTransient<ISteamDirectoryFinder, SteamDirectoryFinder>();
-        services.AddSingleton<ISteamClient, SteamClient>();
+        
+        services.AddSteamClient();
+        services.AddSingleton<SteamClient>();
+        
         services.AddSingleton<INotificationService, SimpleNotificationService>();
 
         #endregion

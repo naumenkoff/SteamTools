@@ -12,6 +12,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SProject.Math", "SProject\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SProject.Steam", "SProject\SProject.Steam\SProject.Steam.csproj", "{8034C80E-9260-4B5F-A5BD-6C4950F06CF5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SProject.Steam.Abstractions", "SProject\SProject.Steam.Abstractions\SProject.Steam.Abstractions.csproj", "{D1592D26-A4BD-4A53-99AE-838E19E5B98C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.SignatureSearcher", "SteamTools.SignatureSearcher\SteamTools.SignatureSearcher.csproj", "{7758F2E3-16CF-4869-BA9D-D23683B4074E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.ProfileScanner", "SteamTools.ProfileScanner\SteamTools.ProfileScanner.csproj", "{797B8D6A-1D29-4ACB-877A-18953D1FD55E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.ProfileScanner.Abstractions", "SteamTools.ProfileScanner.Abstractions\SteamTools.ProfileScanner.Abstractions.csproj", "{4D531D54-9757-49C9-BDF1-B8013FB99FA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.SignatureSearcher.Abstractions", "SteamTools.SignatureSearcher.Abstractions\SteamTools.SignatureSearcher.Abstractions.csproj", "{7AE6E5DD-D662-4788-968C-1D5A4A98824D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +52,25 @@ Global
 		{8034C80E-9260-4B5F-A5BD-6C4950F06CF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8034C80E-9260-4B5F-A5BD-6C4950F06CF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8034C80E-9260-4B5F-A5BD-6C4950F06CF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1592D26-A4BD-4A53-99AE-838E19E5B98C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1592D26-A4BD-4A53-99AE-838E19E5B98C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1592D26-A4BD-4A53-99AE-838E19E5B98C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1592D26-A4BD-4A53-99AE-838E19E5B98C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7758F2E3-16CF-4869-BA9D-D23683B4074E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7758F2E3-16CF-4869-BA9D-D23683B4074E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7758F2E3-16CF-4869-BA9D-D23683B4074E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7758F2E3-16CF-4869-BA9D-D23683B4074E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{797B8D6A-1D29-4ACB-877A-18953D1FD55E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{797B8D6A-1D29-4ACB-877A-18953D1FD55E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{797B8D6A-1D29-4ACB-877A-18953D1FD55E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{797B8D6A-1D29-4ACB-877A-18953D1FD55E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D531D54-9757-49C9-BDF1-B8013FB99FA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D531D54-9757-49C9-BDF1-B8013FB99FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D531D54-9757-49C9-BDF1-B8013FB99FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D531D54-9757-49C9-BDF1-B8013FB99FA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AE6E5DD-D662-4788-968C-1D5A4A98824D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE6E5DD-D662-4788-968C-1D5A4A98824D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AE6E5DD-D662-4788-968C-1D5A4A98824D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AE6E5DD-D662-4788-968C-1D5A4A98824D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

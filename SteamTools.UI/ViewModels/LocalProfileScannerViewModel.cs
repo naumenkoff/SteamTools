@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SteamTools.Domain.Models;
+using SteamTools.ProfileScanner;
+using SteamTools.ProfileScanner.Abstractions;
 
 namespace SteamTools.UI.ViewModels;
 

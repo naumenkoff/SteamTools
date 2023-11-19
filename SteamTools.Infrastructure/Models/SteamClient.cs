@@ -1,64 +1,33 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.Win32;
 using SProject.FileSystem;
+using SProject.Steam.Abstractions;
 using SteamTools.Domain.Models;
 using SteamTools.Domain.Services;
 
 namespace SteamTools.Infrastructure.Models;
 
-public partial class SteamClient : ISteamClient
+public class SteamClient
 {
-    private const string SteamRegistryKeyPath = @"SOFTWARE\WOW6432Node\Valve\Steam";
-    private const string InstallPathValueName = "InstallPath";
-
-    private static string? GetPathFromRegistry()
+    public SteamClient(ISteamClientFinder steamClientFinder)
     {
-        using var baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
-        using var steamKey = baseKey.OpenSubKey(SteamRegistryKeyPath);
-        var installPath = steamKey?.GetValue(InstallPathValueName);
-        return installPath?.ToString();
-    }
-    
-    private DirectoryInfo? GetSteamDirectory()
-    {
-        var installPath = GetPathFromRegistry();
-        return FileSystemInfoExtensions.GetDirectoryInfo(false, installPath);
+        Steam = steamClientFinder.FindSteamClient();
     }
 
-    public DirectoryInfo? RootDirectory { get; }
-    
-    public SteamClient()
+    public SteamClientModel? Steam { get; }
+
+    public FileInfo? GetConfigFile()
     {
-        RootDirectory = GetSteamDirectory();
+        return FileSystemInfoExtensions.GetFileInfo(false, Steam?.GetConfigDirectory()?.FullName, "loginusers.vdf");
     }
 
-    public DirectoryInfo? GetUserdataDirectory()
+    public FileInfo? GetLoginusersFile()
     {
-        return FileSystemInfoExtensions.GetDirectoryInfo(false, RootDirectory?.FullName, "userdata");
-    }
-
-    public DirectoryInfo? GetConfigDirectory()
-    {
-        return FileSystemInfoExtensions.GetDirectoryInfo(false, RootDirectory?.FullName, "config");
-    }
-    
-    public DirectoryInfo? GetSteamappsDirectory(FileSystemInfo? steamLibrary)
-    {
-        return FileSystemInfoExtensions.GetDirectoryInfo(false, steamLibrary?.FullName, "steamapps");
+        return FileSystemInfoExtensions.GetFileInfo(false, Steam?.GetConfigDirectory()?.FullName, "config.vdf");
     }
 
     public DirectoryInfo? GetWorkshopDirectory(FileSystemInfo? steamapps)
     {
         return FileSystemInfoExtensions.GetDirectoryInfo(false, steamapps?.FullName, "workshop");
     }
-
-    public IEnumerable<DirectoryInfo> GetSteamLibrariess(FileInfo? libraryfolders)
-    {
-        if (libraryfolders is null) return Enumerable.Empty<DirectoryInfo>();
-        var fileContent = libraryfolders.ReadAllText();
-        return string.IsNullOrEmpty(fileContent) ? Enumerable.Empty<DirectoryInfo>() : SteamLibraryPattern().Matches(fileContent).Select(x => FileSystemInfoExtensions.GetDirectoryInfo(false, x.Groups[1].Value)).Where(x => x is {Exists: true}).Select(x => x!);
-    }
-
-    [GeneratedRegex("\"path\"\\s+\"([^\"]+)\"", RegexOptions.Compiled)]
-    private partial Regex SteamLibraryPattern();
 }
