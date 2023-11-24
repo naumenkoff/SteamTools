@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.ProfileScanner.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.SignatureSearcher.Abstractions", "SteamTools.SignatureSearcher.Abstractions\SteamTools.SignatureSearcher.Abstractions.csproj", "{7AE6E5DD-D662-4788-968C-1D5A4A98824D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SProject.VDF", "SProject\SProject.VDF\SProject.VDF.csproj", "{D18807D3-4F2D-45B2-85CC-5B5EAA4845D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
