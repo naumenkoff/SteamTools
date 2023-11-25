@@ -6,24 +6,24 @@ using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.DependencyInjection;
 using SteamTools.Domain.Models;
 using SteamTools.Domain.Services;
+using SteamTools.ProfileFetcher.Abstractions;
 
 namespace SteamTools.UI.ViewModels;
 
 public class ProfileDataFetcherViewModel : ObservableObject
 {
     private readonly INotificationService _notificationService;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly Func<IProfileFetcherService> _profileFetcherFactory;
     private readonly ObservableCollection<SteamProfile> _steamProfiles;
     private string _cachedText;
     private SteamProfile _currentSteamProfile;
     private bool _showGrid;
 
-    public ProfileDataFetcherViewModel(IServiceProvider serviceProvider, INotificationService notificationService)
+    public ProfileDataFetcherViewModel(Func<IProfileFetcherService> profileFetcherFactory, INotificationService notificationService)
     {
-        _serviceProvider = serviceProvider;
+        _profileFetcherFactory = profileFetcherFactory;
         _notificationService = notificationService;
 
         CurrentSteamProfile = SteamProfile.Empty;
@@ -125,6 +125,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
     {
         if (parameter is not SteamProfile steamProfile) return;
 
+        CachedText = steamProfile.Request;
         await GetSteamProfileAsync(steamProfile.ID64.AsString);
     }
 
@@ -139,7 +140,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
         var start = Stopwatch.GetTimestamp();
         _notificationService.RegisterNotification("Hold tight, we're on the prowl for your profile!");
 
-        var factory = _serviceProvider.GetRequiredService<ISteamProfileService>();
+        var factory = _profileFetcherFactory();
         var profile = await factory.GetProfileAsync(text);
 
         if (!profile.ExistOnline)

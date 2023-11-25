@@ -1,6 +1,6 @@
 ﻿using SProject.Math;
 
-namespace SteamTools.Domain.Models;
+namespace SteamTools.SignatureSearcher.Abstractions;
 
 public class ScanningOptions
 {

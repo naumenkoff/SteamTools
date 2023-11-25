@@ -1,30 +1,28 @@
-using Newtonsoft.Json;
+using System.Net.Http.Json;
+using System.Text.Json;
 using SteamTools.Domain.Models;
-using SteamTools.Domain.Providers;
 using SteamTools.Domain.Responses;
-using SteamTools.Domain.Services;
-using JsonException = System.Text.Json.JsonException;
+using SteamTools.ProfileFetcher.Abstractions;
 
-namespace SteamTools.Infrastructure.Services;
+namespace SteamTools.ProfileFetcher;
 
 public class SteamApiClient : ISteamApiClient
 {
     private const string ResolveVanityUrl = "https://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key={0}&vanityurl={1}";
-
     private const string GetPlayerSummaries = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={0}&steamids={1}";
 
     private readonly ISteamApiKeyProvider _apiKey;
-    private readonly ISteamApiClientCacheService _cacheService;
+    private readonly ICacheService _cacheService;
     private readonly HttpClient _httpClient;
 
-    public SteamApiClient(ISteamApiKeyProvider steamApiKey, HttpClient httpClient, ISteamApiClientCacheService cacheService)
+    public SteamApiClient(ISteamApiKeyProvider steamApiKey, HttpClient httpClient, ICacheService cacheService)
     {
         _apiKey = steamApiKey;
         _httpClient = httpClient;
         _cacheService = cacheService;
     }
 
-    public async ValueTask<ResolvedVanityUrl?> ResolveVanityUrlAsync(string vanityUrl)
+    public async Task<ResolvedVanityUrl?> ResolveVanityUrlAsync(string vanityUrl)
     {
         if (_apiKey.SteamApiKeySetted is false) return default;
 
@@ -39,7 +37,7 @@ public class SteamApiClient : ISteamApiClient
         return result.Response;
     }
 
-    public async ValueTask<PlayerSummaries> GetPlayerSummariesAsync(SteamID64 steamId64)
+    public async Task<PlayerSummaries?> GetPlayerSummariesAsync(SteamID64 steamId64)
     {
         if (_apiKey.SteamApiKeySetted is false) return default;
 
@@ -55,7 +53,7 @@ public class SteamApiClient : ISteamApiClient
         return player;
     }
 
-    private async ValueTask<GenericSteamResponse<T>> GetSteamApiResponseAsync<T>(string uri)
+    private async Task<GenericSteamResponse<T>?> GetSteamApiResponseAsync<T>(string uri)
     {
         try
         {
@@ -67,9 +65,8 @@ public class SteamApiClient : ISteamApiClient
         catch (JsonException) { return default; }
     }
 
-    private static async ValueTask<GenericSteamResponse<T>?> DeserializeSteamApiResponseAsync<T>(HttpResponseMessage httpResponseMessage)
+    private static async Task<GenericSteamResponse<T>?> DeserializeSteamApiResponseAsync<T>(HttpResponseMessage httpResponseMessage)
     {
-        var document = await httpResponseMessage.Content.ReadAsStringAsync();
-        return string.IsNullOrWhiteSpace(document) ? default : JsonConvert.DeserializeObject<GenericSteamResponse<T>>(document);
+        return await httpResponseMessage.Content.ReadFromJsonAsync<GenericSteamResponse<T>>();
     }
 }

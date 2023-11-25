@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using SteamTools.Domain.Services;
-using SteamTools.Infrastructure.Models;
 using SteamTools.SignatureSearcher.Abstractions;
 
 namespace SteamTools.SignatureSearcher.Services;
@@ -26,14 +25,13 @@ public class ScanningService : IScanningService
         _steamClient = steamClient;
     }
 
-    public async ValueTask<IScanningResult> StartScanningAsync()
+    public async Task<IScanningResult> StartScanningAsync()
     {
         var start = Stopwatch.GetTimestamp();
         var filesToScan = GetFilesToScan();
         var partitions = Partitioner.Create(filesToScan, EnumerablePartitionerOptions.NoBuffering).GetOrderableDynamicPartitions();
         await Parallel.ForEachAsync(partitions, _parallelOptions,
-            async (kvp, token) => { await _fileScanner.ScanFile(kvp.Value, _parallelOptions.CancellationToken); });
-        Console.WriteLine(Stopwatch.GetElapsedTime(start).TotalSeconds);
+            async (kvp, _) => { await _fileScanner.ScanFile(kvp.Value, _parallelOptions.CancellationToken); });
         return _scanningResult;
     }
 

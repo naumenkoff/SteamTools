@@ -15,5 +15,5 @@ public class SimpleNotificationService : INotificationService
         NotificationReceived?.Invoke(this, new NotificationMessage(message, DateTime.Now));
     }
 
-    private event EventHandler<NotificationMessage> NotificationReceived;
+    private event EventHandler<NotificationMessage>? NotificationReceived;
 }

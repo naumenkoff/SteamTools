@@ -2,5 +2,5 @@
 
 public interface IScanningService
 {
-    ValueTask<IScanningResult> StartScanningAsync();
+    Task<IScanningResult> StartScanningAsync();
 }

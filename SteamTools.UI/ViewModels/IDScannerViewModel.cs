@@ -13,9 +13,7 @@ using CommunityToolkit.Mvvm.Input;
 using SProject.Steam;
 using SteamTools.Domain.Models;
 using SteamTools.Domain.Services;
-using SteamTools.Infrastructure.Models;
 using SteamTools.SignatureSearcher.Abstractions;
-using SteamTools.SignatureSearcher.Factories;
 using SteamTools.UI.Models;
 
 namespace SteamTools.UI.ViewModels;
@@ -206,9 +204,9 @@ public class IDScannerViewModel : ObservableObject
     /// <summary>
     ///     Loads the search extensions asynchronously and updates the collection view source.
     /// </summary>
-    private void LoadSearchExtensionsAsync() // skipcq: CS-R1005
+    private async void LoadSearchExtensionsAsync() // skipcq: CS-R1005
     {
-        var fileExtensions = GetFileExtensions();
+        var fileExtensions = await Task.Run(GetFileExtensions);
         _availableExtensions = new ObservableCollection<SearchExtension>(fileExtensions);
         _filteredCollectionViewSource.Source = _availableExtensions;
         OnPropertyChanged(nameof(FilteredCollectionViewSource));
@@ -216,11 +214,10 @@ public class IDScannerViewModel : ObservableObject
 
     private IEnumerable<SearchExtension> GetFileExtensions()
     {
-        if (_steamClient.Steam is null) return Enumerable.Empty<SearchExtension>();
-        
-        return _steamClient.Steam.GetAnotherInstallations().SelectMany(steamLibrary =>
+        return _steamClient.Steam?.GetAnotherInstallations()
+            .SelectMany(steamLibrary =>
                 steamLibrary.WorkingDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories).Select(file => file.Extension)).Distinct()
-            .Select(x => new SearchExtension(x)).OrderBy(x => x.Extension.Length);
+            .Select(x => new SearchExtension(x)).OrderBy(x => x.Extension.Length) ?? Enumerable.Empty<SearchExtension>();
     }
 
     private ValueTask ChangeFileExtensionsSelectedState(Func<SearchExtension, bool> func, bool check)

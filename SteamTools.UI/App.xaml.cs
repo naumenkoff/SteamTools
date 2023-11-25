@@ -4,15 +4,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SProject.Steam;
-using SteamTools.Domain.Enumerations;
-using SteamTools.Domain.Models;
 using SteamTools.Domain.Providers;
 using SteamTools.Domain.Services;
-using SteamTools.Infrastructure.Models;
 using SteamTools.Infrastructure.Services;
-using SteamTools.ProfileScanner;
+using SteamTools.ProfileFetcher;
+using SteamTools.ProfileFetcher.Abstractions;
 using SteamTools.ProfileScanner.Abstractions;
-using SteamTools.ProfileScanner.Providers;
 using SteamTools.ProfileScanner.Services;
 using SteamTools.SignatureSearcher.Abstractions;
 using SteamTools.SignatureSearcher.Factories;
@@ -39,10 +36,12 @@ public partial class App
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        var main = _serviceProvider.GetRequiredService<MainWindow>();
         var navigator = _serviceProvider.GetRequiredService<INavigationService>();
         navigator.Navigate<ProfileDataFetcherViewModel>();
+
+        var main = _serviceProvider.GetRequiredService<MainWindow>();
         main.Show();
+
         base.OnStartup(e);
     }
 
@@ -56,6 +55,8 @@ public partial class App
     private IServiceProvider ConfigureServices()
     {
         var services = new ServiceCollection();
+
+        services.AddSingleton<Func<IProfileFetcherService>>(serviceProvider => serviceProvider.GetRequiredService<IProfileFetcherService>);
 
         #region UI
 
@@ -77,20 +78,17 @@ public partial class App
         #region ProfileDataFetcher
 
         services.AddSingleton<ISteamApiKeyProvider, SteamApiKeyProvider>();
-        services.AddSingleton<ISteamApiClientCacheService, SteamApiClientCacheService>();
-        services.AddSingleton<ITemplateProvider<SteamProfileType>, SteamProfileTemplateProvider>();
+        services.AddSingleton<ICacheService, SteamApiCacheService>();
+        services.AddSingleton<ITemplateProvider<SteamProfileType>, ProfileTemplateProvider>();
         services.AddHttpClient<ISteamApiClient, SteamApiClient>();
-        services.AddTransient<ISteamProfileService, SteamProfileService>();
-        services.AddTransient<ISteamProfileTypeDetector, SteamProfileTypeDetector>();
+        services.AddTransient<IProfileFetcherService, ProfileFetcherService>();
+        services.AddTransient<IProfileTypeResolver, ProfileTypeResolver>();
 
         #endregion
 
         #region LocalProfileScanner
 
-        services.AddSingleton<ILocalProfileStorage, LocalProfileStorage>();
-        services.AddSingleton<ITemplateProvider<IScanner>, ScannerPatternProvider>();
-
-        services.AddTransient<IProfileScannerService, ProfileScannerService>();
+        services.AddSingleton<IProfileScannerService, ProfileScannerService>();
         services.RegisterTransientServices<IScanner>();
 
         #endregion
@@ -104,10 +102,10 @@ public partial class App
         services.AddSingleton<ScanningOptions>();
 
         #region Core
-        
+
         services.AddSteamClient();
         services.AddSingleton<SteamClient>();
-        
+
         services.AddSingleton<INotificationService, SimpleNotificationService>();
 
         #endregion

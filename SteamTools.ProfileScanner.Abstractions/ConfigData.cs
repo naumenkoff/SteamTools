@@ -4,6 +4,6 @@ namespace SteamTools.ProfileScanner.Abstractions;
 
 public class ConfigData : LocalResult
 {
-    public ConfigData(ISteamIDPair steamIDPair, LocalResultType localResultType) : base(steamIDPair, localResultType) { }
+    public ConfigData(ISteamIDPair steamIdPair, LocalResultType localResultType) : base(steamIdPair, localResultType) { }
     public required string Login { get; init; }
 }

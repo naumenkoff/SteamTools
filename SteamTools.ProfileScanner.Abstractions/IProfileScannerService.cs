@@ -2,5 +2,5 @@
 
 public interface IProfileScannerService
 {
-    ValueTask<IEnumerable<LocalResult>> ScanAndGetProfilesAsync();
+    ValueTask<IEnumerable<LocalProfile>> GetProfiles();
 }

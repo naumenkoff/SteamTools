@@ -1,4 +1,4 @@
-﻿namespace SteamTools.Domain.Services;
+﻿namespace SteamTools.SignatureSearcher.Abstractions;
 
 public interface IFileScanner
 {

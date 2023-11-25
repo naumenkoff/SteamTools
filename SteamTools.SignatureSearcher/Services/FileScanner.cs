@@ -1,5 +1,4 @@
-﻿using SteamTools.Domain.Services;
-using SteamTools.SignatureSearcher.Abstractions;
+﻿using SteamTools.SignatureSearcher.Abstractions;
 
 namespace SteamTools.SignatureSearcher.Services;
 
@@ -36,7 +35,7 @@ public class FileScanner : IFileScanner
             while (!streamReader.EndOfStream)
             {
                 var line = await streamReader.ReadLineAsync(token);
-                if (!_fileValidator.ContainsSteamID(line)) continue;
+                if (!_fileValidator.ContainsSteamId(line)) continue;
 
                 _scanningResultWriter.AddFilePath(file.FullName);
                 return;

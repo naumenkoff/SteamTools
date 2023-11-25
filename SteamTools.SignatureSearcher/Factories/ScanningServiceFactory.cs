@@ -1,5 +1,5 @@
 ﻿using SteamTools.Domain.Models;
-using SteamTools.Infrastructure.Models;
+using SteamTools.Domain.Services;
 using SteamTools.SignatureSearcher.Abstractions;
 using SteamTools.SignatureSearcher.Services;
 

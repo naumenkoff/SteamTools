@@ -1,9 +1,9 @@
-﻿namespace SteamTools.Domain.Services;
+﻿namespace SteamTools.ProfileFetcher.Abstractions;
 
 /// <summary>
 ///     A service for caching Steam API objects.
 /// </summary>
-public interface ISteamApiClientCacheService
+public interface ICacheService
 {
     /// <summary>
     ///     Adds a response object to the cache dictionary.

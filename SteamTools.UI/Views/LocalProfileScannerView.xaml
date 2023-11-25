@@ -14,6 +14,8 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="SteamID64" DisplayMemberBinding="{Binding ID64.AsString}" />
+                    <GridViewColumn Header="SteamID32" DisplayMemberBinding="{Binding ID32.AsString}" />
+                    <GridViewColumn Header="Detections" DisplayMemberBinding="{Binding DetectionsCount}" />
                 </GridView>
             </ListView.View>
         </ListView>

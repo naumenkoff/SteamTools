@@ -4,10 +4,10 @@ namespace SteamTools.ProfileScanner.Abstractions;
 
 public class LocalResult : ISteamIDPair
 {
-    public LocalResult(ISteamIDPair steamIDPair, LocalResultType localResultType)
+    public LocalResult(ISteamIDPair steamIdPair, LocalResultType localResultType)
     {
-        ID32 = steamIDPair.ID32;
-        ID64 = steamIDPair.ID64;
+        ID32 = steamIdPair.ID32;
+        ID64 = steamIdPair.ID64;
         Type = localResultType;
     }
 

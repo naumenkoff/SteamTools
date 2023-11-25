@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using SteamTools.Domain.Enumerations;
 
 namespace SteamTools.Domain.Providers;
 

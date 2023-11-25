@@ -1,8 +1,8 @@
 using SteamTools.Domain.Models;
 
-namespace SteamTools.Domain.Services;
+namespace SteamTools.ProfileFetcher.Abstractions;
 
-public interface ISteamProfileService
+public interface IProfileFetcherService
 {
     Task<SteamProfile> GetProfileAsync(string input);
 }

@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\SProject\SProject.VDF\SProject.VDF.csproj"/>
         <ProjectReference Include="..\SteamTools.Domain\SteamTools.Domain.csproj"/>
-        <ProjectReference Include="..\SteamTools.Infrastructure\SteamTools.Infrastructure.csproj"/>
         <ProjectReference Include="..\SteamTools.ProfileScanner.Abstractions\SteamTools.ProfileScanner.Abstractions.csproj"/>
     </ItemGroup>
 

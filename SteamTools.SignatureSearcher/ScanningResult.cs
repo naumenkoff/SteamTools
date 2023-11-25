@@ -1,4 +1,6 @@
-﻿namespace SteamTools.SignatureSearcher.Abstractions;
+﻿using SteamTools.SignatureSearcher.Abstractions;
+
+namespace SteamTools.SignatureSearcher;
 
 public class ScanningResult : IScanningResult, IScanningResultWriter
 {

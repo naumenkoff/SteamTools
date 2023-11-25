@@ -1,52 +1,46 @@
-﻿using System.Text.RegularExpressions;
+﻿using SProject.VDF;
 using SteamTools.Domain.Models;
-using SteamTools.Domain.Providers;
-using SteamTools.Infrastructure.Models;
+using SteamTools.Domain.Services;
 using SteamTools.ProfileScanner.Abstractions;
 
 namespace SteamTools.ProfileScanner.Services;
 
 public class AppworkshopScanner : IScanner
 {
-    private readonly Regex _pattern;
     private readonly SteamClient _steamClient;
 
-    public AppworkshopScanner(SteamClient steamClient, ITemplateProvider<IScanner> scannerPatternProvider)
+    public AppworkshopScanner(SteamClient steamClient)
     {
         _steamClient = steamClient;
-        _pattern = scannerPatternProvider.GetTemplate(this);
     }
 
     public IEnumerable<LocalResult> GetProfiles()
     {
-        return from file in GetAppworkshopFiles() select file.GetMatch(_pattern) into match where match.Success select CreateAppworkshopData(match);
-    }
+        if (_steamClient.Steam is null) return Enumerable.Empty<LocalResult>();
 
-    private IEnumerable<FileMatcher<Match>> GetAppworkshopFiles()
-    {
-        if (_steamClient.Steam is null) return Enumerable.Empty<FileMatcher<Match>>();
-
-        var appworkshopFiles = new List<FileMatcher<Match>>();
-
-        foreach (var files in from steamLibrary in _steamClient.Steam.GetAnotherInstallations()
-                 select steamLibrary.GetSteamappsDirectory()
-                 into steamapps
-                 where steamapps is not null
-                 select _steamClient.GetWorkshopDirectory(steamapps)
-                 into workshop
-                 where workshop is not null
-                 select workshop.GetFiles())
-            appworkshopFiles.AddRange(files.Select(file => new FileMatcher<Match>(file)));
-
-        return appworkshopFiles;
-    }
-
-    private AppworkshopData CreateAppworkshopData(Match match)
-    {
-        var steamProfile = new SteamProfile(uint.Parse(match.Groups[2].Value));
-        return new AppworkshopData(steamProfile, LocalResultType.Appworkshop)
+        var results = new List<LocalResult>();
+        foreach (var file in _steamClient.Steam.GetAnotherInstallations().Select(x => x.GetSteamappsDirectory())
+                     .Select(SteamClient.GetWorkshopDirectory).Where(x => x is not null).SelectMany(x => x!.EnumerateFiles()))
         {
-            AppID = int.Parse(match.Groups[1].Value)
-        };
+            var appWorkshop = VdfSerializer.Parse(file)["AppWorkshop"];
+            if (appWorkshop is null) continue;
+
+            var workshopItemDetails = appWorkshop["WorkshopItemDetails"]?.RootObjects;
+            if (workshopItemDetails is null) continue;
+
+            var appId = appWorkshop.GetValue<int>("appid");
+
+            foreach (var (key, rootObject) in workshopItemDetails)
+            {
+                var steamProfile = new SteamProfile(rootObject.GetValue<uint>("subscribedby"));
+                var profile = new AppworkshopData(steamProfile, LocalResultType.Appworkshop)
+                {
+                    AppId = appId
+                };
+                results.Add(profile);
+            }
+        }
+
+        return results;
     }
 }
