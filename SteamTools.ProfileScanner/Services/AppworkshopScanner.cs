@@ -1,4 +1,5 @@
 ﻿using SProject.VDF;
+using SProject.Vdf.Abstractions;
 using SteamTools.Domain.Models;
 using SteamTools.Domain.Services;
 using SteamTools.ProfileScanner.Abstractions;
@@ -18,29 +19,17 @@ public class AppworkshopScanner : IScanner
     {
         if (_steamClient.Steam is null) return Enumerable.Empty<LocalResult>();
 
-        var results = new List<LocalResult>();
-        foreach (var file in _steamClient.Steam.GetAnotherInstallations().Select(x => x.GetSteamappsDirectory())
-                     .Select(SteamClient.GetWorkshopDirectory).Where(x => x is not null).SelectMany(x => x!.EnumerateFiles()))
-        {
-            var appWorkshop = VdfSerializer.Parse(file)["AppWorkshop"];
-            if (appWorkshop is null) continue;
-
-            var workshopItemDetails = appWorkshop["WorkshopItemDetails"]?.RootObjects;
-            if (workshopItemDetails is null) continue;
-
-            var appId = appWorkshop.GetValue<int>("appid");
-
-            foreach (var (key, rootObject) in workshopItemDetails)
+        return from appworkshop in _steamClient.Steam.GetAnotherInstallations()
+                .Select(x => x.GetSteamappsDirectory())
+                .Select(SteamClient.GetWorkshopDirectory).OfType<DirectoryInfo>()
+                .SelectMany(x => x.EnumerateFiles())
+                .Select(file => VdfSerializer.Parse(file)["AppWorkshop"]).OfType<IRootObject>()
+            let appId = appworkshop.GetValue<int>("appid")
+            from details in appworkshop["WorkshopItemDetails"]?.RootObjects
+            let steamProfile = new SteamProfile(details.Value.GetValue<uint>("subscribedby"))
+            select new AppworkshopData(steamProfile, LocalResultType.Appworkshop)
             {
-                var steamProfile = new SteamProfile(rootObject.GetValue<uint>("subscribedby"));
-                var profile = new AppworkshopData(steamProfile, LocalResultType.Appworkshop)
-                {
-                    AppId = appId
-                };
-                results.Add(profile);
-            }
-        }
-
-        return results;
+                AppId = appId
+            };
     }
 }

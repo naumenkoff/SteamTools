@@ -13,16 +13,8 @@ public class RegistryScanner : IScanner
         using var registryKey = Registry.CurrentUser.OpenSubKey(RegistrySteamUsersPath);
         if (registryKey is null) return Enumerable.Empty<LocalResult>();
 
-        var results = new List<LocalResult>();
-        foreach (var subKey in registryKey.GetSubKeyNames())
-        {
-            if (!uint.TryParse(subKey, out var id32)) continue;
-
-            var profile = new SteamProfile(id32);
-            var result = new LocalResult(profile, LocalResultType.Registry);
-            results.Add(result);
-        }
-
-        return results;
+        return from id32 in registryKey.GetSubKeyNames().Select(uint.Parse)
+            let profile = new SteamProfile(id32)
+            select new LocalResult(profile, LocalResultType.Registry);
     }
 }

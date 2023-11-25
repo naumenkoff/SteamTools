@@ -1,4 +1,5 @@
 ﻿using SProject.VDF;
+using SProject.Vdf.Abstractions;
 using SteamTools.Domain.Models;
 using SteamTools.Domain.Services;
 using SteamTools.ProfileScanner.Abstractions;
@@ -18,22 +19,14 @@ public class AppmanifestScanner : IScanner
     {
         if (_steamClient.Steam is null) return Enumerable.Empty<LocalResult>();
 
-        var results = new List<LocalResult>();
-        foreach (var file in _steamClient.Steam.GetAnotherInstallations().Select(x => x.GetSteamappsDirectory()).Where(x => x is not null)
-                     .SelectMany(x => x!.EnumerateFiles()))
-        {
-            var appState = VdfSerializer.Parse(file)["AppState"];
-            if (appState is null) continue;
-
-            var steamProfile = new SteamProfile(appState.GetValue<long>("LastOwner"));
-            var profile = new AppmanifestData(steamProfile, LocalResultType.Appmanifest)
+        return from appState in _steamClient.Steam.GetAnotherInstallations()
+                .Select(x => x.GetSteamappsDirectory()).OfType<DirectoryInfo>()
+                .SelectMany(x => x.EnumerateFiles())
+                .Select(file => VdfSerializer.Parse(file)["AppState"]).OfType<IRootObject>()
+            let steamProfile = new SteamProfile(appState.GetValue<long>("LastOwner"))
+            select new AppmanifestData(steamProfile, LocalResultType.Appmanifest)
             {
                 Name = appState.GetValue<string>("name")
             };
-
-            results.Add(profile);
-        }
-
-        return results;
     }
 }

@@ -19,7 +19,7 @@ public class ProfileScannerService : IProfileScannerService
         var accounts = new List<LocalProfile>();
         var start = Stopwatch.GetTimestamp();
 
-        foreach (var localResult in _scanners.SelectMany(x => x.GetProfiles()))
+        foreach (var localResult in _scanners.SelectMany(x => x.GetProfiles()).AsParallel())
         {
             if (!SteamIDValidator.IsSteamID64(localResult.ID64.AsLong)) continue;
 

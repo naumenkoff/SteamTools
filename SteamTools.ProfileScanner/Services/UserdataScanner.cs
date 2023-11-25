@@ -17,19 +17,8 @@ public class UserdataScanner : IScanner
     {
         if (_steamClient.Steam is null) return Enumerable.Empty<LocalResult>();
 
-        var userdata = _steamClient.Steam.GetUserdataDirectory();
-        if (userdata is null) return Enumerable.Empty<LocalResult>();
-
-        var results = new List<LocalResult>();
-        foreach (var directory in userdata.EnumerateDirectories())
-        {
-            if (!uint.TryParse(directory.Name, out var id32)) continue;
-
-            var profile = new SteamProfile(id32);
-            var result = new LocalResult(profile, LocalResultType.Userdata);
-            results.Add(result);
-        }
-
-        return results;
+        return from id32 in _steamClient.Steam.GetUserdataDirectory()?.EnumerateDirectories().Select(x => uint.Parse(x.Name))
+            let profile = new SteamProfile(id32)
+            select new LocalResult(profile, LocalResultType.Userdata);
     }
 }

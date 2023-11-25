@@ -19,18 +19,14 @@ public class ConfigScanner : IScanner
         var file = _steamClient.GetConfigFile();
         if (file is null) return Enumerable.Empty<ConfigData>();
 
-        var results = new List<LocalResult>();
-        foreach (var (key, rootObject) in VdfSerializer.Parse(file).GetSection("Accounts").SelectMany(x => x.RootObjects))
-        {
-            var steamProfile = new SteamProfile(long.Parse(rootObject.GetValue<string>("SteamID")));
-            var profile = new ConfigData(steamProfile, LocalResultType.Config)
-            {
-                Login = key
-            };
-            results.Add(profile);
-            Console.WriteLine(profile.Login);
-        }
 
-        return results;
+        return from accounts in VdfSerializer.Parse(file)
+                .GetSection("Accounts")
+                .SelectMany(x => x.RootObjects)
+            let steamProfile = new SteamProfile(long.Parse(accounts.Value.GetValue<string>("SteamID")))
+            select new ConfigData(steamProfile, LocalResultType.Config)
+            {
+                Login = accounts.Key
+            };
     }
 }
