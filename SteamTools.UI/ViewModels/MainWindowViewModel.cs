@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using SteamTools.Core.Models;
-using SteamTools.Core.Services;
+using SteamTools.Domain.Models;
+using SteamTools.Domain.Services;
 using SteamTools.UI.Services.Navigation;
 
 namespace SteamTools.UI.ViewModels;
@@ -72,6 +72,7 @@ public class MainWindowViewModel : ObservableObject
         private set
         {
             if (_notificationMessage == value) return;
+
             _notificationMessage = value;
             OnPropertyChanged();
         }
@@ -83,6 +84,7 @@ public class MainWindowViewModel : ObservableObject
         set
         {
             if (_showNotification == value) return;
+
             _showNotification = value;
             OnPropertyChanged();
         }

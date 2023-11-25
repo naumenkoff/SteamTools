@@ -1,0 +1,3 @@
+﻿[submodule "SProject"]
+	path = SProject
+	url = https://github.com/naumenkoff/SProject.git

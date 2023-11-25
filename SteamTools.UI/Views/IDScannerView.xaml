@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels"
              xmlns:local="clr-namespace:SteamTools.UI.Models"
@@ -133,9 +134,9 @@
                                HorizontalAlignment="Center"
                                Foreground="White" Margin="0 0 0 5" />
                     <Slider Grid.Row="1" Style="{StaticResource SliderStyle}"
-                            Value="{Binding Processors, Mode=TwoWay}"
+                            Value="{Binding ScanningOptions.Processors, Mode=TwoWay}"
                             Minimum="1"
-                            Maximum="12" />
+                            Maximum="{Binding ScanningOptions.TotalProcessors}" />
                 </Grid>
             </Grid>
 
@@ -152,7 +153,7 @@
                                          Content="Enable maximum file size limit"
                                          TextAlignment="Center"
                                          VerticalAlignment="Stretch"
-                                         IsChecked="{Binding Path=LimitFileSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                         IsChecked="{Binding Path=ScanningOptions.LimitScanningFileSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Grid Grid.Row="1" Margin="0 10 0 0">
 
                         <Grid.ColumnDefinitions>
@@ -170,7 +171,7 @@
                                             SearchButtonVisibility="Collapsed"
                                             Margin="10 0"
                                             Padding="0"
-                                            Text="{Binding Path=MaxFileSizeInMb, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            Text="{Binding Path=ScanningOptions.MaximumFileSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                         <local:RoundButton Grid.Column="2" Style="{StaticResource CharRoundButton}"
                                            Content="&#xE949;"
@@ -193,7 +194,7 @@
                                          Content="Enable the use of extensions"
                                          TextAlignment="Center"
                                          VerticalAlignment="Stretch"
-                                         IsChecked="{Binding UseSelectedExtensions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                         IsChecked="{Binding ScanningOptions.ScanFilesOnlyWithSpecifiedExtensions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                     <Grid Grid.Row="1" Margin="0 10 0 0">
 
@@ -218,7 +219,20 @@
                             <ListView.ItemTemplate>
                                 <DataTemplate DataType="{x:Type local:SearchExtension}">
                                     <ToggleButton Style="{StaticResource ListViewToggleButtonStyle}"
-                                                  Content="{Binding Extension}" IsChecked="{Binding Selected}" />
+                                                  Content="{Binding Extension}" IsChecked="{Binding Selected}">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="Checked">
+                                                <i:InvokeCommandAction
+                                                    Command="{Binding DataContext.ExtensionCheckedCommand, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"
+                                                    CommandParameter="{Binding}" />
+                                            </i:EventTrigger>
+                                            <i:EventTrigger EventName="Unchecked">
+                                                <i:InvokeCommandAction
+                                                    Command="{Binding DataContext.ExtensionUncheckedCommand, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"
+                                                    CommandParameter="{Binding}" />
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </ToggleButton>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
@@ -283,7 +297,7 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Button Style="{StaticResource ListViewButtonStyle}" Content="{Binding }"
-                                    Command="{Binding DataContext.OpenInExplorerCommand, ElementName=LimitFileSize}"
+                                    Command="{Binding DataContext.OpenInExplorerCommand, RelativeSource={RelativeSource AncestorType={x:Type ListView}}}"
                                     CommandParameter="{Binding}" />
                         </DataTemplate>
                     </ListView.ItemTemplate>

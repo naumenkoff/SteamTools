@@ -1,28 +1,26 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using SteamTools.LocalProfileScanner.Models;
-using SteamTools.LocalProfileScanner.Services.Interfaces;
+using SteamTools.ProfileScanner.Abstractions;
 
 namespace SteamTools.UI.ViewModels;
 
 public class LocalProfileScannerViewModel : ObservableObject
 {
-    private readonly ILocalProfileStorage _localProfileStorage;
-    private readonly IProfileScannerService _scannerService;
+    private readonly IProfileScannerService _profileScannerService;
 
-    public LocalProfileScannerViewModel(IProfileScannerService scannerService, ILocalProfileStorage localProfileStorage)
+    public LocalProfileScannerViewModel(IProfileScannerService profileScannerService)
     {
-        LocalProfiles = new ObservableCollection<ILocalProfile>();
-        _localProfileStorage = localProfileStorage;
-        _scannerService = scannerService;
-        LoadSearchExtensionsAsync();
+        _profileScannerService = profileScannerService;
+        LocalProfiles = new ObservableCollection<LocalProfile>();
+
+        LoadLocalProfiles();
     }
 
-    public ObservableCollection<ILocalProfile> LocalProfiles { get; }
+    public ObservableCollection<LocalProfile> LocalProfiles { get; }
 
-    private async void LoadSearchExtensionsAsync() // skipcq: CS-R1005
+    private async void LoadLocalProfiles() // skipcq: CS-R1005
     {
-        await _scannerService.ExecuteAsync();
-        foreach (var account in _localProfileStorage.Accounts) LocalProfiles.Add(account);
+        var profiles = await _profileScannerService.GetProfiles();
+        foreach (var profile in profiles) LocalProfiles.Add(profile);
     }
 }

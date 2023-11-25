@@ -58,8 +58,8 @@
                     <Grid x:Name="Bg" SnapsToDevicePixels="true">
 
                         <Border x:Name="Border" Background="#2c2c2c" Opacity="0" ClipToBounds="True"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}" />
+                                BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="2.5"
+                                BorderThickness="{TemplateBinding BorderThickness}" Margin="3" />
 
                         <Track x:Name="PART_Track" IsDirectionReversed="true"
                                IsEnabled="{TemplateBinding IsMouseOver}">
@@ -142,7 +142,7 @@
                             <Grid x:Name="Bg" SnapsToDevicePixels="true">
 
                                 <Border x:Name="Border" Background="#2c2c2c" Opacity="0"
-                                        ClipToBounds="True"
+                                        ClipToBounds="True" Margin="3" CornerRadius="2.5"
                                         BorderBrush="{TemplateBinding BorderBrush}"
                                         BorderThickness="{TemplateBinding BorderThickness}" />
 
@@ -238,21 +238,38 @@
                                                 Content="{TemplateBinding Content}"
                                                 CanContentScroll="False"
                                                 Margin="{TemplateBinding Padding}" Grid.Row="0" />
-                        <ScrollBar x:Name="PART_VerticalScrollBar"
-                                   AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1"
-                                   Style="{StaticResource ScrollBarStyle}"
-                                   Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0"
-                                   Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                   ViewportSize="NaN"
-                                   Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
-                        <ScrollBar x:Name="PART_HorizontalScrollBar"
-                                   AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow"
-                                   Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0"
-                                   Style="{StaticResource ScrollBarStyle}"
-                                   Orientation="Horizontal" Grid.Row="1"
-                                   Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                   ViewportSize="NaN"
-                                   Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+                        <Grid Grid.Row="0" Grid.Column="1">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="{Binding ActualHeight,ElementName=Corner}" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Row="1"
+                                       AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow"
+                                       Style="{StaticResource ScrollBarStyle}"
+                                       Maximum="{TemplateBinding ScrollableHeight}" Minimum="0"
+                                       Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                       ViewportSize="NaN"
+                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+                        </Grid>
+
+                        <Grid Grid.Row="1" Grid.Column="0">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="{Binding ActualHeight,ElementName=Corner}" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <ScrollBar x:Name="PART_HorizontalScrollBar"
+                                       AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow"
+                                       Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0"
+                                       Style="{StaticResource ScrollBarStyle}"
+                                       Orientation="Horizontal"
+                                       Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                       ViewportSize="NaN"
+                                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+                        </Grid>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
-using SteamTools.ProfileDataFetcher.Models;
+using SteamTools.Domain.Models;
 
 namespace SteamTools.UI.Converters;
 
@@ -19,7 +19,9 @@ public class ProfileImageConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is not SteamProfile steamProfile) return _placeholderImage;
+
         if (steamProfile.PlayerSummaries is null) return _placeholderImage;
+
         return string.IsNullOrWhiteSpace(steamProfile.PlayerSummaries.AvatarFull)
             ? _placeholderImage
             : new BitmapImage(new Uri(steamProfile.PlayerSummaries.AvatarFull));

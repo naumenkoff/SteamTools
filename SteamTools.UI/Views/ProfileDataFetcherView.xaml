@@ -163,7 +163,7 @@
                         <TextBlock Style="{StaticResource TextBlockForHistory}">
                             <Hyperlink CommandParameter="{Binding}" Foreground="#a0a0a0"
                                        Command="{Binding DataContext.SelectProfileFromHistoryCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
-                                <Run Text="{Binding SteamID64.AsString, Mode=OneWay}" />
+                                <Run Text="{Binding ID64.AsString, Mode=OneWay}" />
                             </Hyperlink>
                         </TextBlock>
                     </DataTemplate>
@@ -182,24 +182,24 @@
                                           CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.PersonaName}" />
 
                 <models:HeaderValueBorder Header="SteamID" Margin="5 5 5 0"
-                                          Value="{Binding CurrentSteamProfile.SteamID}"
+                                          Value="{Binding CurrentSteamProfile.ID}"
                                           Command="{Binding CopyToClipboardCommand}"
-                                          CommandParameter="{Binding CurrentSteamProfile.SteamID}" />
+                                          CommandParameter="{Binding CurrentSteamProfile.ID}" />
 
                 <models:HeaderValueBorder Header="SteamID3" Margin="5 5 5 0"
-                                          Value="{Binding CurrentSteamProfile.SteamID3}"
+                                          Value="{Binding CurrentSteamProfile.ID3}"
                                           Command="{Binding CopyToClipboardCommand}"
-                                          CommandParameter="{Binding CurrentSteamProfile.SteamID3}" />
+                                          CommandParameter="{Binding CurrentSteamProfile.ID3}" />
 
                 <models:HeaderValueBorder Header="SteamID32" Margin="5 5 5 0"
-                                          Value="{Binding CurrentSteamProfile.SteamID32.AsString}"
+                                          Value="{Binding CurrentSteamProfile.ID32.AsString}"
                                           Command="{Binding CopyToClipboardCommand}"
-                                          CommandParameter="{Binding CurrentSteamProfile.SteamID32.AsString}" />
+                                          CommandParameter="{Binding CurrentSteamProfile.ID32.AsString}" />
 
                 <models:HeaderValueBorder Header="SteamID64" Margin="5 5 5 0"
-                                          Value="{Binding CurrentSteamProfile.SteamID64.AsString}"
+                                          Value="{Binding CurrentSteamProfile.ID64.AsString}"
                                           Command="{Binding CopyToClipboardCommand}"
-                                          CommandParameter="{Binding CurrentSteamProfile.SteamID64.AsString}" />
+                                          CommandParameter="{Binding CurrentSteamProfile.ID64.AsString}" />
 
                 <models:HeaderValueBorder Header="Custom URL" Margin="5 5 5 0"
                                           Value="{Binding CurrentSteamProfile.PlayerSummaries.ProfileUrl}"
@@ -207,9 +207,9 @@
                                           CommandParameter="{Binding CurrentSteamProfile.PlayerSummaries.ProfileUrl}" />
 
                 <models:HeaderValueBorder Header="Permanent URL" Margin="5 5 5 0"
-                                          Value="{Binding CurrentSteamProfile.ProfilePermanentUrl}"
+                                          Value="{Binding CurrentSteamProfile.Permalink}"
                                           Command="{Binding OpenInBrowserCommand}"
-                                          CommandParameter="{Binding CurrentSteamProfile.ProfilePermanentUrl}" />
+                                          CommandParameter="{Binding CurrentSteamProfile.Permalink}" />
 
                 <models:HeaderValueBorder Header="Avatar URL" Margin="5"
                                           Value="{Binding CurrentSteamProfile.PlayerSummaries.AvatarFull}"
