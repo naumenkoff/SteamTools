@@ -89,7 +89,7 @@ public partial class App
         #region LocalProfileScanner
 
         services.AddSingleton<IProfileScannerService, ProfileScannerService>();
-        services.RegisterTransientServices<IScanner>();
+        services.RegisterServices<IScanner>(ServiceLifetime.Singleton);
 
         #endregion
 
