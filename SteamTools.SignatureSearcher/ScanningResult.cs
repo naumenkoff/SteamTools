@@ -7,6 +7,12 @@ public class ScanningResult : IScanningResult, IScanningResultWriter
     private readonly List<string> _paths = new List<string>();
     private int _successfullyScannedFiles;
     private int _totalScannedFiles;
+
+    public ScanningResult()
+    {
+        Console.WriteLine("Hello");
+    }
+
     public int TotalScannedFiles => _totalScannedFiles;
     public int SuccessfullyScannedFiles => _successfullyScannedFiles;
 

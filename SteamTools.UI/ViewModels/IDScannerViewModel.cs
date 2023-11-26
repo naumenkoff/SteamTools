@@ -23,7 +23,7 @@ public class IDScannerViewModel : ObservableObject
     private readonly string[] _defaultExtensions = { ".acf", ".vdf", ".txt", ".json" };
     private readonly CollectionViewSource _filteredCollectionViewSource;
     private readonly INotificationService _notificationService;
-    private readonly IScanningServiceFactory _scanningServiceFactory;
+    private readonly Func<IScanningService> _scanningServiceFactory;
     private readonly SteamClient _steamClient;
     private ObservableCollection<SearchExtension> _availableExtensions;
     private CancellationTokenSource _cancellationTokenSource;
@@ -31,7 +31,7 @@ public class IDScannerViewModel : ObservableObject
     private ObservableCollection<string> _matchingFiles;
 
     public IDScannerViewModel(SteamClient steamClient, INotificationService notificationService, ScanningOptions scanningOptions,
-        IScanningServiceFactory scanningServiceFactory)
+        Func<IScanningService> scanningServiceFactory)
     {
         ScanningOptions = scanningOptions;
         _scanningServiceFactory = scanningServiceFactory;
@@ -160,6 +160,7 @@ public class IDScannerViewModel : ObservableObject
     /// <summary>
     ///     Starts a scanning process asynchronously with the given parameters.
     /// </summary>
+    /// <exception cref="ArgumentNullException"></exception>
     private async Task RunScanAsync(string query)
     {
         if (SteamIDValidator.IsSteamID64(query) is false)
@@ -176,10 +177,12 @@ public class IDScannerViewModel : ObservableObject
 
         _notificationService.RegisterNotification("Keep your eyes open, scanning starts now!");
 
-        var scanningService = _scanningServiceFactory.Create(steamProfile, token);
+        var scanningService = _scanningServiceFactory();
         try
         {
-            var scanningResult = await scanningService.StartScanningAsync();
+            var scanningResult = await scanningService.StartScanningAsync(steamProfile, token);
+            if (scanningResult is null) throw new NullReferenceException($"{nameof(scanningResult)} was null");
+            
             MatchingFiles = new ObservableCollection<string>(scanningResult.GetResultSortedByLength());
             _notificationService.RegisterNotification(
                 $"We're done scanning! It took {Stopwatch.GetElapsedTime(start).TotalSeconds:F1} seconds to scan {scanningResult.SuccessfullyScannedFiles} out of {scanningResult.TotalScannedFiles} files!");

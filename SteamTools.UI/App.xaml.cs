@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SProject.Steam;
+using SteamTools.Domain.Models;
 using SteamTools.Domain.Providers;
 using SteamTools.Domain.Services;
 using SteamTools.Infrastructure.Services;
@@ -11,8 +13,8 @@ using SteamTools.ProfileFetcher;
 using SteamTools.ProfileFetcher.Abstractions;
 using SteamTools.ProfileScanner.Abstractions;
 using SteamTools.ProfileScanner.Services;
+using SteamTools.SignatureSearcher;
 using SteamTools.SignatureSearcher.Abstractions;
-using SteamTools.SignatureSearcher.Factories;
 using SteamTools.UI.Services.Navigation;
 using SteamTools.UI.Utilities;
 using SteamTools.UI.ViewModels;
@@ -90,12 +92,21 @@ public partial class App
 
         services.AddSingleton<IProfileScannerService, ProfileScannerService>();
         services.RegisterServices<IScanner>(ServiceLifetime.Singleton);
-
+        
         #endregion
 
         #region IDScanner
+        
+        services.AddTransient<IScanningResultWriter, ScanningResult>();
+        
+        // IScanningFactory because it's Transient
+        services.AddSingleton<Func<IScanningService>>(x => x.GetRequiredService<IScanningService>);
+        
+        // IFileValidator Factory because it requires runtime value ISteamIDPair
+        services.AddSingleton<Func<ISteamIDPair, IFileValidator>>(_ => id => new FileValidator(id));
 
-        services.AddSingleton<IScanningServiceFactory, ScanningServiceFactory>();
+        services.AddTransient<IScanningService, ScanningService>();
+        services.AddTransient<IFileScanner, FileScanner>();
 
         #endregion
 

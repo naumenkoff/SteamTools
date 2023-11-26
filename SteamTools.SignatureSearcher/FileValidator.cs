@@ -1,7 +1,7 @@
 ﻿using SteamTools.Domain.Models;
 using SteamTools.SignatureSearcher.Abstractions;
 
-namespace SteamTools.SignatureSearcher.Services;
+namespace SteamTools.SignatureSearcher;
 
 public class FileValidator : IFileValidator
 {
