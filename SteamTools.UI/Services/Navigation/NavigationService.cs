@@ -25,7 +25,6 @@ public class NavigationService : ObservableObject, INavigationService
 
     public void Navigate<T>() where T : ObservableObject
     {
-        var viewModel = _viewModelFactory.Invoke(typeof(T));
-        CurrentView = viewModel;
+        CurrentView = _viewModelFactory.Invoke(typeof(T));
     }
 }
