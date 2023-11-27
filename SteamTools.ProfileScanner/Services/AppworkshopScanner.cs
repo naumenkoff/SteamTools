@@ -17,19 +17,22 @@ public class AppworkshopScanner : IScanner
 
     public IEnumerable<LocalResult> GetProfiles()
     {
-        if (_steamClient.Steam is null) return Enumerable.Empty<LocalResult>();
+        if (_steamClient.Steam is null) yield break;
 
-        return from appworkshop in _steamClient.Steam.GetAnotherInstallations()
-                .Select(x => x.GetSteamappsDirectory())
-                .Select(SteamClient.GetWorkshopDirectory).OfType<DirectoryInfo>()
-                .SelectMany(x => x.EnumerateFiles())
-                .Select(file => VdfSerializer.Parse(file)["AppWorkshop"]).OfType<IRootObject>()
-            let appId = appworkshop.GetValue<int>("appid")
-            from details in appworkshop["WorkshopItemDetails"]?.RootObjects
-            let steamProfile = new SteamProfile(details.Value.GetValue<uint>("subscribedby"))
-            select new AppworkshopData(steamProfile, LocalResultType.Appworkshop)
+        foreach (var appworkshop in _steamClient.Steam.GetAnotherInstallations().Select(x => x.GetSteamappsDirectory())
+                     .Select(SteamClient.GetWorkshopDirectory).OfType<DirectoryInfo>().SelectMany(x => x.EnumerateFiles()).Select(VdfSerializer.Parse)
+                     .Select(x => x["AppWorkshop"]).OfType<IRootObject>())
+        {
+            var appId = appworkshop.GetValue<int>("appid");
+            foreach (var subscriber in appworkshop.GetValueObjects("subscribedby").SelectMany(x => x.Value.Split(',')))
             {
-                AppId = appId
-            };
+                var id32 = uint.Parse(subscriber);
+                var profile = new SteamProfile(id32);
+                yield return new AppworkshopData(profile, LocalResultType.Appworkshop)
+                {
+                    AppId = appId
+                };
+            }
+        }
     }
 }
