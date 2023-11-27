@@ -1,4 +1,5 @@
-﻿using SteamTools.Domain.Models;
+﻿using SProject.FileSystem;
+using SteamTools.Domain.Models;
 using SteamTools.Domain.Services;
 using SteamTools.ProfileScanner.Abstractions;
 
@@ -15,10 +16,13 @@ public class UserdataScanner : IScanner
 
     public IEnumerable<LocalResult> GetProfiles()
     {
-        if (_steamClient.Steam is null) return Enumerable.Empty<LocalResult>();
-
-        return from id32 in _steamClient.Steam.GetUserdataDirectory()?.EnumerateDirectories().Select(x => uint.Parse(x.Name))
-            let profile = new SteamProfile(id32)
-            select new LocalResult(profile, LocalResultType.Userdata);
+        var userdata = _steamClient.Steam?.GetUserdataDirectory();
+        if (userdata is null) yield break;
+        
+        foreach (var id32 in userdata.EnumerateDirectoriesAs(x => uint.Parse(x.Name)))
+        {
+            var profile = new SteamProfile(id32);
+            yield return new LocalResult(profile, LocalResultType.Userdata);
+        }
     }
 }
