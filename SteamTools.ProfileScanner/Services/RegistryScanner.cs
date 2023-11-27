@@ -11,10 +11,12 @@ public class RegistryScanner : IScanner
     public IEnumerable<LocalResult> GetProfiles()
     {
         using var registryKey = Registry.CurrentUser.OpenSubKey(RegistrySteamUsersPath);
-        if (registryKey is null) return Enumerable.Empty<LocalResult>();
+        if (registryKey is null) yield break;
 
-        return from id32 in registryKey.GetSubKeyNames().Select(uint.Parse)
-            let profile = new SteamProfile(id32)
-            select new LocalResult(profile, LocalResultType.Registry);
+        foreach (var id32 in registryKey.GetSubKeyNames().Select(uint.Parse))
+        {
+            var profile = new SteamProfile(id32);
+            yield return new LocalResult(profile, LocalResultType.Registry);
+        }
     }
 }
