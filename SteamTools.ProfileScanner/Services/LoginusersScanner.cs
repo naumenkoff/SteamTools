@@ -17,16 +17,23 @@ public class LoginusersScanner : IScanner
     public IEnumerable<LocalResult> GetProfiles()
     {
         var file = _steamClient.GetLoginusersFile();
-        if (file is null) return Enumerable.Empty<LoginusersData>();
+        if (file is null) yield break;
 
-        return from users in VdfSerializer.Parse(file)["users"]?.RootObjects
-            let steamProfile = new SteamProfile(long.Parse(users.Key))
-            let time = users.Value.GetValue<long>("Timestamp")
-            select new LoginusersData(steamProfile, LocalResultType.Loginusers)
+        var content = VdfSerializer.Parse(file)["users"]?.RootObjects;
+        if (content is null) yield break;
+        
+        foreach (var (key, users) in content)
+        {
+            var id64 = long.Parse(key);
+            var profile = new SteamProfile(id64);
+
+            var time = users.GetValue<long>("Timestamp");
+            yield return new LoginusersData(profile, LocalResultType.Loginusers)
             {
-                Login = users.Value.GetValue<string>("PersonaName"),
-                Name = users.Value.GetValue<string>("AccountName"),
+                Login = users.GetValue<string>("PersonaName"),
+                Name = users.GetValue<string>("AccountName"),
                 Timestamp = DateTimeOffset.FromUnixTimeSeconds(time).ToLocalTime()
             };
+        }
     }
 }
