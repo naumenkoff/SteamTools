@@ -41,10 +41,10 @@ public class FileScanner : IFileScanner
             token.ThrowIfCancellationRequested();
 
             _scanningResult.MarkSuccessfullyScannedFile();
-            while (!streamReader.EndOfStream)
+            while (streamReader.BaseStream.Position < streamReader.BaseStream.Length)
             {
                 var line = await streamReader.ReadLineAsync(token);
-                if (!_fileValidator!.ContainsSteamId(line)) continue;
+                if (!_fileValidator.ContainsSteamId(line)) continue;
 
                 _scanningResult.AddFilePath(file.FullName);
                 return;
