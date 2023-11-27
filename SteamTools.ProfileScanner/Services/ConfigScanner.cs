@@ -17,16 +17,17 @@ public class ConfigScanner : IScanner
     public IEnumerable<LocalResult> GetProfiles()
     {
         var file = _steamClient.GetConfigFile();
-        if (file is null) return Enumerable.Empty<ConfigData>();
+        if (file is null) yield break;
 
-
-        return from accounts in VdfSerializer.Parse(file)
-                .GetSection("Accounts")
-                .SelectMany(x => x.RootObjects)
-            let steamProfile = new SteamProfile(long.Parse(accounts.Value.GetValue<string>("SteamID")))
-            select new ConfigData(steamProfile, LocalResultType.Config)
+        var content = VdfSerializer.Parse(file);
+        foreach (var (key, account) in content.GetRootObjects("Accounts").SelectMany(x => x.RootObjects))
+        {
+            var id64 = account.GetValue<long>("SteamID");
+            var profile = new SteamProfile(id64);
+            yield return new ConfigData(profile, LocalResultType.Config)
             {
-                Login = accounts.Key
+                Login = key
             };
+        }
     }
 }
