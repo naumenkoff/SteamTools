@@ -24,13 +24,13 @@ public partial class ProfileTemplateProvider : ITemplateProvider<SteamProfileTyp
     [GeneratedRegex("(76561[1-2][0-9]{11})", RegexOptions.Compiled)]
     private static partial Regex CreateSteamId64Regex();
 
-    [GeneratedRegex("[0-9]+", RegexOptions.Compiled)]
+    [GeneratedRegex(@"^\d+$", RegexOptions.Compiled)]
     private static partial Regex CreateSteamId32Regex();
 
     [GeneratedRegex("U:[1]:([0-9]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled)]
     private static partial Regex CreateSteamId3Regex();
 
-    [GeneratedRegex("STEAM_([0-1]):([0-1]):([0-9]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled)]
+    [GeneratedRegex("STEAM_([0-5]):([0-1]):([0-9]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled)]
     private static partial Regex CreateSteamIdRegex();
 
     [GeneratedRegex(@"steamcommunity\.com\/(?:id|profiles)\/(\w+)", RegexOptions.IgnoreCase | RegexOptions.Compiled)]
