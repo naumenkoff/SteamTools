@@ -171,7 +171,7 @@
             </ItemsControl>
         </Border>
 
-        <Grid Grid.Row="2" Style="{StaticResource FadeInOutGrid}">
+        <Grid Grid.Row="2" Style="{StaticResource FadeInOutGrid}" Visibility="Hidden">
             <Rectangle Style="{StaticResource RectangleStyle}" />
             <StackPanel Margin="1">
                 <models:HeaderValueBorder Header="Name" Margin="5 5 5 0"
