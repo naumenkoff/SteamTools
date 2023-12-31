@@ -18,15 +18,15 @@ public class AppmanifestScanner : IScanner
     public IEnumerable<LocalResult> GetProfiles()
     {
         if (_steamClient.Steam is null) yield break;
-
-        foreach (var appstate in _steamClient.Steam.GetAnotherInstallations().Select(x => x.GetSteamappsDirectory()).OfType<DirectoryInfo>()
-                     .SelectMany(x => x.EnumerateFiles()).Select(x => VdfSerializer.Parse(x)["AppState"]).OfType<IRootObject>())
+        foreach (var file in _steamClient.Steam.GetAnotherInstallations().Select(x => x.GetSteamappsDirectory()).OfType<DirectoryInfo>().SelectMany(x => x.EnumerateFiles()))
         {
-            var id64 = appstate.GetValue<long>("LastOwner");
-            var profile = new SteamProfile(id64);
+            var appstate = ByteVdfParser.Parse(file).Root;
+            if (appstate?.Objects.AsInt64("LastOwner", out var id64) is not true) continue;
+            
+            var profile = new SteamProfile(id64.Value);
             yield return new AppmanifestData(profile, LocalResultType.Appmanifest)
             {
-                Name = appstate.GetValue<string>("name")
+                Name = appstate.Objects.Get("name")?.Value
             };
         }
     }

@@ -19,18 +19,19 @@ public class AppworkshopScanner : IScanner
     {
         if (_steamClient.Steam is null) yield break;
 
-        foreach (var appworkshop in _steamClient.Steam.GetAnotherInstallations().Select(x => x.GetSteamappsDirectory())
-                     .Select(SteamClient.GetWorkshopDirectory).OfType<DirectoryInfo>().SelectMany(x => x.EnumerateFiles()).Select(VdfSerializer.Parse)
-                     .Select(x => x["AppWorkshop"]).OfType<IRootObject>())
+        foreach (var file in _steamClient.Steam.GetAnotherInstallations().Select(x => x.GetSteamappsDirectory())
+                     .Select(SteamClient.GetWorkshopDirectory).OfType<DirectoryInfo>().SelectMany(x => x.EnumerateFiles()))
         {
-            var appId = appworkshop.GetValue<int>("appid");
-            foreach (var subscriber in appworkshop.GetValueObjects("subscribedby").SelectMany(x => x.Value.Split(',')))
+            var appworkshop = ByteVdfParser.Parse(file);
+            if (appworkshop.Empty) continue;
+            
+            foreach (var subscribedby in appworkshop.AllObjects.Enumerate("subscribedby").SelectMany(x => x.Value.Split(',')))
             {
-                var id32 = uint.Parse(subscriber);
+                var id32 = uint.Parse(subscribedby);
                 var profile = new SteamProfile(id32);
                 yield return new AppworkshopData(profile, LocalResultType.Appworkshop)
                 {
-                    AppId = appId
+                    AppId = appworkshop.AllObjects.AsInt32("appid")
                 };
             }
         }

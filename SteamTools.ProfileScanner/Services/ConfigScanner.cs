@@ -19,14 +19,17 @@ public class ConfigScanner : IScanner
         var file = _steamClient.GetConfigFile();
         if (file is null) yield break;
 
-        var content = VdfSerializer.Parse(file);
-        foreach (var (key, account) in content.GetRootObjects("Accounts").SelectMany(x => x.RootObjects))
+        var content = ByteVdfParser.Parse(file);
+        var accountsNode = content.AllContainers.Get("Accounts");
+        if (accountsNode is null) yield break;
+        
+        foreach (var account in accountsNode.Containers)
         {
-            var id64 = account.GetValue<long>("SteamID");
-            var profile = new SteamProfile(id64);
+            if (account.Objects.AsInt64("SteamID", out var id64) is not true) continue;
+            var profile = new SteamProfile(id64.Value);
             yield return new ConfigData(profile, LocalResultType.Config)
             {
-                Login = key
+                Login = account.Key
             };
         }
     }

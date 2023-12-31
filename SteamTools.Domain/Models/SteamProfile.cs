@@ -14,7 +14,7 @@ public class SteamProfile : ISteamIDPair
 
         ID3 = SteamConverter.ToSteamID3(id32);
 
-        ID = SteamConverter.ToSteamID(id32);
+        ID = SteamConverter.ToSteamID(id64, out _, out _);
 
         Permalink = SteamConverter.ToSteamPermanentUrl(id64);
     }
@@ -28,7 +28,7 @@ public class SteamProfile : ISteamIDPair
 
         ID3 = SteamConverter.ToSteamID3(id32);
 
-        ID = SteamConverter.ToSteamID(id32);
+        ID = SteamConverter.ToSteamID(id64, out _, out _);
 
         Permalink = SteamConverter.ToSteamPermanentUrl(id64);
     }
