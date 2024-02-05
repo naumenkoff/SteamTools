@@ -217,10 +217,10 @@ public class IDScannerViewModel : ObservableObject
 
     private IEnumerable<SearchExtension> GetFileExtensions()
     {
-        return _steamClient.Steam?.GetAnotherInstallations()
-            .SelectMany(steamLibrary =>
-                steamLibrary.WorkingDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories).Select(file => file.Extension)).Distinct()
-            .Select(x => new SearchExtension(x)).OrderBy(x => x.Extension.Length) ?? Enumerable.Empty<SearchExtension>();
+        return _steamClient.Steam?.GetSteamLibraries()
+            .SelectMany(library => library.WorkingDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories))
+            .DistinctBy(file => file.Extension, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(x => x.Extension.Length).Select(x => new SearchExtension(x.Extension));
     }
 
     private ValueTask ChangeFileExtensionsSelectedState(Func<SearchExtension, bool> func, bool check)
