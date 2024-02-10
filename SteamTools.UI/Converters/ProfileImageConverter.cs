@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
-using SteamTools.Domain.Models;
+using SteamTools.Common;
 
 namespace SteamTools.UI.Converters;
 

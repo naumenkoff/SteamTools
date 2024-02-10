@@ -1,9 +1,8 @@
-﻿using SteamTools.Domain.Models;
-using SteamTools.SignatureSearcher.Abstractions;
+﻿using SteamTools.Common;
 
 namespace SteamTools.SignatureSearcher;
 
-public class FileValidator : IFileValidator
+internal class FileValidator : IFileValidator
 {
     private readonly string _steam32Id;
     private readonly string _steam64Id;
@@ -17,6 +16,7 @@ public class FileValidator : IFileValidator
     public bool ContainsSteamId(string? value)
     {
         if (string.IsNullOrEmpty(value)) return false;
-        return value.Contains(_steam64Id) || value.Contains(_steam32Id);
+        return value.Contains(_steam64Id, StringComparison.OrdinalIgnoreCase) ||
+               value.Contains(_steam32Id, StringComparison.OrdinalIgnoreCase);
     }
 }

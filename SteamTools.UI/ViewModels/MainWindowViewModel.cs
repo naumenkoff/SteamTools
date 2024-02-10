@@ -1,28 +1,64 @@
 ﻿using System;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using SteamTools.Domain.Models;
-using SteamTools.Domain.Services;
+using SteamTools.Common;
 using SteamTools.UI.Services.Navigation;
 
 namespace SteamTools.UI.ViewModels;
 
 public class MainWindowViewModel : ObservableObject
 {
-    private NotificationMessage _notificationMessage;
-    private bool _showNotification;
+    #region Constructor
 
     public MainWindowViewModel(INavigationService navigationService, INotificationService notificationService)
     {
+        #region Private Fields
+
+        _timer = new DispatcherTimer();
+        _timer.Interval = TimeSpan.FromSeconds(1);
+        _timer.Tick += DispatcherTimer_OnTick;
+        _timer.Start();
+
+        #endregion
+
+        #region Public Properties
+
         Navigation = navigationService;
 
-        var timer = new DispatcherTimer();
-        timer.Interval = TimeSpan.FromSeconds(1);
-        timer.Tick += DispatcherTimer_OnTick;
-        timer.Start();
+        #endregion
 
         notificationService.Subscribe(OnNotificationReceived);
     }
+
+    #endregion
+
+    #region Private Fields
+
+    private readonly DispatcherTimer _timer;
+    private NotificationMessage _notificationMessage;
+    private bool _showNotification;
+
+    #endregion
+
+    #region Private Methods
+
+    private void OnNotificationReceived(object sender, NotificationMessage newNotification)
+    {
+        NotificationMessage = newNotification;
+        ShowNotification = true;
+    }
+
+    private void DispatcherTimer_OnTick(object sender, EventArgs e)
+    {
+        var lastNotificationReceivedAt = NotificationMessage?.ReceivedAt;
+        var timeSinceLastNotification = DateTime.Now - lastNotificationReceivedAt;
+        var fadeOutTime = TimeSpan.FromSeconds(3);
+        if (timeSinceLastNotification >= fadeOutTime) ShowNotification = false;
+    }
+
+    #endregion
+
+    #region Public Properties
 
     public bool IsCurrentViewIDScanner
     {
@@ -92,17 +128,9 @@ public class MainWindowViewModel : ObservableObject
 
     public INavigationService Navigation { get; }
 
-    private void OnNotificationReceived(object sender, NotificationMessage newNotification)
-    {
-        NotificationMessage = newNotification;
-        ShowNotification = true;
-    }
+    #endregion
 
-    private void DispatcherTimer_OnTick(object sender, EventArgs e)
-    {
-        var lastNotificationReceivedAt = NotificationMessage?.ReceivedAt;
-        var timeSinceLastNotification = DateTime.Now - lastNotificationReceivedAt;
-        var fadeOutTime = TimeSpan.FromSeconds(3);
-        if (timeSinceLastNotification >= fadeOutTime) ShowNotification = false;
-    }
+    #region Public Commands
+
+    #endregion
 }

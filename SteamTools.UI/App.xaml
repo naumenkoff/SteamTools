@@ -6,6 +6,13 @@
              xmlns:converters="clr-namespace:SteamTools.UI.Converters">
     <Application.Resources>
         <ResourceDictionary>
+
+            <SolidColorBrush x:Key="CheckBoxMark">#FFFFFF</SolidColorBrush>
+            <SolidColorBrush x:Key="SliderThumb">#FFFFFF</SolidColorBrush>
+
+            <SolidColorBrush x:Key="Background">#202020</SolidColorBrush>
+            <SolidColorBrush x:Key="Foreground">#FFFFFF</SolidColorBrush>
+
             <converters:ProfileImageConverter x:Key="ProfileImageConverter" />
             <DataTemplate DataType="{x:Type TypeName=viewModels:MainWindowViewModel}">
                 <views:MainWindow />
@@ -20,13 +27,17 @@
                 <views:ProfileDataFetcherView />
             </DataTemplate>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/TrackRepeatButton.xaml" />
+                <ResourceDictionary Source="Resources/RoundButton.xaml" />
                 <ResourceDictionary Source="Resources/BaseControlStyles.xaml" />
-                <ResourceDictionary Source="Resources/TextBoxWithPlaceholder.xaml" />
+                <ResourceDictionary Source="Resources/RoundTextBox.xaml" />
                 <ResourceDictionary Source="Resources/ScrollViewerStyle.xaml" />
                 <ResourceDictionary Source="Resources/ListViewStyle.xaml" />
-                <ResourceDictionary Source="Resources/HeaderValueBorderStyle.xaml" />
+                <ResourceDictionary Source="Resources/HeaderValueBorder.xaml" />
                 <ResourceDictionary Source="Resources/ListViewButtonStyle.xaml" />
-                <ResourceDictionary Source="Resources/SliderStyle.xaml" />
+                <ResourceDictionary Source="Resources/HorizontalSlider.xaml" />
+                <ResourceDictionary Source="Resources/RoundCheckBox.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

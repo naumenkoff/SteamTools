@@ -1,17 +1,10 @@
-﻿using SteamTools.SignatureSearcher.Abstractions;
-
-namespace SteamTools.SignatureSearcher;
+﻿namespace SteamTools.SignatureSearcher;
 
 public class ScanningResult : IScanningResult, IScanningResultWriter
 {
-    private readonly List<string> _paths = new List<string>();
+    private readonly List<string> _paths = [];
     private int _successfullyScannedFiles;
     private int _totalScannedFiles;
-
-    public ScanningResult()
-    {
-        Console.WriteLine("Hello");
-    }
 
     public int TotalScannedFiles => _totalScannedFiles;
     public int SuccessfullyScannedFiles => _successfullyScannedFiles;

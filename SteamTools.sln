@@ -2,21 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.UI", "SteamTools.UI\SteamTools.UI.csproj", "{B80B9BF2-1239-47CC-B8CE-7BCCE6205F30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.Domain", "SteamTools.Domain\SteamTools.Domain.csproj", "{54300C79-080D-44CC-9492-316EC21BEDD6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.Infrastructure", "SteamTools.Infrastructure\SteamTools.Infrastructure.csproj", "{5A0BF78F-ADAF-4144-B6F0-BA01434F1C6B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.SignatureSearcher", "SteamTools.SignatureSearcher\SteamTools.SignatureSearcher.csproj", "{7758F2E3-16CF-4869-BA9D-D23683B4074E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.ProfileScanner", "SteamTools.ProfileScanner\SteamTools.ProfileScanner.csproj", "{797B8D6A-1D29-4ACB-877A-18953D1FD55E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.ProfileScanner.Abstractions", "SteamTools.ProfileScanner.Abstractions\SteamTools.ProfileScanner.Abstractions.csproj", "{4D531D54-9757-49C9-BDF1-B8013FB99FA2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.SignatureSearcher.Abstractions", "SteamTools.SignatureSearcher.Abstractions\SteamTools.SignatureSearcher.Abstractions.csproj", "{7AE6E5DD-D662-4788-968C-1D5A4A98824D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.ProfileFetcher", "SteamTools.ProfileFetcher\SteamTools.ProfileFetcher.csproj", "{A8071E71-68F2-4A35-AB30-9CDA413A30A0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.ProfileFetcher.Abstractions", "SteamTools.ProfileFetcher.Abstractions\SteamTools.ProfileFetcher.Abstractions.csproj", "{BF6B8003-DFDF-4701-AB3A-CE79730FD863}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SProject", "SProject", "{8A095987-C16D-433D-A22A-446B083E80D7}"
 EndProject
@@ -32,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SProject.Math", "SProject\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SProject.FileSystem", "SProject\SProject.FileSystem\SProject.FileSystem.csproj", "{AC18C2DA-040E-4D02-BAAE-90F61ECB4C15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.Common", "src\SteamTools.Common\SteamTools.Common.csproj", "{C64C62DD-7D2E-4591-9C97-47F85142B0BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,14 +34,6 @@ Global
 		{B80B9BF2-1239-47CC-B8CE-7BCCE6205F30}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B80B9BF2-1239-47CC-B8CE-7BCCE6205F30}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B80B9BF2-1239-47CC-B8CE-7BCCE6205F30}.Release|Any CPU.Build.0 = Release|Any CPU
-		{54300C79-080D-44CC-9492-316EC21BEDD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{54300C79-080D-44CC-9492-316EC21BEDD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54300C79-080D-44CC-9492-316EC21BEDD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{54300C79-080D-44CC-9492-316EC21BEDD6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A0BF78F-ADAF-4144-B6F0-BA01434F1C6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A0BF78F-ADAF-4144-B6F0-BA01434F1C6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A0BF78F-ADAF-4144-B6F0-BA01434F1C6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A0BF78F-ADAF-4144-B6F0-BA01434F1C6B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7758F2E3-16CF-4869-BA9D-D23683B4074E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7758F2E3-16CF-4869-BA9D-D23683B4074E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7758F2E3-16CF-4869-BA9D-D23683B4074E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -58,22 +42,10 @@ Global
 		{797B8D6A-1D29-4ACB-877A-18953D1FD55E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{797B8D6A-1D29-4ACB-877A-18953D1FD55E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{797B8D6A-1D29-4ACB-877A-18953D1FD55E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4D531D54-9757-49C9-BDF1-B8013FB99FA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D531D54-9757-49C9-BDF1-B8013FB99FA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D531D54-9757-49C9-BDF1-B8013FB99FA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D531D54-9757-49C9-BDF1-B8013FB99FA2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7AE6E5DD-D662-4788-968C-1D5A4A98824D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7AE6E5DD-D662-4788-968C-1D5A4A98824D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7AE6E5DD-D662-4788-968C-1D5A4A98824D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7AE6E5DD-D662-4788-968C-1D5A4A98824D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A8071E71-68F2-4A35-AB30-9CDA413A30A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A8071E71-68F2-4A35-AB30-9CDA413A30A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8071E71-68F2-4A35-AB30-9CDA413A30A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8071E71-68F2-4A35-AB30-9CDA413A30A0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF6B8003-DFDF-4701-AB3A-CE79730FD863}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF6B8003-DFDF-4701-AB3A-CE79730FD863}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF6B8003-DFDF-4701-AB3A-CE79730FD863}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF6B8003-DFDF-4701-AB3A-CE79730FD863}.Release|Any CPU.Build.0 = Release|Any CPU
 		{46092D85-CB1E-490E-9AC4-2BE4056FDDF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{46092D85-CB1E-490E-9AC4-2BE4056FDDF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46092D85-CB1E-490E-9AC4-2BE4056FDDF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -98,6 +70,10 @@ Global
 		{AC18C2DA-040E-4D02-BAAE-90F61ECB4C15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC18C2DA-040E-4D02-BAAE-90F61ECB4C15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC18C2DA-040E-4D02-BAAE-90F61ECB4C15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C64C62DD-7D2E-4591-9C97-47F85142B0BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C64C62DD-7D2E-4591-9C97-47F85142B0BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C64C62DD-7D2E-4591-9C97-47F85142B0BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C64C62DD-7D2E-4591-9C97-47F85142B0BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{46092D85-CB1E-490E-9AC4-2BE4056FDDF6} = {8A095987-C16D-433D-A22A-446B083E80D7}

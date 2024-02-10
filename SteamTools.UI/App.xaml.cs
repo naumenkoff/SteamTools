@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SProject.Steam;
-using SteamTools.Domain.Models;
-using SteamTools.Domain.Providers;
-using SteamTools.Domain.Services;
-using SteamTools.Infrastructure.Services;
+using SteamTools.Common;
 using SteamTools.ProfileFetcher;
-using SteamTools.ProfileFetcher.Abstractions;
-using SteamTools.ProfileScanner.Abstractions;
-using SteamTools.ProfileScanner.Services;
-using SteamTools.SignatureSearcher;
-using SteamTools.SignatureSearcher.Abstractions;
+using SteamTools.ProfileFetcher.DependencyInjection;
+using SteamTools.ProfileScanner.DependencyInjection;
+using SteamTools.SignatureSearcher.DependencyInjection;
 using SteamTools.UI.Services.Navigation;
-using SteamTools.UI.Utilities;
 using SteamTools.UI.ViewModels;
 using SteamTools.UI.Views;
 
@@ -54,7 +47,7 @@ public partial class App
         return configuration.Build();
     }
 
-    private IServiceProvider ConfigureServices()
+    private ServiceProvider ConfigureServices()
     {
         var services = new ServiceCollection();
 
@@ -63,7 +56,7 @@ public partial class App
         #region UI
 
         services.AddSingleton<Func<Type, ObservableObject>>(serviceProvider =>
-            viewModelType => (ObservableObject) serviceProvider.GetRequiredService(viewModelType));
+            viewModelType => (ObservableObject)serviceProvider.GetRequiredService(viewModelType));
         services.AddSingleton(provider => new MainWindow
         {
             DataContext = provider.GetRequiredService<MainWindowViewModel>()
@@ -77,40 +70,10 @@ public partial class App
 
         #endregion
 
-        #region ProfileDataFetcher
-
-        services.AddSingleton<ISteamApiKeyProvider, SteamApiKeyProvider>();
-        services.AddSingleton<ICacheService, SteamApiCacheService>();
-        services.AddSingleton<ITemplateProvider<SteamProfileType>, ProfileTemplateProvider>();
-        services.AddHttpClient<ISteamApiClient, SteamApiClient>();
-        services.AddTransient<IProfileFetcherService, ProfileFetcherService>();
-        services.AddTransient<IProfileTypeResolver, ProfileTypeResolver>();
-
-        #endregion
-
-        #region LocalProfileScanner
-
-        services.AddSingleton<IProfileScannerService, ProfileScannerService>();
-        services.RegisterServices<IScanner>(ServiceLifetime.Singleton);
-        
-        #endregion
-
-        #region IDScanner
-        
-        services.AddTransient<IScanningResultWriter, ScanningResult>();
-        
-        // IScanningFactory because it's Transient
-        services.AddSingleton<Func<IScanningService>>(x => x.GetRequiredService<IScanningService>);
-        
-        // IFileValidator Factory because it requires runtime value ISteamIDPair
-        services.AddSingleton<Func<ISteamIDPair, IFileValidator>>(_ => id => new FileValidator(id));
-
-        services.AddTransient<IScanningService, ScanningService>();
-        services.AddTransient<IFileScanner, FileScanner>();
-
-        #endregion
-
+        services.AddSignatureSearcher();
         services.AddSingleton<ScanningOptions>();
+        services.AddProfileFetcher();
+        services.AddProfileScanner();
 
         #region Core
 

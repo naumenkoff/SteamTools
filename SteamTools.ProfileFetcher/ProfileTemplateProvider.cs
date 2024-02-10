@@ -1,12 +1,11 @@
 using System.Text.RegularExpressions;
-using SteamTools.Domain.Providers;
-using SteamTools.ProfileFetcher.Abstractions;
+using SteamTools.Common;
 
 namespace SteamTools.ProfileFetcher;
 
-public partial class ProfileTemplateProvider : ITemplateProvider<SteamProfileType>
+internal partial class ProfileTemplateProvider : ITemplateProvider<SteamProfileType>
 {
-    private readonly Dictionary<SteamProfileType, Regex> _regexTemplates = new Dictionary<SteamProfileType, Regex>
+    private readonly Dictionary<SteamProfileType, Regex> _regexTemplates = new()
     {
         { SteamProfileType.Url, CreateSteamCustomUrlRegex() },
         { SteamProfileType.Id, CreateSteamIdRegex() },

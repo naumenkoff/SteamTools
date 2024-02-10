@@ -13,206 +13,209 @@
     <converters:ThumbHalfSizeConverter x:Key="ThumbHalfSizeConverter" />
 
     <Style x:Key="RepeatButtonStyle" TargetType="{x:Type RepeatButton}">
-        <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Focusable" Value="false" />
-        <Setter Property="IsTabStop" Value="false" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
-                    <Rectangle Fill="{TemplateBinding Background}" Height="{TemplateBinding Height}"
-                               Width="{TemplateBinding Width}" />
+                    <Rectangle Fill="{TemplateBinding Background}" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
     <Style x:Key="ScrollBarThumbStyle" TargetType="{x:Type Thumb}">
-        <Setter Property="OverridesDefaultStyle" Value="true" />
-        <Setter Property="IsTabStop" Value="false" />
         <Setter Property="Background" Value="{StaticResource PassiveThumbBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Rectangle x:Name="rectangle" RadiusX="2.5" RadiusY="2.5"
+                    <Rectangle RadiusX="2" RadiusY="2"
                                Fill="{TemplateBinding Background}"
                                Height="{TemplateBinding Height}"
-                               SnapsToDevicePixels="True"
                                Width="{TemplateBinding Width}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
+    <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
+        <Grid>
+            <Rectangle x:Name="Border" Fill="#2c2c2c" Opacity="0" RadiusX="2" RadiusY="2" Margin="3" />
+
+            <Track x:Name="PART_Track" IsEnabled="{TemplateBinding IsMouseOver}">
+
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}"
+                                  Style="{StaticResource RepeatButtonStyle}" />
+                </Track.DecreaseRepeatButton>
+
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}"
+                                  Style="{StaticResource RepeatButtonStyle}" />
+                </Track.IncreaseRepeatButton>
+
+                <Track.Thumb>
+                    <Thumb x:Name="Thumb"
+                           Margin="3"
+                           VerticalAlignment="Bottom"
+                           MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ActualWidth, Converter={StaticResource ThumbHalfSizeConverter}}"
+                           Height="{StaticResource ScrollBarPassiveSize}"
+                           Style="{StaticResource ScrollBarThumbStyle}" />
+                </Track.Thumb>
+
+            </Track>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+
+                            <DoubleAnimation Storyboard.TargetName="Thumb"
+                                             Storyboard.TargetProperty="Height"
+                                             To="{StaticResource ScrollBarActiveSize}"
+                                             BeginTime="{StaticResource AnimationBeginTime}"
+                                             Duration="{StaticResource AnimationDurationTime}" />
+
+                            <DoubleAnimation Storyboard.TargetName="Border"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="1"
+                                             BeginTime="{StaticResource AnimationBeginTime}"
+                                             Duration="{StaticResource AnimationDurationTime}" />
+
+                            <ColorAnimation Storyboard.TargetName="Thumb"
+                                            Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
+                                            To="{StaticResource ActiveThumbColor}"
+                                            BeginTime="{StaticResource AnimationBeginTime}"
+                                            Duration="{StaticResource AnimationDurationTime}" />
+
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+
+                            <DoubleAnimation Storyboard.TargetName="Thumb"
+                                             Storyboard.TargetProperty="Height"
+                                             To="{StaticResource ScrollBarPassiveSize}"
+                                             BeginTime="{StaticResource AnimationBeginTime}"
+                                             Duration="{StaticResource AnimationDurationTime}" />
+
+                            <DoubleAnimation Storyboard.TargetName="Border"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0"
+                                             BeginTime="{StaticResource AnimationBeginTime}"
+                                             Duration="{StaticResource AnimationDurationTime}" />
+
+                            <ColorAnimation Storyboard.TargetName="Thumb"
+                                            Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
+                                            To="{StaticResource PassiveThumbColor}"
+                                            BeginTime="{StaticResource AnimationBeginTime}"
+                                            Duration="{StaticResource AnimationDurationTime}" />
+
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
+        <Grid>
+
+            <Rectangle x:Name="Border" Fill="#2c2c2c" Opacity="0" RadiusX="2" RadiusY="2" Margin="3" />
+
+            <Track x:Name="PART_Track" IsDirectionReversed="True" IsEnabled="{TemplateBinding IsMouseOver}">
+
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
+                                  Style="{StaticResource RepeatButtonStyle}" />
+                </Track.DecreaseRepeatButton>
+
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
+                                  Style="{StaticResource RepeatButtonStyle}" />
+                </Track.IncreaseRepeatButton>
+
+                <Track.Thumb>
+                    <Thumb x:Name="Thumb" Width="{StaticResource ScrollBarPassiveSize}"
+                           Margin="3" HorizontalAlignment="Right"
+                           MinHeight="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ActualHeight, Converter={StaticResource ThumbHalfSizeConverter}}"
+                           Style="{StaticResource ScrollBarThumbStyle}" />
+                </Track.Thumb>
+
+            </Track>
+
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+
+                            <DoubleAnimation Storyboard.TargetName="Thumb"
+                                             Storyboard.TargetProperty="Width"
+                                             To="{StaticResource ScrollBarActiveSize}"
+                                             BeginTime="{StaticResource AnimationBeginTime}"
+                                             Duration="{StaticResource AnimationDurationTime}" />
+
+                            <DoubleAnimation Storyboard.TargetName="Border"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="1"
+                                             BeginTime="{StaticResource AnimationBeginTime}"
+                                             Duration="{StaticResource AnimationDurationTime}" />
+
+                            <ColorAnimation Storyboard.TargetName="Thumb"
+                                            Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
+                                            To="{StaticResource ActiveThumbColor}"
+                                            BeginTime="{StaticResource AnimationBeginTime}"
+                                            Duration="{StaticResource AnimationDurationTime}" />
+
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+
+                            <DoubleAnimation Storyboard.TargetName="Thumb"
+                                             Storyboard.TargetProperty="Width"
+                                             To="{StaticResource ScrollBarPassiveSize}"
+                                             BeginTime="{StaticResource AnimationBeginTime}"
+                                             Duration="{StaticResource AnimationDurationTime}" />
+
+                            <DoubleAnimation Storyboard.TargetName="Border"
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0"
+                                             BeginTime="{StaticResource AnimationBeginTime}"
+                                             Duration="{StaticResource AnimationDurationTime}" />
+
+                            <ColorAnimation Storyboard.TargetName="Thumb"
+                                            Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
+                                            To="{StaticResource PassiveThumbColor}"
+                                            BeginTime="{StaticResource AnimationBeginTime}"
+                                            Duration="{StaticResource AnimationDurationTime}" />
+
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
     <Style x:Key="ScrollBarStyle" TargetType="{x:Type ScrollBar}">
-        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false" />
-        <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource {x:Static SystemColors.ControlTextBrushKey}}" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Width" Value="12" />
-        <Setter Property="MinWidth" Value="12" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ScrollBar}">
-                    <Grid x:Name="Bg" SnapsToDevicePixels="true">
-
-                        <Border x:Name="Border" Background="#2c2c2c" Opacity="0" ClipToBounds="True"
-                                BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="2.5"
-                                BorderThickness="{TemplateBinding BorderThickness}" Margin="3" />
-
-                        <Track x:Name="PART_Track" IsDirectionReversed="true"
-                               IsEnabled="{TemplateBinding IsMouseOver}">
-                            <Track.DecreaseRepeatButton>
-                                <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}"
-                                              Style="{StaticResource RepeatButtonStyle}" />
-                            </Track.DecreaseRepeatButton>
-                            <Track.IncreaseRepeatButton>
-                                <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}"
-                                              Style="{StaticResource RepeatButtonStyle}" />
-                            </Track.IncreaseRepeatButton>
-                            <Track.Thumb>
-                                <Thumb x:Name="Thumb" Width="{StaticResource ScrollBarPassiveSize}"
-                                       Margin="3" HorizontalAlignment="Right"
-                                       MinHeight="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ActualHeight, Converter={StaticResource ThumbHalfSizeConverter}}"
-                                       Style="{StaticResource ScrollBarThumbStyle}" />
-                            </Track.Thumb>
-                        </Track>
-
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="Thumb"
-                                                         Storyboard.TargetProperty="Width"
-                                                         To="{StaticResource ScrollBarActiveSize}"
-                                                         BeginTime="{StaticResource AnimationBeginTime}"
-                                                         Duration="{StaticResource AnimationDurationTime}" />
-                                        <DoubleAnimation Storyboard.TargetName="Border"
-                                                         Storyboard.TargetProperty="Opacity"
-                                                         To="1"
-                                                         BeginTime="{StaticResource AnimationBeginTime}"
-                                                         Duration="{StaticResource AnimationDurationTime}" />
-                                        <ColorAnimation Storyboard.TargetName="Thumb"
-                                                        Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
-                                                        To="{StaticResource ActiveThumbColor}"
-                                                        BeginTime="{StaticResource AnimationBeginTime}"
-                                                        Duration="{StaticResource AnimationDurationTime}" />
-
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="Thumb"
-                                                         Storyboard.TargetProperty="Width"
-                                                         To="{StaticResource ScrollBarPassiveSize}"
-                                                         BeginTime="{StaticResource AnimationBeginTime}"
-                                                         Duration="{StaticResource AnimationDurationTime}" />
-                                        <DoubleAnimation Storyboard.TargetName="Border"
-                                                         Storyboard.TargetProperty="Opacity"
-                                                         To="0"
-                                                         BeginTime="{StaticResource AnimationBeginTime}"
-                                                         Duration="{StaticResource AnimationDurationTime}" />
-                                        <ColorAnimation Storyboard.TargetName="Thumb"
-                                                        Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
-                                                        To="{StaticResource PassiveThumbColor}"
-                                                        BeginTime="{StaticResource AnimationBeginTime}"
-                                                        Duration="{StaticResource AnimationDurationTime}" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
                 <Setter Property="Width" Value="Auto" />
                 <Setter Property="MinWidth" Value="0" />
                 <Setter Property="Height" Value="12" />
                 <Setter Property="MinHeight" Value="12" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ScrollBar}">
-                            <Grid x:Name="Bg" SnapsToDevicePixels="true">
-
-                                <Border x:Name="Border" Background="#2c2c2c" Opacity="0"
-                                        ClipToBounds="True" Margin="3" CornerRadius="2.5"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}" />
-
-                                <Track x:Name="PART_Track" IsEnabled="{TemplateBinding IsMouseOver}">
-                                    <Track.DecreaseRepeatButton>
-                                        <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}"
-                                                      Style="{StaticResource RepeatButtonStyle}" />
-                                    </Track.DecreaseRepeatButton>
-                                    <Track.IncreaseRepeatButton>
-                                        <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}"
-                                                      Style="{StaticResource RepeatButtonStyle}" />
-                                    </Track.IncreaseRepeatButton>
-                                    <Track.Thumb>
-                                        <Thumb x:Name="Thumb" Margin="3" VerticalAlignment="Bottom"
-                                               MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ActualWidth, Converter={StaticResource ThumbHalfSizeConverter}}"
-                                               Height="{StaticResource ScrollBarPassiveSize}"
-                                               Style="{StaticResource ScrollBarThumbStyle}" />
-                                    </Track.Thumb>
-                                </Track>
-
-                            </Grid>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Trigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetName="Thumb"
-                                                                 Storyboard.TargetProperty="Height"
-                                                                 To="{StaticResource ScrollBarActiveSize}"
-                                                                 BeginTime="{StaticResource AnimationBeginTime}"
-                                                                 Duration="{StaticResource AnimationDurationTime}" />
-                                                <DoubleAnimation Storyboard.TargetName="Border"
-                                                                 Storyboard.TargetProperty="Opacity"
-                                                                 To="1"
-                                                                 BeginTime="{StaticResource AnimationBeginTime}"
-                                                                 Duration="{StaticResource AnimationDurationTime}" />
-                                                <ColorAnimation Storyboard.TargetName="Thumb"
-                                                                Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
-                                                                To="{StaticResource ActiveThumbColor}"
-                                                                BeginTime="{StaticResource AnimationBeginTime}"
-                                                                Duration="{StaticResource AnimationDurationTime}" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </Trigger.EnterActions>
-                                    <Trigger.ExitActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation Storyboard.TargetName="Thumb"
-                                                                 Storyboard.TargetProperty="Height"
-                                                                 To="{StaticResource ScrollBarPassiveSize}"
-                                                                 BeginTime="{StaticResource AnimationBeginTime}"
-                                                                 Duration="{StaticResource AnimationDurationTime}" />
-                                                <DoubleAnimation Storyboard.TargetName="Border"
-                                                                 Storyboard.TargetProperty="Opacity"
-                                                                 To="0"
-                                                                 BeginTime="{StaticResource AnimationBeginTime}"
-                                                                 Duration="{StaticResource AnimationDurationTime}" />
-                                                <ColorAnimation Storyboard.TargetName="Thumb"
-                                                                Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"
-                                                                To="{StaticResource PassiveThumbColor}"
-                                                                BeginTime="{StaticResource AnimationBeginTime}"
-                                                                Duration="{StaticResource AnimationDurationTime}" />
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </Trigger.ExitActions>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
+                <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
+            </Trigger>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="Width" Value="12" />
+                <Setter Property="MinWidth" Value="12" />
+                <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -221,55 +224,47 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollViewer}">
-                    <Grid x:Name="Grid" Background="{TemplateBinding Background}">
+                    <Grid x:Name="Grid">
+
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
+
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <Rectangle x:Name="Corner" Grid.Column="1"
-                                   Fill="Transparent" Grid.Row="1" />
-                        <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanHorizontallyScroll="False"
-                                                ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                CanVerticallyScroll="False" Grid.Column="0"
-                                                Content="{TemplateBinding Content}"
-                                                CanContentScroll="False"
-                                                Margin="{TemplateBinding Padding}" Grid.Row="0" />
-                        <Grid Grid.Row="0" Grid.Column="1">
 
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="{Binding ActualHeight,ElementName=Corner}" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
+                        <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}"
+                                                Grid.Column="0" />
 
-                            <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Row="1"
-                                       AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow"
-                                       Style="{StaticResource ScrollBarStyle}"
-                                       Maximum="{TemplateBinding ScrollableHeight}" Minimum="0"
-                                       Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                       ViewportSize="NaN"
-                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
-                        </Grid>
+                        <ScrollBar x:Name="PART_VerticalScrollBar"
 
-                        <Grid Grid.Row="1" Grid.Column="0">
+                                   Cursor="Arrow"
+                                   Grid.Column="1"
+                                   Grid.Row="0"
+                                   Grid.RowSpan="2"
+                                   Style="{StaticResource ScrollBarStyle}"
 
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="{Binding ActualHeight,ElementName=Corner}" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                                   Value="{TemplateBinding VerticalOffset}"
+                                   Maximum="{TemplateBinding ScrollableHeight}"
+                                   ViewportSize="NaN"
+                                   Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
 
-                            <ScrollBar x:Name="PART_HorizontalScrollBar"
-                                       AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow"
-                                       Grid.Column="1" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0"
-                                       Style="{StaticResource ScrollBarStyle}"
-                                       Orientation="Horizontal"
-                                       Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                       ViewportSize="NaN"
-                                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
-                        </Grid>
+                        <ScrollBar x:Name="PART_HorizontalScrollBar"
+                                   Orientation="Horizontal"
+
+                                   Cursor="Arrow"
+                                   Grid.Row="1"
+                                   Grid.Column="0"
+                                   Style="{StaticResource ScrollBarStyle}"
+
+                                   Value="{TemplateBinding HorizontalOffset}"
+                                   Maximum="{TemplateBinding ScrollableWidth}"
+                                   ViewportSize="NaN"
+                                   Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

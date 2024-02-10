@@ -1,10 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
-using SteamTools.ProfileFetcher.Abstractions;
 
 namespace SteamTools.ProfileFetcher;
 
-public class SteamApiKeyProvider : ISteamApiKeyProvider
+internal class SteamApiKeyProvider : ISteamApiKeyProvider
 {
     private readonly string? _steamApiKey;
 

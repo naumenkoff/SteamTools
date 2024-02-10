@@ -1,14 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0-windows</TargetFramework>
+        <TargetFramework>net8.0-windows</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SteamTools.Domain\SteamTools.Domain.csproj"/>
-        <ProjectReference Include="..\SteamTools.SignatureSearcher.Abstractions\SteamTools.SignatureSearcher.Abstractions.csproj"/>
+        <ProjectReference Include="..\src\SteamTools.Common\SteamTools.Common.csproj"/>
     </ItemGroup>
 
 </Project>

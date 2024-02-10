@@ -1,11 +1,10 @@
 using System.Text.RegularExpressions;
 using SProject.Steam;
-using SteamTools.Domain.Models;
-using SteamTools.ProfileFetcher.Abstractions;
+using SteamTools.Common;
 
 namespace SteamTools.ProfileFetcher;
 
-public class ProfileFetcherService : IProfileFetcherService
+internal class ProfileFetcherService : IProfileFetcherService
 {
     private readonly IProfileTypeResolver _profileTypeResolver;
     private readonly ISteamApiClient _steamApiClient;
@@ -21,26 +20,26 @@ public class ProfileFetcherService : IProfileFetcherService
         if (string.IsNullOrWhiteSpace(input)) return SteamProfile.Empty;
 
         var profileType = _profileTypeResolver.ResolveProfileType(input);
-        var steamProfile = await GetSteamId64FromProfileTypeAsync(input, profileType);
+        var steamProfile = await GetSteamId64FromProfileTypeAsync(input, profileType).ConfigureAwait(false);
         if (steamProfile is null) return SteamProfile.Empty;
 
-        var playerSummary = await _steamApiClient.GetPlayerSummariesAsync(steamProfile.ID64);
+        var playerSummary = await _steamApiClient.GetPlayerSummariesAsync(steamProfile.ID64).ConfigureAwait(false);
         return new SteamProfile(steamProfile, playerSummary, input);
     }
 
     private async Task<SteamProfile?> GetSteamId64FromProfileTypeAsync(string input, SteamProfileType profileType)
     {
         var match = _profileTypeResolver.GetResolvedMatch(profileType);
-        if (match is null) return await GetSteamId64FromUnknownAsync(input);
+        if (match is null) return await GetSteamId64FromUnknownAsync(input).ConfigureAwait(false);
 
         return profileType switch
         {
-            SteamProfileType.Id => await GetSteamId64FromSteamIdAsync(match),
-            SteamProfileType.Id3 => await GetSteamId64FromSteamId3Async(match),
-            SteamProfileType.Id32 => await GetSteamId64FromSteamId32Async(match),
-            SteamProfileType.Id64 => await GetSteamId64FromSteamId64Async(match),
-            SteamProfileType.Url => await GetSteamId64FromCustomUrlAsync(match),
-            SteamProfileType.Unknown => await GetSteamId64FromUnknownAsync(input),
+            SteamProfileType.Id => await GetSteamId64FromSteamIdAsync(match).ConfigureAwait(false),
+            SteamProfileType.Id3 => await GetSteamId64FromSteamId3Async(match).ConfigureAwait(false),
+            SteamProfileType.Id32 => await GetSteamId64FromSteamId32Async(match).ConfigureAwait(false),
+            SteamProfileType.Id64 => await GetSteamId64FromSteamId64Async(match).ConfigureAwait(false),
+            SteamProfileType.Url => await GetSteamId64FromCustomUrlAsync(match).ConfigureAwait(false),
+            SteamProfileType.Unknown => await GetSteamId64FromUnknownAsync(input).ConfigureAwait(false),
             _ => throw new ArgumentOutOfRangeException(nameof(profileType))
         };
     }
@@ -73,13 +72,13 @@ public class ProfileFetcherService : IProfileFetcherService
 
     private async Task<SteamProfile?> GetSteamId64FromCustomUrlAsync(Match match)
     {
-        var response = await _steamApiClient.ResolveVanityUrlAsync(match.Groups[1].Value);
+        var response = await _steamApiClient.ResolveVanityUrlAsync(match.Groups[1].Value).ConfigureAwait(false);
         return long.TryParse(response?.SteamID, out var id) ? new SteamProfile(id) : null;
     }
 
     private async Task<SteamProfile?> GetSteamId64FromUnknownAsync(string input)
     {
-        var response = await _steamApiClient.ResolveVanityUrlAsync(input);
+        var response = await _steamApiClient.ResolveVanityUrlAsync(input).ConfigureAwait(false);
         return long.TryParse(response?.SteamID, out var id) ? new SteamProfile(id) : null;
     }
 }

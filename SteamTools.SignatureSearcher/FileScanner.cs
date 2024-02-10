@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using SteamTools.Domain.Models;
-using SteamTools.SignatureSearcher.Abstractions;
+using SteamTools.Common;
 
 namespace SteamTools.SignatureSearcher;
 
-public class FileScanner : IFileScanner
+internal class FileScanner : IFileScanner
 {
     private readonly Func<ISteamIDPair, IFileValidator> _fileValidatorFactory;
     private readonly bool _isFileSizeLimitEnabled;
@@ -12,7 +11,8 @@ public class FileScanner : IFileScanner
     private readonly IScanningResultWriter _scanningResult;
     private IFileValidator _fileValidator = null!;
 
-    public FileScanner(IScanningResultWriter scanningResult, ScanningOptions scanningOptions, Func<ISteamIDPair, IFileValidator> fileValidatorFactory)
+    public FileScanner(IScanningResultWriter scanningResult, ScanningOptions scanningOptions,
+        Func<ISteamIDPair, IFileValidator> fileValidatorFactory)
     {
         _fileValidatorFactory = fileValidatorFactory;
         _isFileSizeLimitEnabled = scanningOptions.LimitScanningFileSize;
@@ -43,7 +43,7 @@ public class FileScanner : IFileScanner
             _scanningResult.MarkSuccessfullyScannedFile();
             while (streamReader.BaseStream.Position < streamReader.BaseStream.Length)
             {
-                var line = await streamReader.ReadLineAsync(token);
+                var line = await streamReader.ReadLineAsync(token).ConfigureAwait(false);
                 if (!_fileValidator.ContainsSteamId(line)) continue;
 
                 _scanningResult.AddFilePath(file.FullName);
@@ -58,6 +58,6 @@ public class FileScanner : IFileScanner
 
     public IScanningResult GetResult()
     {
-        return (IScanningResult) _scanningResult;
+        return (IScanningResult)_scanningResult;
     }
 }

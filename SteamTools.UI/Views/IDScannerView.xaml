@@ -6,107 +6,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:viewModels="clr-namespace:SteamTools.UI.ViewModels"
              xmlns:local="clr-namespace:SteamTools.UI.Models"
+             xmlns:resources="clr-namespace:SteamTools.UI.Resources"
              mc:Ignorable="d"
              d:DesignHeight="510"
              d:DesignWidth="720"
-             Background="#202020"
+             Background="{StaticResource Background}"
              d:DataContext="{d:DesignInstance viewModels:IDScannerViewModel}">
-
-    <UserControl.Resources>
-
-        <Style TargetType="local:RoundCheckBox" x:Key="BaseRoundCheckBox">
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Foreground" Value="#FFFFFF" />
-            <Setter Property="Background" Value="#26292e" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="MaxHeight" Value="26" />
-            <Setter Property="MinHeight" Value="26" />
-            <Setter Property="TextAlignment" Value="Left" />
-            <Setter Property="CornerRadius" Value="3" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type local:RoundCheckBox}">
-                        <Grid Background="Transparent">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="{Binding ActualWidth, ElementName=Mark}" />
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Grid.Column="1" Margin="12 0 12 1"
-                                       HorizontalAlignment="Stretch"
-                                       VerticalAlignment="Center"
-                                       Text="{TemplateBinding Content}"
-                                       TextAlignment="{TemplateBinding TextAlignment}"
-                                       Foreground="{TemplateBinding Foreground}"
-                                       FontSize="{TemplateBinding FontSize}" />
-
-                            <Border x:Name="Mark" Width="22" Height="22" Grid.Column="0"
-                                    CornerRadius="{TemplateBinding CornerRadius}" ClipToBounds="True"
-                                    BorderThickness="3"
-                                    Background="#26292e" BorderBrush="#7189FF">
-                                <Border x:Name="Border"
-                                        Background="#26292e"
-                                        Margin="-1"
-                                        Padding="3.5"
-                                        CornerRadius="{TemplateBinding CornerRadius}"
-                                        ClipToBounds="True">
-                                    <Path x:Name="CheckMark"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          Stretch="Uniform"
-                                          Data="F1M9.97498,1.22334L4.6983,9.09834 4.52164,9.09834 0,5.19331 1.27664,3.52165 4.255,6.08833 8.33331,1.52588E-05 9.97498,1.22334z"
-                                          Fill="White"
-                                          Opacity="0" />
-                                </Border>
-                            </Border>
-
-                        </Grid>
-
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsChecked" Value="True">
-                                <Trigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ColorAnimation To="#7189FF" Duration="0:0:0.15"
-                                                            Storyboard.TargetName="Border"
-                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" />
-                                            <DoubleAnimation Storyboard.TargetName="CheckMark"
-                                                             Storyboard.TargetProperty="(Opacity)" To="1"
-                                                             Duration="0:0:0.25" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.EnterActions>
-                                <Trigger.ExitActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ColorAnimation To="#26292e" Duration="0:0:0.15"
-                                                            Storyboard.TargetName="Border"
-                                                            Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)" />
-                                            <DoubleAnimation Storyboard.TargetName="CheckMark"
-                                                             Storyboard.TargetProperty="(Opacity)" To="0"
-                                                             Duration="0:0:0.25" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.ExitActions>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="CharRoundButton" BasedOn="{StaticResource BaseRoundButton}" TargetType="local:RoundButton">
-            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="Padding" Value="1 0 0 0" />
-            <Setter Property="TextOptions.TextRenderingMode" Value="Aliased" />
-            <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
-        </Style>
-
-    </UserControl.Resources>
 
     <Grid Margin="20">
 
@@ -132,11 +37,9 @@
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="The number of threads used during scanning" FontSize="13"
                                HorizontalAlignment="Center"
-                               Foreground="White" Margin="0 0 0 5" />
-                    <Slider Grid.Row="1" Style="{StaticResource SliderStyle}"
-                            Value="{Binding ScanningOptions.Processors, Mode=TwoWay}"
-                            Minimum="1"
-                            Maximum="{Binding ScanningOptions.TotalProcessors}" />
+                               Foreground="{DynamicResource Foreground}" Margin="0 0 0 5" />
+                    <resources:HorizontalSlider Grid.Row="1" Value="{Binding ScanningOptions.Processors, Mode=TwoWay}"
+                                                Minimum="1" Maximum="{Binding ScanningOptions.TotalProcessors}" />
                 </Grid>
             </Grid>
 
@@ -148,12 +51,12 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <local:RoundCheckBox Grid.Row="0" x:Name="LimitFileSize"
-                                         Style="{StaticResource BaseRoundCheckBox}"
-                                         Content="Enable maximum file size limit"
-                                         TextAlignment="Center"
-                                         VerticalAlignment="Stretch"
-                                         IsChecked="{Binding Path=ScanningOptions.LimitScanningFileSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <resources:RoundCheckBox Grid.Row="0"
+                                             Style="{StaticResource BaseRoundCheckBox}"
+                                             Content="Enable maximum file size limit"
+                                             TextAlignment="Center"
+                                             VerticalAlignment="Stretch"
+                                             IsChecked="{Binding Path=ScanningOptions.LimitScanningFileSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     <Grid Grid.Row="1" Margin="0 10 0 0">
 
                         <Grid.ColumnDefinitions>
@@ -162,20 +65,20 @@
                             <ColumnDefinition MaxWidth="32" />
                         </Grid.ColumnDefinitions>
 
-                        <local:RoundButton Grid.Column="0" Style="{StaticResource CharRoundButton}"
-                                           Content="&#xE948;"
-                                           Command="{Binding Path=IncreaseMaximumFileSizeCommand}" />
+                        <resources:RoundButton Grid.Column="0" Style="{StaticResource CharRoundButton}"
+                                               Content="&#xE948;"
+                                               Command="{Binding Path=IncreaseMaximumFileSizeCommand}" />
 
-                        <local:RoundTextBox Grid.Column="1" Style="{StaticResource TextBoxWithPlaceholder}"
-                                            CornerRadius="5"
-                                            SearchButtonVisibility="Collapsed"
-                                            Margin="10 0"
-                                            Padding="0"
-                                            Text="{Binding Path=ScanningOptions.MaximumFileSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <resources:RoundTextBox Grid.Column="1"
+                                                CornerRadius="5"
+                                                SearchButtonVisibility="Collapsed"
+                                                Margin="10 0"
+                                                Padding="0"
+                                                Text="{Binding Path=ScanningOptions.MaximumFileSize}" />
 
-                        <local:RoundButton Grid.Column="2" Style="{StaticResource CharRoundButton}"
-                                           Content="&#xE949;"
-                                           Command="{Binding Path=DecreaseMaximumFileSizeCommand}" />
+                        <resources:RoundButton Grid.Column="2" Style="{StaticResource CharRoundButton}"
+                                               Content="&#xE949;"
+                                               Command="{Binding Path=DecreaseMaximumFileSizeCommand}" />
 
                     </Grid>
 
@@ -190,11 +93,11 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <local:RoundCheckBox Grid.Row="0" Style="{StaticResource BaseRoundCheckBox}"
-                                         Content="Enable the use of extensions"
-                                         TextAlignment="Center"
-                                         VerticalAlignment="Stretch"
-                                         IsChecked="{Binding ScanningOptions.ScanFilesOnlyWithSpecifiedExtensions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <resources:RoundCheckBox Grid.Row="0" Style="{StaticResource BaseRoundCheckBox}"
+                                             Content="Enable the use of extensions"
+                                             TextAlignment="Center"
+                                             VerticalAlignment="Stretch"
+                                             IsChecked="{Binding ScanningOptions.ScanFilesOnlyWithSpecifiedExtensions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                     <Grid Grid.Row="1" Margin="0 10 0 0">
 
@@ -204,13 +107,13 @@
                             <RowDefinition Height="25" />
                         </Grid.RowDefinitions>
 
-                        <local:RoundTextBox Grid.Row="0" Style="{StaticResource TextBoxWithPlaceholder}"
-                                            CornerRadius="5"
-                                            TextAlignment="Center"
-                                            Padding="1 0 0 0"
-                                            SearchButtonVisibility="Collapsed"
-                                            PlaceholderText="Enter the extension, e.g. json"
-                                            Text="{Binding ExtensionQuery, UpdateSourceTrigger=PropertyChanged}" />
+                        <resources:RoundTextBox Grid.Row="0"
+                                                CornerRadius="5"
+                                                TextAlignment="Center"
+                                                Padding="1 0 0 0"
+                                                SearchButtonVisibility="Collapsed"
+                                                PlaceholderText="Enter the extension, e.g. json"
+                                                Text="{Binding ExtensionQuery, UpdateSourceTrigger=PropertyChanged}" />
 
                         <ListView Grid.Row="1" Margin="0 10" VirtualizingStackPanel.IsVirtualizing="True"
                                   ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
@@ -218,8 +121,8 @@
                                   ItemsSource="{Binding Path=FilteredCollectionViewSource}">
                             <ListView.ItemTemplate>
                                 <DataTemplate DataType="{x:Type local:SearchExtension}">
-                                    <ToggleButton Style="{StaticResource ListViewToggleButtonStyle}"
-                                                  Content="{Binding Extension}" IsChecked="{Binding Selected}">
+                                    <ToggleButton Style="{StaticResource ListViewToggleButtonStyle}" Content="{Binding Extension}"
+                                                  IsChecked="{Binding Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                         <i:Interaction.Triggers>
                                             <i:EventTrigger EventName="Checked">
                                                 <i:InvokeCommandAction
@@ -245,21 +148,21 @@
                                 <ColumnDefinition Width="2*" />
                             </Grid.ColumnDefinitions>
 
-                            <local:RoundButton Grid.Column="0" Style="{StaticResource BaseRoundButton}"
-                                               Content="All"
-                                               FontSize="12"
-                                               Command="{Binding SelectAllSearchExtensionsCommand}" />
+                            <resources:RoundButton Grid.Column="0" Style="{StaticResource BaseRoundButton}"
+                                                   Content="All"
+                                                   FontSize="12"
+                                                   Command="{Binding SelectAllSearchExtensionsCommand}" />
 
-                            <local:RoundButton Grid.Column="1" Style="{StaticResource BaseRoundButton}"
-                                               Content="Default"
-                                               FontSize="12"
-                                               Command="{Binding SelectDefaultExtensionsCommand}"
-                                               Margin="10 0" />
+                            <resources:RoundButton Grid.Column="1" Style="{StaticResource BaseRoundButton}"
+                                                   Content="Default"
+                                                   FontSize="12"
+                                                   Command="{Binding SelectDefaultExtensionsCommand}"
+                                                   Margin="10 0" />
 
-                            <local:RoundButton Grid.Column="2" Style="{StaticResource BaseRoundButton}"
-                                               Content="Reset"
-                                               FontSize="12"
-                                               Command="{Binding ResetAllSearchExtensionsCommand}" />
+                            <resources:RoundButton Grid.Column="2" Style="{StaticResource BaseRoundButton}"
+                                                   Content="Reset"
+                                                   FontSize="12"
+                                                   Command="{Binding ResetAllSearchExtensionsCommand}" />
 
                         </Grid>
                     </Grid>
@@ -276,20 +179,20 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <local:RoundTextBox Grid.Row="0" Style="{StaticResource TextBoxWithPlaceholder}"
-                                    CornerRadius="5"
-                                    TextAlignment="Left"
-                                    SearchButtonCommand="{Binding RunScanCommand}"
-                                    ClearButtonUsesBehavior="False"
-                                    ClearButtonCommand="{Binding CancelScanCommand}"
-                                    SearchButtonCommandParameter="{Binding Text, RelativeSource={RelativeSource Self}}"
-                                    PlaceholderText="Enter SteamID64">
+                <resources:RoundTextBox Grid.Row="0"
+                                        CornerRadius="5"
+                                        TextAlignment="Left"
+                                        SearchButtonCommand="{Binding RunScanCommand}"
+                                        ClearButtonUsesBehavior="False"
+                                        ClearButtonCommand="{Binding CancelScanCommand}"
+                                        SearchButtonCommandParameter="{Binding Text, RelativeSource={RelativeSource Self}}"
+                                        PlaceholderText="Enter SteamID64">
                     <TextBox.InputBindings>
                         <KeyBinding Command="{Binding RunScanCommand}"
                                     CommandParameter="{Binding Path=Text, RelativeSource={RelativeSource AncestorType=TextBox} }"
                                     Key="Enter" />
                     </TextBox.InputBindings>
-                </local:RoundTextBox>
+                </resources:RoundTextBox>
 
                 <ListView Margin="0 10 0 0" Grid.Row="1"
                           ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"

@@ -5,12 +5,7 @@
         <Setter Property="Background" Value="#202020" />
         <Setter Property="BorderBrush" Value="#797979" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Foreground" Value="White" />
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-        <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
-        <Setter Property="ScrollViewer.PanningMode" Value="Both" />
-        <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+        <Setter Property="Foreground" Value="{DynamicResource Foreground}" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Template">
             <Setter.Value>
@@ -18,7 +13,7 @@
                     <Border x:Name="Bd" Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
-                        <ScrollViewer Style="{StaticResource ScrollViewerStyle}" Focusable="false"
+                        <ScrollViewer Style="{StaticResource ScrollViewerStyle}"
                                       Padding="{TemplateBinding Padding}">
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                             Margin="0 0 0 4" />

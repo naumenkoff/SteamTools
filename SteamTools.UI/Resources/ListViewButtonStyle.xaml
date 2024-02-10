@@ -14,7 +14,7 @@
                             CornerRadius="5"
                             MaxHeight="{TemplateBinding MaxHeight}"
                             MinHeight="{TemplateBinding MinHeight}" Padding="{TemplateBinding Padding}">
-                        <TextBlock Foreground="White" VerticalAlignment="Center"
+                        <TextBlock Foreground="{DynamicResource Foreground}" VerticalAlignment="Center"
                                    Text="{TemplateBinding Content}" />
                     </Border>
                     <ControlTemplate.Triggers>

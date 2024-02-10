@@ -1,11 +1,10 @@
 using System.Text.RegularExpressions;
 using SProject.Steam;
-using SteamTools.Domain.Providers;
-using SteamTools.ProfileFetcher.Abstractions;
+using SteamTools.Common;
 
 namespace SteamTools.ProfileFetcher;
 
-public class ProfileTypeResolver : IProfileTypeResolver
+internal class ProfileTypeResolver : IProfileTypeResolver
 {
     private readonly Dictionary<SteamProfileType, Match> _matches;
     private readonly ITemplateProvider<SteamProfileType> _templateProvider;
@@ -26,12 +25,16 @@ public class ProfileTypeResolver : IProfileTypeResolver
         return input switch
         {
             _ when IsMatch(input, SteamProfileType.Id) => SteamProfileType.Id,
-            _ when IsMatch(input, SteamProfileType.Id3, match => SteamIDValidator.IsSteamID32(match.Groups[1].Value)) => SteamProfileType.Id3,
-            _ when IsMatch(input, SteamProfileType.Url, match => SteamIDValidator.IsSteamID64(match.Groups[1].Value), SteamProfileType.Id64) =>
-                SteamProfileType.Id64,
-            _ when IsMatch(input, SteamProfileType.Id64, match => SteamIDValidator.IsSteamID64(match.Groups[1].Value)) => SteamProfileType.Id64,
-            _ when IsMatch(input, SteamProfileType.Url, match => !string.IsNullOrWhiteSpace(match.Groups[1].Value)) => SteamProfileType.Url,
-            _ when IsMatch(input, SteamProfileType.Id32, match => SteamIDValidator.IsSteamID32(match.Value)) => SteamProfileType.Id32,
+            _ when IsMatch(input, SteamProfileType.Id3, match => 
+                SteamIDValidator.IsSteamID32(match.Groups[1].Value)) => SteamProfileType.Id3,
+            _ when IsMatch(input, SteamProfileType.Url, match => 
+                SteamIDValidator.IsSteamID64(match.Groups[1].Value), SteamProfileType.Id64) => SteamProfileType.Id64,
+            _ when IsMatch(input, SteamProfileType.Id64, match => 
+                SteamIDValidator.IsSteamID64(match.Groups[1].Value)) => SteamProfileType.Id64,
+            _ when IsMatch(input, SteamProfileType.Url, match => 
+                !string.IsNullOrWhiteSpace(match.Groups[1].Value)) => SteamProfileType.Url,
+            _ when IsMatch(input, SteamProfileType.Id32, match => 
+                SteamIDValidator.IsSteamID32(match.Value)) => SteamProfileType.Id32,
             _ => SteamProfileType.Unknown
         };
     }

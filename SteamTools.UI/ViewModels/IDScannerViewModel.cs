@@ -7,65 +7,85 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SProject.Steam;
-using SteamTools.Domain.Models;
-using SteamTools.Domain.Services;
-using SteamTools.SignatureSearcher.Abstractions;
+using SteamTools.Common;
+using SteamTools.SignatureSearcher;
 using SteamTools.UI.Models;
 
 namespace SteamTools.UI.ViewModels;
 
 public class IDScannerViewModel : ObservableObject
 {
-    private readonly string[] _defaultExtensions = { ".acf", ".vdf", ".txt", ".json" };
-    private readonly CollectionViewSource _filteredCollectionViewSource;
-    private readonly INotificationService _notificationService;
-    private readonly Func<IScanningService> _scanningServiceFactory;
-    private readonly SteamClient _steamClient;
-    private ObservableCollection<SearchExtension> _availableExtensions;
-    private CancellationTokenSource _cancellationTokenSource;
-    private string _extensionQuery;
-    private ObservableCollection<string> _matchingFiles;
+    #region Constructor
 
     public IDScannerViewModel(SteamClient steamClient, INotificationService notificationService, ScanningOptions scanningOptions,
         Func<IScanningService> scanningServiceFactory)
     {
-        ScanningOptions = scanningOptions;
-        _scanningServiceFactory = scanningServiceFactory;
+        #region Private Fields
+
         _steamClient = steamClient;
         _notificationService = notificationService;
+        _scanningServiceFactory = scanningServiceFactory;
         _cancellationTokenSource = new CancellationTokenSource();
+        _filteredCollectionViewSource = new CollectionViewSource();
+        _availableExtensions = [];
 
-        #region Commands
+        _filteredCollectionViewSource.Filter += FilterFileExtensions;
+        _filteredCollectionViewSource.Source = _availableExtensions;
+
+        #endregion
+
+        #region Public Properties
+
+        ScanningOptions = scanningOptions;
+        MatchingFiles = [];
+
+        #endregion
+
+        #region Public Commands
 
         DecreaseMaximumFileSizeCommand = new RelayCommand(() => ScanningOptions.MaximumFileSize--);
         IncreaseMaximumFileSizeCommand = new RelayCommand(() => ScanningOptions.MaximumFileSize++);
-        SelectAllSearchExtensionsCommand = new AsyncRelayCommand(async () => await ChangeFileExtensionsSelectedState(x => x.Selected == false, true));
-        ResetAllSearchExtensionsCommand = new AsyncRelayCommand(async () => await ChangeFileExtensionsSelectedState(x => x.Selected, false));
-        SelectDefaultExtensionsCommand =
-            new AsyncRelayCommand(async () => await ChangeFileExtensionsSelectedState(x => _defaultExtensions.Contains(x.Extension), true));
-        RunScanCommand = new AsyncRelayCommand<string>(RunScanAsync);
+
+        ResetAllSearchExtensionsCommand =
+            new AsyncRelayCommand(async () => await ChangeFileExtensionsSelectedState(x => x.Selected, false));
+        SelectAllSearchExtensionsCommand =
+            new AsyncRelayCommand(async () => await ChangeFileExtensionsSelectedState(x => x.Selected == false, true));
+        SelectDefaultExtensionsCommand = new AsyncRelayCommand(async () =>
+            await ChangeFileExtensionsSelectedState(x => _defaultExtensions.Contains(x.Extension, StringComparer.OrdinalIgnoreCase), true));
+
         CancelScanCommand = new RelayCommand(CancelScan);
+        RunScanCommand = new AsyncRelayCommand<string>(RunScanAsync);
         OpenInExplorerCommand = new RelayCommand<string>(OpenInExplorer);
-        ExtensionCheckedCommand = new RelayCommand<SearchExtension>(x => { ScanningOptions.Extensions.Add(x.Extension); });
-        ExtensionUncheckedCommand = new RelayCommand<SearchExtension>(x => { ScanningOptions.Extensions.Remove(x.Extension); });
+        ExtensionCheckedCommand = new RelayCommand<SearchExtension>(x => ScanningOptions.Extensions.Add(x.Extension));
+        ExtensionUncheckedCommand = new RelayCommand<SearchExtension>(x => ScanningOptions.Extensions.Remove(x.Extension));
 
         #endregion
 
-        #region Collections
-
-        MatchingFiles = new ObservableCollection<string>();
-        _filteredCollectionViewSource = new CollectionViewSource();
-        _filteredCollectionViewSource.Filter += FilterFileExtensions;
-        _availableExtensions = new ObservableCollection<SearchExtension>();
-
-        #endregion
-
-        LoadSearchExtensionsAsync();
+        Task.Run(FillExtensionsAsync);
     }
+
+    #endregion
+
+    #region Private Fields
+
+    private readonly string[] _defaultExtensions = [".acf", ".vdf", ".txt", ".json"];
+    private readonly CollectionViewSource _filteredCollectionViewSource;
+    private readonly INotificationService _notificationService;
+    private readonly Func<IScanningService> _scanningServiceFactory;
+    private readonly SteamClient _steamClient;
+    private readonly ObservableCollection<SearchExtension> _availableExtensions;
+    private CancellationTokenSource _cancellationTokenSource;
+    private string _extensionQuery;
+    private ObservableCollection<string> _matchingFiles;
+
+    #endregion
+
+    #region Public Properties
 
     public ScanningOptions ScanningOptions { get; }
 
@@ -103,46 +123,9 @@ public class IDScannerViewModel : ObservableObject
         }
     }
 
-    /// <summary>
-    ///     Gets the command to run the scan asynchronously.
-    /// </summary>
-    public AsyncRelayCommand<string> RunScanCommand { get; }
+    #endregion
 
-
-    public RelayCommand<SearchExtension> ExtensionCheckedCommand { get; }
-    public RelayCommand<SearchExtension> ExtensionUncheckedCommand { get; }
-
-    /// <summary>
-    ///     Gets the command to cancel the ongoing scan.
-    /// </summary>
-    public RelayCommand CancelScanCommand { get; }
-
-    /// <summary>
-    ///     Gets the command to select all file extensions for the scan.
-    /// </summary>
-    public AsyncRelayCommand SelectAllSearchExtensionsCommand { get; }
-
-    /// <summary>
-    ///     Gets the command to reset all file extensions for the scan.
-    /// </summary>
-    public AsyncRelayCommand ResetAllSearchExtensionsCommand { get; }
-
-    /// <summary>
-    ///     Gets the command to decrease the maximum file size allowed during the search.
-    /// </summary>
-    public RelayCommand DecreaseMaximumFileSizeCommand { get; }
-
-    /// <summary>
-    ///     Gets the command to increase the maximum file size allowed during the search.
-    /// </summary>
-    public RelayCommand IncreaseMaximumFileSizeCommand { get; }
-
-    /// <summary>
-    ///     Gets the command to open the specified file path in Explorer.
-    /// </summary>
-    public RelayCommand<string> OpenInExplorerCommand { get; }
-
-    public AsyncRelayCommand SelectDefaultExtensionsCommand { get; }
+    #region Private Methods
 
     /// <summary>
     ///     Opens the file explorer and selects the file at the given path.
@@ -182,14 +165,23 @@ public class IDScannerViewModel : ObservableObject
         {
             var scanningResult = await scanningService.StartScanningAsync(steamProfile, token);
             if (scanningResult is null) throw new NullReferenceException($"{nameof(scanningResult)} was null");
-            
+
             MatchingFiles = new ObservableCollection<string>(scanningResult.GetResultSortedByLength());
             _notificationService.RegisterNotification(
-                $"We're done scanning! It took {Stopwatch.GetElapsedTime(start).TotalSeconds:F1} seconds to scan {scanningResult.SuccessfullyScannedFiles} out of {scanningResult.TotalScannedFiles} files!");
+                $"We're done scanning! It took {Stopwatch.GetElapsedTime(start).TotalSeconds:F} seconds to scan {scanningResult.SuccessfullyScannedFiles} out of {scanningResult.TotalScannedFiles} files!");
         }
-        catch (OperationCanceledException) { _notificationService.RegisterNotification("Scanning has been cancelled."); }
-        catch (Exception) { _notificationService.RegisterNotification("There's something error while scanning, cancelled."); }
-        finally { ScanningOptions.IsScanning = false; }
+        catch (OperationCanceledException)
+        {
+            _notificationService.RegisterNotification("Scanning has been cancelled.");
+        }
+        catch (Exception)
+        {
+            _notificationService.RegisterNotification("There's something error while scanning, cancelled.");
+        }
+        finally
+        {
+            ScanningOptions.IsScanning = false;
+        }
     }
 
     /// <summary>
@@ -200,19 +192,18 @@ public class IDScannerViewModel : ObservableObject
         if (ScanningOptions.IsScanning is false) return;
 
         _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
         _cancellationTokenSource = new CancellationTokenSource();
+
         _notificationService.RegisterNotification("Cancelling scan. Please wait...");
     }
 
     /// <summary>
     ///     Loads the search extensions asynchronously and updates the collection view source.
     /// </summary>
-    private async void LoadSearchExtensionsAsync() // skipcq: CS-R1005
+    private async Task FillExtensionsAsync()
     {
-        var fileExtensions = await Task.Run(GetFileExtensions);
-        _availableExtensions = new ObservableCollection<SearchExtension>(fileExtensions);
-        _filteredCollectionViewSource.Source = _availableExtensions;
-        OnPropertyChanged(nameof(FilteredCollectionViewSource));
+        foreach (var item in GetFileExtensions()) await Application.Current.Dispatcher.BeginInvoke(() => _availableExtensions.Add(item));
     }
 
     private IEnumerable<SearchExtension> GetFileExtensions()
@@ -226,8 +217,7 @@ public class IDScannerViewModel : ObservableObject
     private ValueTask ChangeFileExtensionsSelectedState(Func<SearchExtension, bool> func, bool check)
     {
         foreach (var item in _availableExtensions.Where(func)) item.Selected = check;
-        _filteredCollectionViewSource.Source = _availableExtensions;
-        FilteredCollectionViewSource?.Refresh();
+
         return ValueTask.CompletedTask;
     }
 
@@ -245,4 +235,50 @@ public class IDScannerViewModel : ObservableObject
         e.Accepted = e.Item is SearchExtension searchExtension &&
                      searchExtension.Extension.Contains(ExtensionQuery, StringComparison.OrdinalIgnoreCase);
     }
+
+    #endregion
+
+    #region Public Commands
+
+    /// <summary>
+    ///     Gets the command to run the scan asynchronously.
+    /// </summary>
+    public AsyncRelayCommand<string> RunScanCommand { get; }
+
+    public RelayCommand<SearchExtension> ExtensionCheckedCommand { get; }
+    public RelayCommand<SearchExtension> ExtensionUncheckedCommand { get; }
+
+    /// <summary>
+    ///     Gets the command to cancel the ongoing scan.
+    /// </summary>
+    public RelayCommand CancelScanCommand { get; }
+
+    /// <summary>
+    ///     Gets the command to select all file extensions for the scan.
+    /// </summary>
+    public AsyncRelayCommand SelectAllSearchExtensionsCommand { get; }
+
+    /// <summary>
+    ///     Gets the command to reset all file extensions for the scan.
+    /// </summary>
+    public AsyncRelayCommand ResetAllSearchExtensionsCommand { get; }
+
+    /// <summary>
+    ///     Gets the command to decrease the maximum file size allowed during the search.
+    /// </summary>
+    public RelayCommand DecreaseMaximumFileSizeCommand { get; }
+
+    /// <summary>
+    ///     Gets the command to increase the maximum file size allowed during the search.
+    /// </summary>
+    public RelayCommand IncreaseMaximumFileSizeCommand { get; }
+
+    /// <summary>
+    ///     Gets the command to open the specified file path in Explorer.
+    /// </summary>
+    public RelayCommand<string> OpenInExplorerCommand { get; }
+
+    public AsyncRelayCommand SelectDefaultExtensionsCommand { get; }
+
+    #endregion
 }
