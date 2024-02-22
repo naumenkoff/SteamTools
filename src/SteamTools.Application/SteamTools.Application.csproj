@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <Nullable>disable</Nullable>
+        <UseWPF>true</UseWPF>
+        <RootNamespace>SteamTools.Presentation</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0-preview.1.24080.9"/>
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Page Update="Views\MainWindow.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Resources\placeholder.jpg"/>
+        <Resource Include="Resources\placeholder.jpg"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\SProject\src\SProject.Steam\SProject.Steam.csproj"/>
+        <ProjectReference Include="..\SteamTools.Common\SteamTools.Common.csproj"/>
+        <ProjectReference Include="..\SteamTools.ProfileFetcher\SteamTools.ProfileFetcher.csproj"/>
+        <ProjectReference Include="..\SteamTools.ProfileScanner\SteamTools.ProfileScanner.csproj"/>
+        <ProjectReference Include="..\SteamTools.SignatureSearcher\SteamTools.SignatureSearcher.csproj"/>
+    </ItemGroup>
+
+</Project>

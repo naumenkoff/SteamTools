@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="SteamTools.Presentation.Views.LocalProfileScannerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:SteamTools.Presentation.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="510"
+             d:DesignWidth="720"
+             Background="{StaticResource Background}"
+             d:DataContext="{d:DesignInstance viewModels:LocalProfileScannerViewModel}">
+    <Grid>
+        <ListView ItemsSource="{Binding Path=LocalProfiles}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="SteamID64" DisplayMemberBinding="{Binding ID64.AsString}" />
+                    <GridViewColumn Header="SteamID32" DisplayMemberBinding="{Binding ID32.AsString}" />
+                    <GridViewColumn Header="Detections" DisplayMemberBinding="{Binding DetectionsCount}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+    <!--
+    Здесь нужен один ListView.
+    ListView будет включать:
+        Avatar - SteamID64 - Show Details
+    При нажатии на ShowDetails откроется другой View, в котором будет:
+        - Кнопка, дающая возможность сканирования SteamID с помощью проекта IDScanner.
+          Результаты сканирования будут добавлены зелёным цветом в список файлов.
+        - Краткие сведения, найденные об аккаунте на компьютере, например,
+          SteamID64, SteamID32, Login.
+        - Список файлов, в которых была обнаружена сигнатура аккаунта, 
+          при нажатии на элемент открывается проводник, с выделением файла.
+        - Если аккаунт был найден в реестре, об этом так же нужно сообщить.  
+    -->
+</UserControl>

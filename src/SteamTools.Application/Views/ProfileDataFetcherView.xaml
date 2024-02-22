@@ -1,0 +1,206 @@
+﻿<UserControl x:Class="SteamTools.Presentation.Views.ProfileDataFetcherView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:SteamTools.Presentation.ViewModels"
+             xmlns:resources="clr-namespace:SteamTools.Presentation.Resources"
+             mc:Ignorable="d"
+             Background="{StaticResource Background}"
+             d:DesignHeight="510"
+             d:DesignWidth="720"
+             d:DataContext="{d:DesignInstance viewModels:ProfileDataFetcherViewModel}">
+
+    <UserControl.Resources>
+
+        <Storyboard x:Key="FadeInStoryboard">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.125" />
+        </Storyboard>
+
+        <Storyboard x:Key="FadeOutStoryboard">
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.125" />
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.25" Value="{x:Static Visibility.Hidden}" />
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Style x:Key="FadeInOutGrid" TargetType="Grid">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ShowGrid}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource FadeInStoryboard}" />
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard Storyboard="{StaticResource FadeOutStoryboard}" />
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ShowGrid}" Value="False">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource FadeOutStoryboard}" />
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard Storyboard="{StaticResource FadeInStoryboard}" />
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TextBlockWithOpacity" TargetType="TextBlock">
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="1" Duration="0:0:0.2" Storyboard.TargetProperty="Opacity" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="0.5" Duration="0:0:0.2"
+                                             Storyboard.TargetProperty="Opacity" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TextBlockForHistory" TargetType="TextBlock" BasedOn="{StaticResource TextBlockWithOpacity}">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="5 0 5 0" />
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+
+        <Style x:Key="HistoryBorder" TargetType="Border">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="0 0 0 40" />
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding ShowGrid}" Value="True" />
+                        <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}"
+                                   Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation BeginTime="0:0:0.25" Duration="0:0:0.15"
+                                                    Storyboard.TargetProperty="Padding"
+                                                    To="0" FillBehavior="HoldEnd" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </MultiDataTrigger.EnterActions>
+                    <MultiDataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation BeginTime="0:0:0.25" Duration="0:0:0.15"
+                                                    Storyboard.TargetProperty="Padding"
+                                                    To="0 0 0 40" FillBehavior="Stop" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </MultiDataTrigger.ExitActions>
+                </MultiDataTrigger>
+                <DataTrigger Binding="{Binding ShowGrid}" Value="False">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Duration="0:0:0.15" Storyboard.TargetProperty="Padding"
+                                                    To="0 0 0 0" FillBehavior="HoldEnd" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ThicknessAnimation Duration="0:0:0.15" Storyboard.TargetProperty="Padding"
+                                                    To="0 0 0 40" FillBehavior="Stop" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35" />
+            <RowDefinition Height="20" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <resources:RoundTextBox Grid.Row="0"
+                                CornerRadius="5"
+                                TextAlignment="Left"
+                                Text="{Binding CachedText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                ClearButtonCommand="{Binding ResetSelectedProfileCommand}"
+                                SearchButtonCommand="{Binding GetProfileDetailsCommand}"
+                                SearchButtonCommandParameter="{Binding Text, RelativeSource={RelativeSource Self}}"
+                                PlaceholderText="Enter Steam ID">
+            <TextBox.InputBindings>
+                <KeyBinding Command="{Binding GetProfileDetailsCommand}"
+                            CommandParameter="{Binding Path=Text, RelativeSource={RelativeSource AncestorType=resources:RoundTextBox}}"
+                            Key="Enter" />
+            </TextBox.InputBindings>
+        </resources:RoundTextBox>
+
+        <Border Grid.Row="1" Style="{StaticResource HistoryBorder}">
+            <ItemsControl ItemsSource="{Binding SteamProfiles}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Style="{StaticResource TextBlockForHistory}">
+                            <Hyperlink CommandParameter="{Binding}" Foreground="#a0a0a0"
+                                       Command="{Binding DataContext.SelectProfileFromHistoryCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
+                                <Run Text="{Binding ID64.AsString, Mode=OneWay}" />
+                            </Hyperlink>
+                        </TextBlock>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+
+        <Grid Grid.Row="2" Style="{StaticResource FadeInOutGrid}" Visibility="Hidden">
+            <Rectangle Style="{StaticResource RectangleStyle}" />
+
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Image Source="{Binding CurrentSteamProfile, Converter={StaticResource ProfileImageConverter}}"
+                       Stretch="None" />
+                <TextBlock Text="{Binding CurrentSteamProfile.PlayerSummaries.PersonaName}"
+                           FontFamily="Segoe UI Regular"
+                           TextAlignment="Center"
+                           Foreground="White" />
+            </StackPanel>
+
+            <ScrollViewer Style="{StaticResource ScrollViewerStyle}" VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Auto" Margin="1">
+                <ItemsControl ItemsSource="{Binding ProfileContent}" Background="#22000000">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" IsItemsHost="False" Background="Transparent" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <resources:HeaderValueBorder Header="{Binding Header}" Margin="5 5 5 0"
+                                                         Value="{Binding Value}"
+                                                         Command="{Binding Command}"
+                                                         CommandParameter="{Binding Path=Value, RelativeSource={RelativeSource Self}}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

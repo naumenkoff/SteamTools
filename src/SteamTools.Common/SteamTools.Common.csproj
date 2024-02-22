@@ -11,9 +11,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\SProject\SProject.Math\SProject.Math.csproj"/>
-        <ProjectReference Include="..\..\SProject\SProject.Steam.Abstractions\SProject.Steam.Abstractions.csproj"/>
-        <ProjectReference Include="..\..\SProject\SProject.Steam\SProject.Steam.csproj"/>
+        <ProjectReference Include="..\..\SProject\src\SProject.Math\SProject.Math.csproj"/>
+        <ProjectReference Include="..\..\SProject\src\SProject.Steam\SProject.Steam.csproj"/>
     </ItemGroup>
 
 </Project>

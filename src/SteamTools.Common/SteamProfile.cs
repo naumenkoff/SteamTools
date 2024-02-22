@@ -50,7 +50,7 @@ public class SteamProfile : ISteamIDPair
         ExistOnline = false;
     }
 
-    public static SteamProfile Empty { get; } = new();
+    public static SteamProfile Empty { get; } = new SteamProfile();
     public string ID3 { get; } = null!;
     public string ID { get; } = null!;
     public string Permalink { get; } = null!;

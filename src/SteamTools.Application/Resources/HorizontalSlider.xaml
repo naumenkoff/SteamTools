@@ -1,0 +1,119 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:resources="clr-namespace:SteamTools.Presentation.Resources">
+
+    <Style TargetType="{x:Type ToolTip}">
+        <Setter Property="Background" Value="#2C2C2C" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Width" Value="35" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="ToolTipService.VerticalOffset" Value="-7" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToolTip">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="#1F1F1F"
+                            BorderThickness="1"
+                            Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            CornerRadius="5">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type resources:HorizontalSlider}">
+
+        <Setter Property="Background" Value="#9a9a9a" />
+        <Setter Property="MaxHeight" Value="36" />
+        <Setter Property="AutoToolTipPlacement" Value="TopLeft" />
+
+        <Setter Property="TrackHeight" Value="8" />
+        <Setter Property="TrackRadiusX" Value="5" />
+        <Setter Property="TrackRadiusY" Value="5" />
+        <Setter Property="TrackLeftBackground" Value="#7189FF" />
+        <Setter Property="TrackLeftRadius" Value="5 0 0 5" />
+        <Setter Property="TrackRightBackground" Value="Transparent" />
+        <Setter Property="TrackRightRadius" Value="0 5 5 0" />
+        <Setter Property="ThumbWidth" Value="8" />
+        <Setter Property="ThumbHeight" Value="24" />
+        <Setter Property="ThumbBrush" Value="White" />
+        <Setter Property="ThumbRadiusX" Value="5" />
+        <Setter Property="ThumbRadiusY" Value="5" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type resources:HorizontalSlider}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Road -->
+                        <Rectangle Width="{TemplateBinding Width}"
+                                   Fill="{TemplateBinding Background}"
+                                   Height="{TemplateBinding TrackHeight}"
+                                   RadiusX="{TemplateBinding TrackRadiusX}"
+                                   RadiusY="{TemplateBinding TrackRadiusY}" />
+
+                        <Track Grid.Row="0" x:Name="PART_Track">
+
+                            <!-- Passed -->
+                            <Track.DecreaseRepeatButton>
+                                <resources:TrackRepeatButton CornerRadius="{TemplateBinding TrackLeftRadius}"
+                                                             Command="{x:Static Slider.DecreaseLarge}"
+                                                             Height="{TemplateBinding TrackHeight}"
+                                                             Background="{TemplateBinding TrackLeftBackground}" />
+                            </Track.DecreaseRepeatButton>
+
+                            <!-- Remaining -->
+                            <Track.IncreaseRepeatButton>
+                                <resources:TrackRepeatButton CornerRadius="{TemplateBinding TrackRightRadius}"
+                                                             Command="{x:Static Slider.IncreaseLarge}"
+                                                             Height="{TemplateBinding TrackHeight}"
+                                                             Background="{TemplateBinding TrackRightBackground}" />
+                            </Track.IncreaseRepeatButton>
+
+                            <Track.Thumb>
+                                <Thumb Cursor="SizeWE"
+                                       VerticalAlignment="Center"
+                                       Foreground="{TemplateBinding ThumbBrush}"
+                                       Height="{TemplateBinding ThumbHeight}"
+                                       Width="{TemplateBinding ThumbWidth}">
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="{x:Type Thumb}">
+                                            <Rectangle Width="{TemplateBinding Width}"
+                                                       Height="{TemplateBinding Height}"
+                                                       Fill="{TemplateBinding Foreground}"
+                                                       RadiusX="{Binding Path=ThumbRadiusX, RelativeSource={RelativeSource AncestorType={x:Type resources:HorizontalSlider}}}"
+                                                       RadiusY="{Binding Path=ThumbRadiusY, RelativeSource={RelativeSource AncestorType={x:Type resources:HorizontalSlider}}}" />
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+
+                        </Track>
+
+                        <!-- Minimum Value -->
+                        <TextBlock Grid.Row="1"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Bottom"
+                                   Foreground="{TemplateBinding Background}"
+                                   Text="{Binding Minimum, RelativeSource={RelativeSource TemplatedParent}}" />
+
+                        <!-- Maximum Value -->
+                        <TextBlock Grid.Row="1"
+                                   VerticalAlignment="Bottom"
+                                   HorizontalAlignment="Right"
+                                   Foreground="{TemplateBinding Background}"
+                                   Text="{Binding Maximum, RelativeSource={RelativeSource TemplatedParent}}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

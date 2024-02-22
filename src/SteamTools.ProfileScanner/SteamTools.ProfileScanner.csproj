@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\SProject\src\SProject.VDF\SProject.VDF.csproj"/>
+        <ProjectReference Include="..\SteamTools.Common\SteamTools.Common.csproj"/>
+    </ItemGroup>
+
+</Project>

@@ -1,5 +1,5 @@
 ﻿using SProject.FileSystem;
-using SProject.Steam.Abstractions;
+using SProject.Steam;
 
 namespace SteamTools.Common;
 
