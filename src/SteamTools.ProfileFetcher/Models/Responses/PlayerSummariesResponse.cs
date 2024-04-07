@@ -1,6 +1,6 @@
 using SteamTools.Common;
 
-namespace SteamTools.ProfileFetcher;
+namespace SteamTools.ProfileFetcher.Models.Responses;
 
 // ReSharper disable ClassNeverInstantiated.Global
 public class PlayerSummariesResponse

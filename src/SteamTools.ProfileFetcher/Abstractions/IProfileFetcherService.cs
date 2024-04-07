@@ -1,6 +1,6 @@
 using SteamTools.Common;
 
-namespace SteamTools.ProfileFetcher;
+namespace SteamTools.ProfileFetcher.Abstractions;
 
 public interface IProfileFetcherService
 {

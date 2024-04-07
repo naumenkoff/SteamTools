@@ -1,4 +1,4 @@
-namespace SteamTools.ProfileFetcher;
+namespace SteamTools.ProfileFetcher.Enums;
 
 internal enum SteamProfileType
 {

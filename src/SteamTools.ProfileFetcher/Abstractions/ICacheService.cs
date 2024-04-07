@@ -1,4 +1,4 @@
-﻿namespace SteamTools.ProfileFetcher;
+﻿namespace SteamTools.ProfileFetcher.Abstractions;
 
 /// <summary>
 ///     A service for caching Steam API objects.

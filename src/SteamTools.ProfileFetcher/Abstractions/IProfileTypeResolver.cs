@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace SteamTools.ProfileFetcher;
+namespace SteamTools.ProfileFetcher.Abstractions;
 
 public interface IProfileTypeResolver<T>
 {

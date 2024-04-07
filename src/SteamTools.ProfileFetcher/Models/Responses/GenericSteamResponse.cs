@@ -1,4 +1,4 @@
-namespace SteamTools.ProfileFetcher;
+namespace SteamTools.ProfileFetcher.Models.Responses;
 
 // ReSharper disable ClassNeverInstantiated.Global
 public class GenericSteamResponse<T>
