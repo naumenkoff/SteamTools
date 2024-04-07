@@ -18,7 +18,7 @@ public class ScanningOptions : ObservableObject
         Processors = Math.Max(TotalProcessors / 2, 1);
         LimitScanningFileSize = true;
         MaximumFileSize = 1;
-        Extensions = new HashSet<string>();
+        Extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     }
 
     public bool ScanFilesOnlyWithSpecifiedExtensions
