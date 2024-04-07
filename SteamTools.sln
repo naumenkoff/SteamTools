@@ -25,6 +25,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.ProfileScanner",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamTools.SignatureSearcher", "src\SteamTools.SignatureSearcher\SteamTools.SignatureSearcher.csproj", "{8D9C2B6E-94EC-4022-95BD-34041E8BC43C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SProject.DependencyInjection", "SProject\src\SProject.DependencyInjection\SProject.DependencyInjection.csproj", "{014DAAEB-3264-4AD4-AD1F-739F0F76A745}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SProject.CQRS", "SProject\src\SProject.CQRS\SProject.CQRS.csproj", "{AD056C57-BE11-4D5D-9AA7-BC4B46D5FF22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +45,8 @@ Global
 		{195A013D-13FF-4531-84D1-83FB4481D6DB} = {B60A2974-59DD-457F-95B0-1FFF1C682D0A}
 		{3EF4BF4B-7009-440E-B44B-7A83900477BC} = {B60A2974-59DD-457F-95B0-1FFF1C682D0A}
 		{8D9C2B6E-94EC-4022-95BD-34041E8BC43C} = {B60A2974-59DD-457F-95B0-1FFF1C682D0A}
+		{014DAAEB-3264-4AD4-AD1F-739F0F76A745} = {C489898A-86E1-4B3C-813C-32E2A93F58D1}
+		{AD056C57-BE11-4D5D-9AA7-BC4B46D5FF22} = {C489898A-86E1-4B3C-813C-32E2A93F58D1}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{84A860EC-A353-40B9-B4CF-34DFC24626FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -83,5 +89,13 @@ Global
 		{8D9C2B6E-94EC-4022-95BD-34041E8BC43C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D9C2B6E-94EC-4022-95BD-34041E8BC43C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D9C2B6E-94EC-4022-95BD-34041E8BC43C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{014DAAEB-3264-4AD4-AD1F-739F0F76A745}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{014DAAEB-3264-4AD4-AD1F-739F0F76A745}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{014DAAEB-3264-4AD4-AD1F-739F0F76A745}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{014DAAEB-3264-4AD4-AD1F-739F0F76A745}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD056C57-BE11-4D5D-9AA7-BC4B46D5FF22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD056C57-BE11-4D5D-9AA7-BC4B46D5FF22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD056C57-BE11-4D5D-9AA7-BC4B46D5FF22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD056C57-BE11-4D5D-9AA7-BC4B46D5FF22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
