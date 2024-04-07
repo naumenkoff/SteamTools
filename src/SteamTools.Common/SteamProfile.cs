@@ -50,14 +50,13 @@ public class SteamProfile : ISteamIDPair
         ExistOnline = false;
     }
 
-    public static SteamProfile Empty { get; } = new SteamProfile();
-    public string ID3 { get; } = null!;
-    public string ID { get; } = null!;
-    public string Permalink { get; } = null!;
+    public static SteamProfile Empty { get; } = new();
+    public string ID3 { get; }
+    public string ID { get; }
+    public string Permalink { get; }
     public PlayerSummaries? PlayerSummaries { get; }
     public string? Request { get; }
     public bool ExistOnline { get; }
-
     public SteamID32 ID32 { get; }
     public SteamID64 ID64 { get; }
 }

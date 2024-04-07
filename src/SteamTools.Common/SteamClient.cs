@@ -3,14 +3,9 @@ using SProject.Steam;
 
 namespace SteamTools.Common;
 
-public class SteamClient
+public class SteamClient(ISteamClientFinder steamClientFinder)
 {
-    public SteamClient(ISteamClientFinder steamClientFinder)
-    {
-        Steam = steamClientFinder.FindSteamClient();
-    }
-
-    public SteamClientModel? Steam { get; }
+    public SteamClientModel? Steam { get; } = steamClientFinder.FindSteamClient();
 
     public FileInfo? GetLoginusersFile()
     {
