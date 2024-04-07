@@ -3,15 +3,16 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SProject.CQRS;
+using SProject.DependencyInjection;
 using SProject.Steam;
 using SteamTools.Common;
 using SteamTools.Presentation.Services.Navigation;
 using SteamTools.Presentation.ViewModels;
 using SteamTools.Presentation.Views;
 using SteamTools.ProfileFetcher;
-using SteamTools.ProfileFetcher.DependencyInjection;
-using SteamTools.ProfileScanner.DependencyInjection;
-using SteamTools.SignatureSearcher.DependencyInjection;
+using SteamTools.ProfileScanner;
+using SteamTools.SignatureSearcher;
 
 namespace SteamTools.Presentation;
 
@@ -39,16 +40,17 @@ public partial class App
     {
         var builder = Host.CreateApplicationBuilder();
 
-        builder.Services.AddSingleton<Func<IProfileFetcherService>>(serviceProvider => serviceProvider.GetRequiredService<IProfileFetcherService>);
+        builder.Services.AddSingleton(typeof(IServiceScopeFactory<>), typeof(ServiceScopeFactory<>));
 
         builder.Services.AddSingleton<Func<Type, ObservableObject>>(serviceProvider =>
-            viewModelType => (ObservableObject) serviceProvider.GetRequiredService(viewModelType));
+            viewModelType => (ObservableObject)serviceProvider.GetRequiredService(viewModelType));
 
         builder.Services.AddSingleton(provider => new MainWindow
         {
             DataContext = provider.GetRequiredService<MainWindowViewModel>()
         });
 
+        builder.Services.RegisterRequestHandlers();
         builder.Services.AddSingleton<MainWindowViewModel>();
         builder.Services.AddSingleton<IDScannerViewModel>();
         builder.Services.AddSingleton<LocalProfileScannerViewModel>();

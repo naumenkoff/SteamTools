@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SProject.DependencyInjection;
 using SteamTools.Common;
 using SteamTools.Presentation.Models;
-using SteamTools.ProfileFetcher;
+using SteamTools.ProfileFetcher.Abstractions;
 
 namespace SteamTools.Presentation.ViewModels;
 
@@ -18,11 +19,12 @@ public class ProfileDataFetcherViewModel : ObservableObject
 
     #region Constructor
 
-    public ProfileDataFetcherViewModel(Func<IProfileFetcherService> profileFetcherFactory, INotificationService notificationService)
+    public ProfileDataFetcherViewModel(IServiceScopeFactory<IProfileFetcherService> profileFetcherScopeFactory,
+        INotificationService notificationService)
     {
         #region Private Fields
 
-        _profileFetcherFactory = profileFetcherFactory;
+        _profileFetcherScopeFactory = profileFetcherScopeFactory;
         _notificationService = notificationService;
 
         #endregion
@@ -51,7 +53,7 @@ public class ProfileDataFetcherViewModel : ObservableObject
     #region Private Fields
 
     private readonly INotificationService _notificationService;
-    private readonly Func<IProfileFetcherService> _profileFetcherFactory;
+    private readonly IServiceScopeFactory<IProfileFetcherService> _profileFetcherScopeFactory;
     private string _cachedText;
     private SteamProfile _currentSteamProfile;
     private bool _showGrid;
@@ -70,7 +72,10 @@ public class ProfileDataFetcherViewModel : ObservableObject
             Clipboard.SetText(text);
             _notificationService.RegisterNotification("Copied");
         }
-        catch { _notificationService.RegisterNotification("System clipboard is unavailable"); }
+        catch
+        {
+            _notificationService.RegisterNotification("System clipboard is unavailable");
+        }
     }
 
     private void OnHyperLinkClicked(object parameter)
@@ -99,7 +104,8 @@ public class ProfileDataFetcherViewModel : ObservableObject
         var start = Stopwatch.GetTimestamp();
         _notificationService.RegisterNotification("Hold tight, we're on the prowl for your profile!");
 
-        var factory = _profileFetcherFactory();
+        using var scope = _profileFetcherScopeFactory.CreateScope();
+        var factory = scope.GetRequiredService();
         var profile = await factory.GetProfileAsync(text);
 
         if (!profile.ExistOnline)
@@ -135,7 +141,9 @@ public class ProfileDataFetcherViewModel : ObservableObject
         }
 
         var existingProfile = SteamProfiles.FirstOrDefault(x => x.ID32.AsUInt == steamProfile.ID32.AsUInt);
-        CurrentSteamProfile = existingProfile?.ExistOnline is true ? SelectExisting(existingProfile) : SelectNew(steamProfile);
+        CurrentSteamProfile = existingProfile?.ExistOnline is true
+            ? SelectExisting(existingProfile)
+            : SelectNew(steamProfile);
         FillProfileContent(steamProfile);
     }
 
@@ -147,7 +155,8 @@ public class ProfileDataFetcherViewModel : ObservableObject
         ProfileContent.Add(new ProfileContent("SteamID3", steamProfile.ID3, CopyToClipboardCommand));
         ProfileContent.Add(new ProfileContent("SteamID64", steamProfile.ID32.AsString, CopyToClipboardCommand));
         ProfileContent.Add(new ProfileContent("SteamID32", steamProfile.ID64.AsString, CopyToClipboardCommand));
-        ProfileContent.Add(new ProfileContent("Custom URL", steamProfile.PlayerSummaries?.ProfileUrl, OpenInBrowserCommand));
+        ProfileContent.Add(new ProfileContent("Custom URL", steamProfile.PlayerSummaries?.ProfileUrl,
+            OpenInBrowserCommand));
         ProfileContent.Add(new ProfileContent("Permanent URL", steamProfile.Permalink, CopyToClipboardCommand));
 
         var timeCreated = steamProfile.PlayerSummaries is null

@@ -23,7 +23,7 @@
         <Storyboard x:Key="FadeOutStoryboard">
             <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.125" />
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility">
-                <DiscreteObjectKeyFrame KeyTime="0:0:0.25" Value="{x:Static Visibility.Hidden}" />
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.25" Value="{x:Static Visibility.Collapsed}" />
             </ObjectAnimationUsingKeyFrames>
         </Storyboard>
 
@@ -170,7 +170,7 @@
             </ItemsControl>
         </Border>
 
-        <Grid Grid.Row="2" Style="{StaticResource FadeInOutGrid}" Visibility="Hidden">
+        <Grid Grid.Row="2" Style="{StaticResource FadeInOutGrid}" Visibility="Collapsed">
             <Rectangle Style="{StaticResource RectangleStyle}" />
 
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">

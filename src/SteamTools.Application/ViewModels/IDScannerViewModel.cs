@@ -11,10 +11,11 @@ using System.Windows;
 using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SProject.CQRS;
 using SProject.Steam;
 using SteamTools.Common;
 using SteamTools.Presentation.Models;
-using SteamTools.SignatureSearcher;
+using SteamTools.SignatureSearcher.Contracts.Requests;
 
 namespace SteamTools.Presentation.ViewModels;
 
@@ -22,14 +23,15 @@ public class IDScannerViewModel : ObservableObject
 {
     #region Constructor
 
-    public IDScannerViewModel(SteamClient steamClient, INotificationService notificationService, ScanningOptions scanningOptions,
-        Func<IScanningService> scanningServiceFactory)
+    public IDScannerViewModel(SteamClient steamClient, INotificationService notificationService,
+        ScanningOptions scanningOptions,
+        IRequestResolver requestResolver)
     {
         #region Private Fields
 
         _steamClient = steamClient;
         _notificationService = notificationService;
-        _scanningServiceFactory = scanningServiceFactory;
+        _requestResolver = requestResolver;
         _cancellationTokenSource = new CancellationTokenSource();
         _filteredCollectionViewSource = new CollectionViewSource();
         _availableExtensions = [];
@@ -51,16 +53,20 @@ public class IDScannerViewModel : ObservableObject
         DecreaseMaximumFileSizeCommand = new RelayCommand(() => ScanningOptions.MaximumFileSize--);
         IncreaseMaximumFileSizeCommand = new RelayCommand(() => ScanningOptions.MaximumFileSize++);
 
-        ResetAllSearchExtensionsCommand = new AsyncRelayCommand(async () => await ChangeFileExtensionsSelectedState(x => x.Selected, false));
-        SelectAllSearchExtensionsCommand = new AsyncRelayCommand(async () => await ChangeFileExtensionsSelectedState(x => x.Selected == false, true));
+        ResetAllSearchExtensionsCommand =
+            new AsyncRelayCommand(async () => await ChangeFileExtensionsSelectedState(x => x.Selected, false));
+        SelectAllSearchExtensionsCommand = new AsyncRelayCommand(async () =>
+            await ChangeFileExtensionsSelectedState(x => x.Selected == false, true));
         SelectDefaultExtensionsCommand = new AsyncRelayCommand(async () =>
-            await ChangeFileExtensionsSelectedState(x => _defaultExtensions.Contains(x.Extension, StringComparer.OrdinalIgnoreCase), true));
+            await ChangeFileExtensionsSelectedState(
+                x => _defaultExtensions.Contains(x.Extension, StringComparer.OrdinalIgnoreCase), true));
 
         CancelScanCommand = new RelayCommand(CancelScan);
         RunScanCommand = new AsyncRelayCommand<string>(RunScanAsync);
         OpenInExplorerCommand = new RelayCommand<string>(OpenInExplorer);
         ExtensionCheckedCommand = new RelayCommand<SearchExtension>(x => ScanningOptions.Extensions.Add(x.Extension));
-        ExtensionUncheckedCommand = new RelayCommand<SearchExtension>(x => ScanningOptions.Extensions.Remove(x.Extension));
+        ExtensionUncheckedCommand =
+            new RelayCommand<SearchExtension>(x => ScanningOptions.Extensions.Remove(x.Extension));
 
         #endregion
 
@@ -74,7 +80,7 @@ public class IDScannerViewModel : ObservableObject
     private readonly string[] _defaultExtensions = [".acf", ".vdf", ".txt", ".json"];
     private readonly CollectionViewSource _filteredCollectionViewSource;
     private readonly INotificationService _notificationService;
-    private readonly Func<IScanningService> _scanningServiceFactory;
+    private readonly IRequestResolver _requestResolver;
     private readonly SteamClient _steamClient;
     private readonly ObservableCollection<SearchExtension> _availableExtensions;
     private CancellationTokenSource _cancellationTokenSource;
@@ -158,19 +164,33 @@ public class IDScannerViewModel : ObservableObject
 
         _notificationService.RegisterNotification("Keep your eyes open, scanning starts now!");
 
-        var scanningService = _scanningServiceFactory();
+
         try
         {
-            var scanningResult = await scanningService.StartScanningAsync(steamProfile, token);
+            var scanningResult = await _requestResolver.ExecuteAsync(new StartScanningRequest
+            {
+                SteamId = steamProfile,
+                ScanningCancellation = token
+            });
             if (scanningResult is null) throw new NullReferenceException($"{nameof(scanningResult)} was null");
 
-            MatchingFiles = new ObservableCollection<string>(scanningResult.GetResultSortedByLength());
+            MatchingFiles = new ObservableCollection<string>(scanningResult.Files);
             _notificationService.RegisterNotification(
-                $"We're done scanning! It took {Stopwatch.GetElapsedTime(start).TotalSeconds:F} seconds to scan {scanningResult.SuccessfullyScannedFiles} out of {scanningResult.TotalScannedFiles} files!");
+                $"We're done scanning! It took {Stopwatch.GetElapsedTime(start).TotalSeconds:F} seconds to scan {scanningResult.OpenedFiles} out of {scanningResult.ScannedFiles} files!");
         }
-        catch (OperationCanceledException) { _notificationService.RegisterNotification("Scanning has been cancelled."); }
-        catch (Exception) { _notificationService.RegisterNotification("There's something error while scanning, cancelled."); }
-        finally { ScanningOptions.IsScanning = false; }
+        catch (OperationCanceledException)
+        {
+            _notificationService.RegisterNotification("Scanning has been cancelled.");
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception);
+            _notificationService.RegisterNotification("There's something error while scanning, cancelled.");
+        }
+        finally
+        {
+            ScanningOptions.IsScanning = false;
+        }
     }
 
     /// <summary>
@@ -192,7 +212,8 @@ public class IDScannerViewModel : ObservableObject
     /// </summary>
     private async Task FillExtensionsAsync()
     {
-        foreach (var item in GetFileExtensions()) await Application.Current.Dispatcher.BeginInvoke(() => _availableExtensions.Add(item));
+        foreach (var item in GetFileExtensions())
+            await Application.Current.Dispatcher.BeginInvoke(() => _availableExtensions.Add(item));
     }
 
     private IEnumerable<SearchExtension> GetFileExtensions()

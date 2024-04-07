@@ -44,73 +44,73 @@ public class HorizontalSlider : Slider
 
     public double TrackHeight
     {
-        get => (double) GetValue(TrackHeightProperty);
+        get => (double)GetValue(TrackHeightProperty);
         set => SetValue(TrackHeightProperty, value);
     }
 
     public double TrackRadiusX
     {
-        get => (double) GetValue(TrackRadiusXProperty);
+        get => (double)GetValue(TrackRadiusXProperty);
         set => SetValue(TrackRadiusXProperty, value);
     }
 
     public double TrackRadiusY
     {
-        get => (double) GetValue(TrackRadiusYProperty);
+        get => (double)GetValue(TrackRadiusYProperty);
         set => SetValue(TrackRadiusYProperty, value);
     }
 
     public Brush TrackLeftBackground
     {
-        get => (Brush) GetValue(TrackLeftBackgroundProperty);
+        get => (Brush)GetValue(TrackLeftBackgroundProperty);
         set => SetValue(TrackLeftBackgroundProperty, value);
     }
 
     public CornerRadius TrackLeftRadius
     {
-        get => (CornerRadius) GetValue(TrackLeftRadiusProperty);
+        get => (CornerRadius)GetValue(TrackLeftRadiusProperty);
         set => SetValue(TrackLeftRadiusProperty, value);
     }
 
     public Brush TrackRightBackground
     {
-        get => (Brush) GetValue(TrackRightBackgroundProperty);
+        get => (Brush)GetValue(TrackRightBackgroundProperty);
         set => SetValue(TrackRightBackgroundProperty, value);
     }
 
     public CornerRadius TrackRightRadius
     {
-        get => (CornerRadius) GetValue(TrackRightRadiusProperty);
+        get => (CornerRadius)GetValue(TrackRightRadiusProperty);
         set => SetValue(TrackRightRadiusProperty, value);
     }
 
     public double ThumbHeight
     {
-        get => (double) GetValue(ThumbHeightProperty);
+        get => (double)GetValue(ThumbHeightProperty);
         set => SetValue(ThumbHeightProperty, value);
     }
 
     public double ThumbWidth
     {
-        get => (double) GetValue(ThumbWidthProperty);
+        get => (double)GetValue(ThumbWidthProperty);
         set => SetValue(ThumbWidthProperty, value);
     }
 
     public double ThumbRadiusX
     {
-        get => (double) GetValue(ThumbRadiusXProperty);
+        get => (double)GetValue(ThumbRadiusXProperty);
         set => SetValue(ThumbRadiusXProperty, value);
     }
 
     public double ThumbRadiusY
     {
-        get => (double) GetValue(ThumbRadiusYProperty);
+        get => (double)GetValue(ThumbRadiusYProperty);
         set => SetValue(ThumbRadiusYProperty, value);
     }
 
     public Brush ThumbBrush
     {
-        get => (Brush) GetValue(ThumbBrushProperty);
+        get => (Brush)GetValue(ThumbBrushProperty);
         set => SetValue(ThumbBrushProperty, value);
     }
 }

@@ -14,13 +14,13 @@ public class RoundButton : Button
 
     public CornerRadius CornerRadius
     {
-        get => (CornerRadius) GetValue(CornerRadiusProperty);
+        get => (CornerRadius)GetValue(CornerRadiusProperty);
         set => SetValue(CornerRadiusProperty, value);
     }
 
     public TextAlignment TextAlignment
     {
-        get => (TextAlignment) GetValue(TextAlignmentProperty);
+        get => (TextAlignment)GetValue(TextAlignmentProperty);
         set => SetValue(TextAlignmentProperty, value);
     }
 }

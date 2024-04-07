@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
-using SteamTools.ProfileScanner;
+using SteamTools.ProfileScanner.Abstractions;
+using SteamTools.ProfileScanner.Models;
 
 namespace SteamTools.Presentation.ViewModels;
 
@@ -37,7 +38,7 @@ public class LocalProfileScannerViewModel : ObservableObject
 
     #region Public Properties
 
-    public ObservableCollection<LocalProfile> LocalProfiles { get; }
+    public ObservableCollection<ResultProfile> LocalProfiles { get; }
 
     #endregion
 

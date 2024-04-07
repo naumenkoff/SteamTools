@@ -16,25 +16,32 @@ public class RoundTextBox : TextBox
     public static readonly DependencyProperty PlaceholderForegroundProperty =
         DependencyProperty.Register(nameof(PlaceholderForeground), typeof(Brush), typeof(RoundTextBox));
 
-    public static readonly DependencyProperty SearchButtonCommandProperty = DependencyProperty.Register(nameof(SearchButtonCommand), typeof(ICommand),
-        typeof(RoundTextBox), new FrameworkPropertyMetadata((ICommand) null));
+    public static readonly DependencyProperty SearchButtonCommandProperty = DependencyProperty.Register(
+        nameof(SearchButtonCommand), typeof(ICommand),
+        typeof(RoundTextBox), new FrameworkPropertyMetadata((ICommand)null));
 
-    public static readonly DependencyProperty SearchButtonCommandParameterProperty = DependencyProperty.Register(nameof(SearchButtonCommandParameter),
-        typeof(object), typeof(RoundTextBox), new FrameworkPropertyMetadata((object) null));
+    public static readonly DependencyProperty SearchButtonCommandParameterProperty = DependencyProperty.Register(
+        nameof(SearchButtonCommandParameter),
+        typeof(object), typeof(RoundTextBox), new FrameworkPropertyMetadata((object)null));
 
-    public static readonly DependencyProperty SearchButtonVisibilityProperty = DependencyProperty.Register(nameof(SearchButtonVisibility),
+    public static readonly DependencyProperty SearchButtonVisibilityProperty = DependencyProperty.Register(
+        nameof(SearchButtonVisibility),
         typeof(Visibility), typeof(RoundTextBox), new FrameworkPropertyMetadata(Visibility.Visible));
 
-    public static readonly DependencyProperty ClearButtonCommandProperty = DependencyProperty.Register(nameof(ClearButtonCommand), typeof(ICommand),
-        typeof(RoundTextBox), new FrameworkPropertyMetadata((ICommand) null));
+    public static readonly DependencyProperty ClearButtonCommandProperty = DependencyProperty.Register(
+        nameof(ClearButtonCommand), typeof(ICommand),
+        typeof(RoundTextBox), new FrameworkPropertyMetadata((ICommand)null));
 
-    public static readonly DependencyProperty ClearButtonCommandParameterProperty = DependencyProperty.Register(nameof(ClearButtonCommandParameter),
-        typeof(object), typeof(RoundTextBox), new FrameworkPropertyMetadata((object) null));
+    public static readonly DependencyProperty ClearButtonCommandParameterProperty = DependencyProperty.Register(
+        nameof(ClearButtonCommandParameter),
+        typeof(object), typeof(RoundTextBox), new FrameworkPropertyMetadata((object)null));
 
-    public static readonly DependencyProperty ClearButtonVisibilityProperty = DependencyProperty.Register(nameof(ClearButtonVisibility),
+    public static readonly DependencyProperty ClearButtonVisibilityProperty = DependencyProperty.Register(
+        nameof(ClearButtonVisibility),
         typeof(Visibility), typeof(RoundTextBox), new FrameworkPropertyMetadata(Visibility.Collapsed));
 
-    public static readonly DependencyProperty ClearButtonUsesBehaviorProperty = DependencyProperty.Register(nameof(ClearButtonUsesBehavior),
+    public static readonly DependencyProperty ClearButtonUsesBehaviorProperty = DependencyProperty.Register(
+        nameof(ClearButtonUsesBehavior),
         typeof(bool), typeof(RoundTextBox), new FrameworkPropertyMetadata(true));
 
     private RoundButton _clearButton;
@@ -44,7 +51,7 @@ public class RoundTextBox : TextBox
     /// </summary>
     public bool ClearButtonUsesBehavior
     {
-        get => (bool) GetValue(ClearButtonUsesBehaviorProperty);
+        get => (bool)GetValue(ClearButtonUsesBehaviorProperty);
         set => SetValue(ClearButtonUsesBehaviorProperty, value);
     }
 
@@ -62,7 +69,7 @@ public class RoundTextBox : TextBox
     /// </summary>
     public ICommand ClearButtonCommand
     {
-        get => (ICommand) GetValue(ClearButtonCommandProperty);
+        get => (ICommand)GetValue(ClearButtonCommandProperty);
         set => SetValue(ClearButtonCommandProperty, value);
     }
 
@@ -80,7 +87,7 @@ public class RoundTextBox : TextBox
     /// </summary>
     public Visibility ClearButtonVisibility
     {
-        get => (Visibility) GetValue(ClearButtonVisibilityProperty);
+        get => (Visibility)GetValue(ClearButtonVisibilityProperty);
         set => SetValue(ClearButtonVisibilityProperty, value);
     }
 
@@ -89,7 +96,7 @@ public class RoundTextBox : TextBox
     /// </summary>
     public Visibility SearchButtonVisibility
     {
-        get => (Visibility) GetValue(SearchButtonVisibilityProperty);
+        get => (Visibility)GetValue(SearchButtonVisibilityProperty);
         set => SetValue(SearchButtonVisibilityProperty, value);
     }
 
@@ -98,7 +105,7 @@ public class RoundTextBox : TextBox
     /// </summary>
     public ICommand SearchButtonCommand
     {
-        get => (ICommand) GetValue(SearchButtonCommandProperty);
+        get => (ICommand)GetValue(SearchButtonCommandProperty);
         set => SetValue(SearchButtonCommandProperty, value);
     }
 
@@ -107,7 +114,7 @@ public class RoundTextBox : TextBox
     /// </summary>
     public CornerRadius CornerRadius
     {
-        get => (CornerRadius) GetValue(CornerRadiusProperty);
+        get => (CornerRadius)GetValue(CornerRadiusProperty);
         set => SetValue(CornerRadiusProperty, value);
     }
 
@@ -116,7 +123,7 @@ public class RoundTextBox : TextBox
     /// </summary>
     public string PlaceholderText
     {
-        get => (string) GetValue(PlaceholderTextProperty);
+        get => (string)GetValue(PlaceholderTextProperty);
         set => SetValue(PlaceholderTextProperty, value);
     }
 
@@ -125,7 +132,7 @@ public class RoundTextBox : TextBox
     /// </summary>
     public Brush PlaceholderForeground
     {
-        get => (Brush) GetValue(PlaceholderForegroundProperty);
+        get => (Brush)GetValue(PlaceholderForegroundProperty);
         set => SetValue(PlaceholderForegroundProperty, value);
     }
 

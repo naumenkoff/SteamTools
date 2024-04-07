@@ -34,6 +34,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\SProject\src\SProject.DependencyInjection\SProject.DependencyInjection.csproj"/>
         <ProjectReference Include="..\..\SProject\src\SProject.Steam\SProject.Steam.csproj"/>
         <ProjectReference Include="..\SteamTools.Common\SteamTools.Common.csproj"/>
         <ProjectReference Include="..\SteamTools.ProfileFetcher\SteamTools.ProfileFetcher.csproj"/>
