@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\SProject\src\SProject.CQRS\SProject.CQRS.csproj"/>
+        <ProjectReference Include="..\..\SProject\src\SProject.DependencyInjection\SProject.DependencyInjection.csproj"/>
         <ProjectReference Include="..\SteamTools.Common\SteamTools.Common.csproj"/>
     </ItemGroup>
 
