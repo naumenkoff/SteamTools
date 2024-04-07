@@ -1,6 +1,6 @@
-﻿namespace SteamTools.ProfileScanner;
+﻿namespace SteamTools.ProfileScanner.Enums;
 
-public enum LocalResultType
+public enum ResultType
 {
     Appmanifest,
     Appworkshop,
