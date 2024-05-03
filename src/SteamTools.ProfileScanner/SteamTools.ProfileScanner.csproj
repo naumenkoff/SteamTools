@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\SProject\src\SProject.DependencyInjection\SProject.DependencyInjection.csproj" />
         <ProjectReference Include="..\..\SProject\src\SProject.VDF\SProject.VDF.csproj"/>
         <ProjectReference Include="..\SteamTools.Common\SteamTools.Common.csproj"/>
     </ItemGroup>
