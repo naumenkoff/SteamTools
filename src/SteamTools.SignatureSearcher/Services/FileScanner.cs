@@ -6,8 +6,6 @@ namespace SteamTools.SignatureSearcher.Services;
 
 internal class FileScanner(IFileValidator<string> fileValidator) : IFileScanner
 {
-    private const int DefaultBufferSize = 4096;
-
     public FileScanResult ScanFile(FileInfo fileInfo, CancellationToken cancellationToken)
     {
         try
@@ -31,13 +29,31 @@ internal class FileScanner(IFileValidator<string> fileValidator) : IFileScanner
 
     private static StreamReader CreateStreamReader(FileInfo fileInfo)
     {
-        var fileStreamOptions = new FileStreamOptions
+        var fileStreamOptions = FileStreamOptionsFactory.CreateFileStreamOptions(fileInfo);
+        return new StreamReader(fileInfo.FullName, Encoding.UTF8, true, fileStreamOptions);
+    }
+
+    private static class FileStreamOptionsFactory
+    {
+        private const int DefaultBufferSize = 4096;
+
+        private static readonly Lazy<FileStreamOptions> DefaultFileStreamOptions = new(new FileStreamOptions
         {
-            BufferSize = fileInfo.Length >= DefaultBufferSize ? DefaultBufferSize : (int)fileInfo.Length,
+            BufferSize = DefaultBufferSize,
             Access = FileAccess.Read,
             Mode = FileMode.Open
-        };
+        });
 
-        return new StreamReader(fileInfo.FullName, Encoding.UTF8, true, fileStreamOptions);
+        public static FileStreamOptions CreateFileStreamOptions(FileInfo fileInfo)
+        {
+            return fileInfo.Length >= DefaultBufferSize
+                ? DefaultFileStreamOptions.Value
+                : new FileStreamOptions
+                {
+                    BufferSize = (int)fileInfo.Length,
+                    Access = FileAccess.Read,
+                    Mode = FileMode.Open
+                };
+        }
     }
 }
