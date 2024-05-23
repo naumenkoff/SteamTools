@@ -1,6 +1,4 @@
 ﻿using System.Buffers;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using SteamTools.Common;
 using SteamTools.SignatureSearcher.Abstractions;
@@ -23,19 +21,14 @@ internal sealed class BinaryFileScanner(ISteamIDPair steamIdPair) : FileScannerB
             fileStream = CreateStreamReader(fileInfo, out var bufferSize);
             if (cancellationToken.IsCancellationRequested) return FileScanResult.Cancelled;
 
-            var id64Position = 0;
-            var id32Position = 0;
             buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
             while (fileStream.Position < fileStream.Length)
             {
                 var read = fileStream.Read(buffer, 0, buffer.Length);
-                ref var start = ref MemoryMarshal.GetArrayDataReference(buffer);
-                ref var end = ref Unsafe.Add(ref start, read);
-                for (; Unsafe.IsAddressLessThan(ref start, ref end); start = ref Unsafe.Add(ref start, 1))
-                {
-                    if (IsContains(_id32, ref id32Position, start) || IsContains(_id64, ref id64Position, start)) return FileScanResult.Detected;
-                    if (cancellationToken.IsCancellationRequested) return FileScanResult.Cancelled;
-                }
+                var span = buffer.AsSpan(0, read);
+                if (span.IndexOf(_id64) != -1) return FileScanResult.Detected;
+                if (span.IndexOf(_id32) != -1) return FileScanResult.Detected;
+                if (cancellationToken.IsCancellationRequested) return FileScanResult.Cancelled;
             }
 
             return FileScanResult.NotFound;
@@ -49,15 +42,6 @@ internal sealed class BinaryFileScanner(ISteamIDPair steamIdPair) : FileScannerB
             if (fileStream != null) fileStream.Dispose();
             if (buffer != null) ArrayPool<byte>.Shared.Return(buffer);
         }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool IsContains(byte[] array, ref int position, byte value)
-    {
-        if (array[position] == value)
-            return ++position == array.Length;
-        position = 0;
-        return false;
     }
 
     private static FileStream CreateStreamReader(FileInfo fileInfo, out int bufferSize)
