@@ -1,10 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using SteamTools.Common;
-using IFileProvider = SteamTools.SignatureSearcher.Abstractions.IFileProvider;
 
-namespace SteamTools.SignatureSearcher.Services;
+namespace SteamTools.SignatureSearcher.Abstractions;
 
-internal abstract class FileProviderBase(ScanningOptions scanningOptions) : IFileProvider
+internal abstract class FileProviderBase(ScanningOptions scanningOptions)
 {
     private readonly bool _isFileSizeLimitEnabled = scanningOptions.LimitScanningFileSize;
     private readonly long _maximumFileSize = scanningOptions.GetFormattedMaximumFileSize();

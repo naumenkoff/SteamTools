@@ -1,12 +1,23 @@
 using System.Text;
+using SteamTools.Common;
 using SteamTools.SignatureSearcher.Abstractions;
 using SteamTools.SignatureSearcher.Enums;
 
 namespace SteamTools.SignatureSearcher.Services;
 
-internal class FileScanner(IFileValidator<string> fileValidator) : IFileScanner
+internal sealed class FileScanner(ISteamIDPair steamIdPair) : FileScannerBase
 {
-    public FileScanResult ScanFile(FileInfo fileInfo, CancellationToken cancellationToken)
+    private readonly string _id32 = steamIdPair.ID32.AsString;
+    private readonly string _id64 = steamIdPair.ID64.AsString;
+
+    private bool Validate(string? value)
+    {
+        if (value is null) return false;
+        return value.Contains(_id32, StringComparison.OrdinalIgnoreCase)
+               || value.Contains(_id64, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public override FileScanResult ScanFile(FileInfo fileInfo, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -15,7 +26,7 @@ internal class FileScanner(IFileValidator<string> fileValidator) : IFileScanner
             while (streamReader.BaseStream.Position < streamReader.BaseStream.Length)
             {
                 var line = streamReader.ReadLine();
-                if (fileValidator.Validate(line)) return FileScanResult.Detected;
+                if (Validate(line)) return FileScanResult.Detected;
                 if (cancellationToken.IsCancellationRequested) return FileScanResult.Cancelled;
             }
 
@@ -29,31 +40,7 @@ internal class FileScanner(IFileValidator<string> fileValidator) : IFileScanner
 
     private static StreamReader CreateStreamReader(FileInfo fileInfo)
     {
-        var fileStreamOptions = FileStreamOptionsFactory.CreateFileStreamOptions(fileInfo);
+        var fileStreamOptions = FileStreamOptionsFactory.CreateFileStreamOptions(fileInfo, out _);
         return new StreamReader(fileInfo.FullName, Encoding.UTF8, true, fileStreamOptions);
-    }
-
-    private static class FileStreamOptionsFactory
-    {
-        private const int DefaultBufferSize = 4096;
-
-        private static readonly Lazy<FileStreamOptions> DefaultFileStreamOptions = new(new FileStreamOptions
-        {
-            BufferSize = DefaultBufferSize,
-            Access = FileAccess.Read,
-            Mode = FileMode.Open
-        });
-
-        public static FileStreamOptions CreateFileStreamOptions(FileInfo fileInfo)
-        {
-            return fileInfo.Length >= DefaultBufferSize
-                ? DefaultFileStreamOptions.Value
-                : new FileStreamOptions
-                {
-                    BufferSize = (int)fileInfo.Length,
-                    Access = FileAccess.Read,
-                    Mode = FileMode.Open
-                };
-        }
     }
 }

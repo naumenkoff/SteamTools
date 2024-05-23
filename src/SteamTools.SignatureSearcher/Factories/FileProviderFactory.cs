@@ -7,9 +7,9 @@ namespace SteamTools.SignatureSearcher.Factories;
 internal sealed class FileProviderFactory(
     Func<CertainFileProvider> allowedFileProvider,
     Func<FileProvider> fileProvider,
-    ScanningOptions scanningOptions) : IFactory<IFileProvider>
+    ScanningOptions scanningOptions) : IFactory<FileProviderBase>
 {
-    public IFileProvider Create()
+    public FileProviderBase Create()
     {
         return scanningOptions.ScanFilesOnlyWithSpecifiedExtensions ? allowedFileProvider() : fileProvider();
     }

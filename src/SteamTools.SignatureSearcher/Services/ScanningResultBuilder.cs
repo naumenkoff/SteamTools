@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using SteamTools.SignatureSearcher.Abstractions;
 using SteamTools.SignatureSearcher.Contracts.Responses;
 using SteamTools.SignatureSearcher.Enums;
@@ -12,16 +13,19 @@ internal sealed class ScanningResultBuilder : IScanningResultBuilder
     private int _openedFiles;
     private int _scannedFiles;
 
+    [SuppressMessage("ReSharper", "SwitchStatementMissingSomeEnumCasesNoDefault")]
     public void FileScanned(FileScanResult fileScanResult, FileInfo? fileInfo)
     {
         Interlocked.Increment(ref _scannedFiles);
         switch (fileScanResult)
         {
             case FileScanResult.NotFound:
+            {
                 Interlocked.Increment(ref _openedFiles);
                 break;
-
+            }
             case FileScanResult.Detected:
+            {
                 Interlocked.Increment(ref _openedFiles);
                 lock (_lock)
                 {
@@ -29,10 +33,12 @@ internal sealed class ScanningResultBuilder : IScanningResultBuilder
                 }
 
                 break;
-
+            }
             case FileScanResult.Failed:
+            {
                 Interlocked.Increment(ref _errors);
                 break;
+            }
         }
     }
 

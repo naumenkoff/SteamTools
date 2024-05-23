@@ -1,5 +1,6 @@
 using SProject.FileSystem;
 using SteamTools.Common;
+using SteamTools.SignatureSearcher.Abstractions;
 
 namespace SteamTools.SignatureSearcher.Services;
 

@@ -4,12 +4,10 @@ using SteamTools.SignatureSearcher.Services;
 
 namespace SteamTools.SignatureSearcher.Factories;
 
-internal sealed class FileScannerFactory(IFactory<ISteamIDPair, IFileValidator<string>> fileValidatorFactory)
-    : IFactory<ISteamIDPair, IFileScanner>
+internal sealed class FileScannerFactory : IFactory<ISteamIDPair, FileScannerBase>
 {
-    public IFileScanner Create(ISteamIDPair arg)
+    public FileScannerBase Create(ISteamIDPair arg)
     {
-        var fileValidator = fileValidatorFactory.Create(arg);
-        return new FileScanner(fileValidator);
+        return new BinaryFileScanner(arg);
     }
 }

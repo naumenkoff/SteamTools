@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using SProject.CQRS;
 using SteamTools.Common;
 using SteamTools.SignatureSearcher.Abstractions;
@@ -7,10 +8,11 @@ using SteamTools.SignatureSearcher.Contracts.Responses;
 
 namespace SteamTools.SignatureSearcher.Contracts.Handlers;
 
+[SuppressMessage("ReSharper", "UnusedType.Global")]
 internal sealed class StartScanningHandler(
-    IFactory<IFileProvider> fileProviderFactory,
+    IFactory<FileProviderBase> fileProviderFactory,
     IScanningResultBuilder scanningResultBuilder,
-    IFactory<ISteamIDPair, IFileScanner> fileScannerFactory,
+    IFactory<ISteamIDPair, FileScannerBase> fileScannerFactory,
     ScanningOptions scanningOptions) : IRequestHandler<StartScanningRequest, ScanningResult>
 {
     public async Task<ScanningResult> ExecuteAsync(StartScanningRequest request)
