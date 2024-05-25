@@ -172,11 +172,9 @@ public class IDScannerViewModel : ObservableObject
                 SteamId = steamProfile,
                 ScanningCancellation = token
             });
-            if (scanningResult is null) throw new NullReferenceException($"{nameof(scanningResult)} was null");
 
             MatchingFiles = new ObservableCollection<string>(scanningResult.Files);
-            _notificationService.RegisterNotification(
-                $"We're done scanning! It took {Stopwatch.GetElapsedTime(start).TotalSeconds:F} seconds to scan {scanningResult.OpenedFiles} out of {scanningResult.ScannedFiles} files!");
+            _notificationService.RegisterNotification($"We're done scanning! It took {Stopwatch.GetElapsedTime(start).TotalSeconds:F} seconds to scan {scanningResult.OpenedFiles} out of {scanningResult.ScannedFiles} files!");
         }
         catch (OperationCanceledException)
         {
