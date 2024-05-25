@@ -21,4 +21,13 @@ public class SteamClient(ISteamClientFinder steamClientFinder)
     {
         return FileSystemInfoExtensions.GetDirectoryInfo(false, steamapps?.FullName, "workshop");
     }
+    
+    public IEnumerable<FileInfo> GetUniqueExtensions()
+    {
+        return Steam is not null
+            ? Steam.GetSteamLibraries()
+                .SelectMany(x => x.WorkingDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories))
+                .DistinctBy(file => file.Extension, StringComparer.OrdinalIgnoreCase).OrderBy(x => x.Extension.Length)
+            : [];
+    }
 }
