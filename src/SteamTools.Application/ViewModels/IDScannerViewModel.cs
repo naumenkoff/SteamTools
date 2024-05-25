@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -210,16 +209,13 @@ public class IDScannerViewModel : ObservableObject
     /// </summary>
     private async Task FillExtensionsAsync()
     {
-        foreach (var item in GetFileExtensions())
-            await Application.Current.Dispatcher.BeginInvoke(() => _availableExtensions.Add(item));
+        foreach (var extension in GetFileExtensions())
+            await Application.Current.Dispatcher.BeginInvoke(_availableExtensions.Add, extension);
     }
 
     private IEnumerable<SearchExtension> GetFileExtensions()
     {
-        return _steamClient.Steam?.GetSteamLibraries()
-            .SelectMany(library => library.WorkingDirectory.EnumerateFiles("*.*", SearchOption.AllDirectories))
-            .DistinctBy(file => file.Extension, StringComparer.OrdinalIgnoreCase).OrderBy(x => x.Extension.Length)
-            .Select(x => new SearchExtension(x.Extension));
+        return _steamClient.GetUniqueExtensions().Select(x => new SearchExtension(x.Extension));
     }
 
     private ValueTask ChangeFileExtensionsSelectedState(Func<SearchExtension, bool> func, bool check)
